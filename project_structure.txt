@@ -1,0 +1,94 @@
+app/
+The main directory containing all application logic, UI, and business features.
+
+app/assets/
+Static assets such as:
+
+audio_prompts/: 
+Pre-recorded voice instructions for AED guidance.
+
+icons/: 
+App icons and vector graphics.
+
+images/: 
+UI images and branding assets.
+
+app/components/
+Reusable UI components like buttons, headers, modals, etc., used across multiple screens.
+
+app/constants/
+Static values such as role definitions, app settings, or status enums.
+
+app/contexts/
+Context API logic for global state (e.g., auth, session data), especially if not using Redux everywhere.
+
+app/data/
+Dummy or mock JSON data for development/testing or pre-filled datasets.
+
+app/encryption/
+Handles all local and peer data encryption:
+Local storage encryption (SQLite/AsyncStorage)
+Peer-to-peer encryption (Bluetooth/Wi-Fi Direct)
+
+app/hooks/
+Custom React Native hooks for business logic, like:
+Bluetooth scanning and pairing
+Offline session management
+
+app/interfaces/
+TypeScript interfaces and type definitions (e.g., for user, sessions, prompts, etc.).
+
+app/navigation/
+Navigation logic using React Navigation:
+AppNavigator.tsx: Defines screen stacks or tabs.
+routes.ts: Contains screen names, parameters, and path constants.
+
+app/screens/
+Houses all app screens:
+
+auth/: 
+Login & registration screens.
+
+student/: 
+AED interface for students with manual/AED toggle.
+
+instructor/: 
+Scenario control, “End Session” feature.
+
+settings/:
+Static pages like Terms & Privacy Policy.
+
+shared/: 
+Common screens like SplashScreen.
+
+app/services/
+Handles app logic and native modules:
+Bluetooth & Wi-Fi Direct communication
+Session state management
+Local database or AsyncStorage
+File exporting/importing if needed
+
+app/state/
+Redux state management (optional but powerful for large logic):
+
+reducers/: 
+App-level state handlers (auth, sessions, etc.)
+
+actions/:
+Redux action creators
+store.ts: Redux store setup
+
+app/utils/
+Utility functions:
+permissions.ts: Handles permission requests (e.g., Bluetooth, storage)
+logger.ts: Logs/debugs to console or file
+validator.ts: Form or input validation
+
+test/
+Manual and future automated tests:
+Jest test files for Bluetooth, encryption, user flows.
+
+docs/
+Documentation files:
+terms_of_service.md, privacy_policy.md: Legal compliance pages
+architecture_diagram.png: System design illustration
