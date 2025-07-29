@@ -12,7 +12,7 @@
   "dependencies": {
     "@react-native/new-app-screen": "0.80.2",
     "lucide-react": "^0.526.0",
-    "lucide-react-native": "^0.526.0",
+    "lucide-react-native": "^0.533.0",
     "react": "19.1.0",
     "react-native": "0.80.2",
     "react-native-linear-gradient": "^2.8.3",
