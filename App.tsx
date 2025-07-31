@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import RoleSelectionScreen from './app/screens/auth/RoleSelectionScreen';
 import StudentHomeScreen from './app/screens/student/StudentHomeScreen';
-import SessionCompleteScreen from './app/screens/SessionCompleteScreen';
-import PrivacyPolicyScreen from './app/screens/PrivacyPolicyScreen';
+import InstructorLiveSessionScreen from './app/screens/instructor/InstructorLiveSessionScreen';
+import ScenarioBuilder from './app/screens/instructor/ScenarioBuilder';
 
 export default function App() {
-  return <RoleSelectionScreen />;
+  return <ScenarioBuilder />;
 }
