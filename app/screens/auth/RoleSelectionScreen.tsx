@@ -15,7 +15,7 @@ const RoleSelectionScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require('../../assets/images/simcritLogo1.png')} />
+        <Image style={{width: 170, height: 60, marginBottom: -10}} source={require('../../assets/images/simcritLogo1.png')} />
         <Text style={styles.fontSubtitle}>Simulation for Critical Care</Text>
       </View>
 
