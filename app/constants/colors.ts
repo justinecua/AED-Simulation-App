@@ -7,6 +7,7 @@ const Colors = {
   rhythmBackground: '#2E3847',
   heartRhythmColor: '#00E0D8',
   heartRateBackground: '#555E69',
+  buttonBlue: '#0071EE',
 };
 
 export default Colors;

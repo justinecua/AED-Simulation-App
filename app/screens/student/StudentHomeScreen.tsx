@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
   container: {
     height: '100%',
     display: 'flex',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
   },
