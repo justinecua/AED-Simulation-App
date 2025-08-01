@@ -17,16 +17,13 @@ const ScenarioBuilder = () => {
       <View style={styles.header}>
         <View style={styles.returnButton}>
           <ChevronLeft
-            style={styles.returnIcon}
+            color={Colors.button}
             size={Dimensions.get('window').width * 0.065}
           />
         </View>
         <View style={styles.rightBox}>
           <View style={styles.userCircle}>
-            <User
-              style={styles.userIcon}
-              size={Dimensions.get('window').width * 0.075}
-            />
+            <User color="#fff" size={Dimensions.get('window').width * 0.075} />
           </View>
           <View style={styles.userTypeBox}>
             <Text style={styles.userType}>Instructor</Text>
@@ -110,10 +107,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 
-  returnIcon: {
-    color: Colors.button,
-  },
-
   rightBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -127,12 +120,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
 
-  userIcon: {
-    color: Colors.subText,
-  },
-
   userTypeBox: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 10,
     backgroundColor: Colors.subText,
   },
