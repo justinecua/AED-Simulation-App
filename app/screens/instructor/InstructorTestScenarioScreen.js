@@ -111,15 +111,12 @@ const InstructorTestScenarioScreen = () => {
 
 const style = StyleSheet.create({
   container: {
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    paddingTop: 30,
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     marginTop: 40,
-    gap: 130,
+    justifyContent: 'space-between',
   },
   boxIcon: {
     width: 40,
@@ -139,7 +136,6 @@ const style = StyleSheet.create({
   },
   wrapper: {
     flexDirection: 'row',
-    gap: 10,
   },
   headerText: {
     color: Colors.rhythmBackground,
@@ -153,7 +149,7 @@ const style = StyleSheet.create({
   content: {
     padding: 15,
     marginTop: 15,
-    width: '86%',
+    width: '100%',
     height: '80%',
     borderRadius: 15,
     alignItems: 'center',
@@ -161,8 +157,9 @@ const style = StyleSheet.create({
   },
   contentButton: {
     flexDirection: 'row',
-    gap: 60,
-    marginTop: 5,
+    justifyContent: 'space-between',
+
+    width: '100%',
   },
   contentText: {
     fontSize: 11,

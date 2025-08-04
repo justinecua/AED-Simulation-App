@@ -8,6 +8,7 @@ const Colors = {
   heartRhythmColor: '#00E0D8',
   heartRateBackground: '#555E69',
   buttonBlue: '#0071EE',
+  recentSessionCard: '#EDF9FF',
 };
 
 export default Colors;
