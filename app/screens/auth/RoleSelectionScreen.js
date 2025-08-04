@@ -6,20 +6,24 @@ import {
   Image,
   ScrollView,
   TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import Colors from '../../constants/colors';
 import { Bold } from 'lucide-react-native';
 import { UserRound } from 'lucide-react-native';
 
-const RoleSelectionScreen = () => {
+const RoleSelectionScreen = ({ onSelectStudent, onSelectInstructor }) => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image style={{width: 170, height: 60, marginBottom: -10}} source={require('../../assets/images/simcritLogo1.png')} />
+        <Image
+          style={{ width: 170, height: 60, marginBottom: -10 }}
+          source={require('../../assets/images/simcritLogo1.png')}
+        />
         <Text style={styles.fontSubtitle}>Simulation for Critical Care</Text>
       </View>
 
-      <View style={styles.userCard}>
+      <TouchableOpacity style={styles.userCard} onPress={onSelectStudent}>
         <View style={styles.ucIcons}>
           <UserRound color="white" size={35} />
         </View>
@@ -29,9 +33,9 @@ const RoleSelectionScreen = () => {
             Join an AED simulation and follow prompts during the session
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
-      <View style={styles.userCard}>
+      <TouchableOpacity style={styles.userCard} onPress={onSelectInstructor}>
         <View style={styles.ucIcons2}>
           <UserRound color="white" size={35} />
         </View>
@@ -42,7 +46,7 @@ const RoleSelectionScreen = () => {
             session flow
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
       <View style={styles.additionalText}>
         <Text style={styles.atInfo}>
