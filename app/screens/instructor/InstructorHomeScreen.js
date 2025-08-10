@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Colors from '../../constants/colors';
 import { Bold } from 'lucide-react-native';
-import FloatingHome from '../shared/FloatingHome';
+import FloatingHome from '../../components/FloatingHome';
 import {
   Play,
   BluetoothSearching,
@@ -21,7 +21,7 @@ import {
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const InstructorHomeScreen = ({ goHome }) => {
+const InstructorHomeScreen = ({ goHome, onSelectAutoMode }) => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -57,7 +57,10 @@ const InstructorHomeScreen = ({ goHome }) => {
                 <Text style={styles.modeDescription}>
                   Begin simulation without instructor supervision
                 </Text>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={onSelectAutoMode}
+                >
                   <Text style={styles.buttonText}>Start Simulation</Text>
                 </TouchableOpacity>
               </View>
@@ -193,7 +196,7 @@ const styles = StyleSheet.create({
   },
 
   rscTitleText: {
-    color: Colors.button,
+    color: Colors.rhythmBackground,
     fontWeight: 700,
     fontSize: 15,
   },
@@ -225,7 +228,7 @@ const styles = StyleSheet.create({
     width: 50,
     padding: 13,
     borderRadius: '50%',
-    backgroundColor: Colors.button,
+    backgroundColor: Colors.rhythmBackground,
   },
   recentSessionsContainer: {
     padding: 16,
