@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Home } from 'lucide-react-native';
-import Colors from '../../constants/colors';
+import Colors from '../constants/colors';
 
 const FloatingHome = ({ onPress }) => {
   return (

@@ -1,7 +1,8 @@
 // app/screens/instructor/InstructorTestScenarioScreen.js
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import style from '../../styles/InstructorTestScenarioStyle';
+import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
 
 import Header from '../../components/Header';
@@ -10,34 +11,41 @@ import AEDControls from '../../components/AEDControls';
 import PlayButton from '../../components/PlayButton';
 import StopButton from '../../components/StopButton';
 import useAED from '../../hooks/useAED';
-import { Timer } from 'lucide-react-native';
+import { Timer, Wifi, Info, Hand } from 'lucide-react-native';
 
-const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
+const StudentAutoModeScreen = ({ goHomeStudent }) => {
   const { started, currentRhythm, waveform, strokeColors, startAED, stopAED } =
     useAED();
 
   return (
     <View style={style.container}>
-      <Header goBack={goHomeInsctructor} role="instructor" />
+      <Header goBack={goHomeStudent} role="student" />
 
       <View style={style.subContainer}>
         <View style={style.content}>
-          <View style={style.contentButton}>
-            <Text style={style.contentText}>Test Scenario Mode</Text>
-            <Text style={style.contentText}>Change Scenario</Text>
+          <View style={style2.studentWrapper}>
+            <View style={style.contentButton}>
+              <Text style={style.contentText}>Auto Mode</Text>
+            </View>
+
+            <View style={style2.studentSubWrapper}>
+              <View style={style.timerIcon}>
+                <Timer color={Colors.text} size={25} />
+                <Text style={style.timerText}>1:58</Text>
+              </View>
+
+              <TouchableOpacity style={style2.wifiButton}>
+                <Wifi color={Colors.text} size={22} />
+              </TouchableOpacity>
+              <TouchableOpacity style={style2.wifiButton}>
+                <Info color={Colors.text} size={22} />
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={style.wrapperButton}>
-            <View style={style.timerIcon}>
-              <Timer color={Colors.text} size={25} />
-              <Text style={style.timerText}>1:58</Text>
-            </View>
-            <View style={style.button}>
-              <PlayButton onPress={startAED} />
-              <StopButton onPress={stopAED} />
-            </View>
-          </View>
-
+          <TouchableOpacity style={style2.wifiButton}>
+            <Hand color={Colors.text} size={22} />
+          </TouchableOpacity>
           <View style={style.contentCenter}>
             <View style={style.aedBox}>
               <AEDWaveform
@@ -59,4 +67,4 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
   );
 };
 
-export default InstructorTestScenarioScreen;
+export default StudentAutoModeScreen;
