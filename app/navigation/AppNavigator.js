@@ -3,13 +3,21 @@ import AnimatedScreenTransition from '../animations/AnimatedScreenTransition';
 import RoleSelectionScreen from '../screens/auth/RoleSelectionScreen';
 import StudentHomeScreen from '../screens/student/StudentHomeScreen';
 import InstructorHomeScreen from '../screens/instructor/InstructorHomeScreen';
+import InstructorTestScenarioScreen from '../screens/instructor/InstructorTestScenarioScreen';
+import StudentAutoModeScreen from '../screens/student/StudentAutoModeScreen';
 
 export default function AppNavigator() {
   const [screen, setScreen] = useState('role');
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
 
   const handleNavigation = newScreen => {
-    setDirection(newScreen === 'role' ? -1 : 1);
+    if (newScreen === 'role') {
+      setDirection(-1);
+    } else if (newScreen === 'instructor') {
+      setDirection(-1);
+    } else {
+      setDirection(1);
+    }
     setScreen(newScreen);
   };
 
@@ -17,13 +25,43 @@ export default function AppNavigator() {
     <>
       {screen === 'student' && (
         <AnimatedScreenTransition direction={direction} keyValue="student">
-          <StudentHomeScreen goHome={() => handleNavigation('role')} />
+          <StudentHomeScreen
+            goHome={() => handleNavigation('role')}
+            goStudentAutoMode={() => handleNavigation('studentAutoMode')}
+          />
         </AnimatedScreenTransition>
       )}
 
       {screen === 'instructor' && (
         <AnimatedScreenTransition direction={direction} keyValue="instructor">
-          <InstructorHomeScreen />
+          <InstructorHomeScreen
+            goHome={() => handleNavigation('role')}
+            onSelectAutoMode={() => handleNavigation('testScenarioInstructor')}
+          />
+        </AnimatedScreenTransition>
+      )}
+
+      {screen === 'testScenarioInstructor' && (
+        <AnimatedScreenTransition
+          direction={direction}
+          keyValue="testScenarioInstructor"
+        >
+          <InstructorTestScenarioScreen
+            goHome={() => handleNavigation('role')}
+            goHomeInsctructor={() => handleNavigation('instructor')}
+          />
+        </AnimatedScreenTransition>
+      )}
+
+      {screen === 'studentAutoMode' && (
+        <AnimatedScreenTransition
+          direction={direction}
+          keyValue="studentAutoMode"
+        >
+          <StudentAutoModeScreen
+            goHome={() => handleNavigation('role')}
+            goHomeStudent={() => handleNavigation('student')}
+          />
         </AnimatedScreenTransition>
       )}
 
