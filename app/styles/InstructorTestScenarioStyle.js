@@ -20,6 +20,7 @@ const style = StyleSheet.create({
     position: 'relative',
   },
   header: {
+    width: '100%',
     flexDirection: 'row',
     marginTop: 20,
     justifyContent: 'space-between',
