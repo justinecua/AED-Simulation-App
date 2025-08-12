@@ -1,15 +1,21 @@
 // app/screens/instructor/InstructorTestScenarioScreen.js
 import React from 'react';
 import { View, Text } from 'react-native';
+// import style
 import style from '../../styles/InstructorTestScenarioStyle';
+import aedStyle from '../../styles/aedBoxStyle';
 import Colors from '../../constants/colors';
-
+// import components
 import Header from '../../components/Header';
 import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
 import PlayButton from '../../components/PlayButton';
 import StopButton from '../../components/StopButton';
 import useAED from '../../hooks/useAED';
+import ToneDisplay from '../../components/ToneDisplay';
+import ShockDisplay from '../../components/ShockDisplay';
+
+// icon imports
 import { Timer } from 'lucide-react-native';
 
 const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
@@ -38,8 +44,12 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
             </View>
           </View>
 
+          <View style={{ marginTop: 45 }}>
+            <ToneDisplay />
+          </View>
+
           <View style={style.contentCenter}>
-            <View style={style.aedBox}>
+            <View style={aedStyle.aedBox}>
               <AEDWaveform
                 started={started}
                 currentRhythm={currentRhythm}
@@ -53,6 +63,8 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
               />
             </View>
           </View>
+
+          <ShockDisplay />
         </View>
       </View>
     </View>

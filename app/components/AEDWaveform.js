@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import style from '../styles/InstructorTestScenarioStyle';
+import aedStyle from '../styles/aedBoxStyle';
 
 const HEIGHT = 150;
 
@@ -22,11 +22,11 @@ const AEDWaveform = ({ started, currentRhythm, waveform, strokeColors }) => {
   }
 
   return (
-    <View style={style.aedScreen}>
-      <View style={style.aedScreenDetails}>
-        <View style={style.hrBox}>
-          <Text style={style.hrLabel}>HR / </Text>
-          <Text style={style.hrValue}>
+    <View style={aedStyle.aedScreen}>
+      <View style={aedStyle.aedScreenDetails}>
+        <View style={aedStyle.hrBox}>
+          <Text style={aedStyle.hrLabel}>HR </Text>
+          <Text style={aedStyle.hrValue}>
             {started && currentRhythm ? currentRhythm.bpm : 'N/A'}
           </Text>
         </View>
