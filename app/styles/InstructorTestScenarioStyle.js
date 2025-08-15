@@ -13,12 +13,10 @@ const style = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: Colors.background,
     position: 'relative',
-    height: '80%',
   },
   header: {
     width: '100%',
     flexDirection: 'row',
-    marginTop: 50,
     justifyContent: 'space-between',
     marginBottom: 20,
   },
@@ -65,7 +63,8 @@ const style = StyleSheet.create({
     alignContent: 'center',
     height: '100%',
   },
-  contentButton: {
+
+  contentWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',

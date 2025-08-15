@@ -288,6 +288,10 @@
     {
       "path": "app/assets/fonts/Roboto_SemiCondensed-ThinItalic.ttf",
       "sha1": "4015948dfdcc05da6c01e8950dc1f09bb0cc3ed0"
+    },
+    {
+      "path": "app/assets/fonts/RussoOne-Regular.ttf",
+      "sha1": "4a12533ad9ee3d6c83da4ac659d78ef9fb702ab4"
     }
   ]
 }

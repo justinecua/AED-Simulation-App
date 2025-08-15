@@ -84,6 +84,7 @@
 		FB533E75E174453296B1D6BD /* Roboto_SemiCondensed-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 61ABD778999D4BA7A6C97F92 /* Roboto_SemiCondensed-LightItalic.ttf */; };
 		FD5B718E468540338084823F /* Poppins-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6CE8BEBCA69465693757008 /* Poppins-ExtraBoldItalic.ttf */; };
 		FF1DC3963D2442A482F3833F /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 523ED61A22924BF282AE5CC5 /* Roboto-Light.ttf */; };
+		032A64B3FC3F4536887DACD4 /* RussoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C6FDBC4EB1AE4AF4930C4DAE /* RussoOne-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -169,6 +170,7 @@
 		FB4820C1046843B3913E116B /* Roboto-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraBoldItalic.ttf"; path = "../app/assets/fonts/Roboto-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		FC53B2859ED94B84987A490B /* Roboto_Condensed-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-ExtraBold.ttf"; path = "../app/assets/fonts/Roboto_Condensed-ExtraBold.ttf"; sourceTree = "<group>"; };
 		FE060ADEF7CB40499C7327F4 /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../app/assets/fonts/Poppins-Italic.ttf"; sourceTree = "<group>"; };
+		C6FDBC4EB1AE4AF4930C4DAE /* RussoOne-Regular.ttf */ = {isa = PBXFileReference; name = "RussoOne-Regular.ttf"; path = "../app/assets/fonts/RussoOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,6 +281,7 @@
 				76531A1AA4844DDDA9313D9A /* Roboto_SemiCondensed-SemiBoldItalic.ttf */,
 				02C49F16C8A0411EB13B57E6 /* Roboto_SemiCondensed-Thin.ttf */,
 				CE163E07F4AD4017B96D94C6 /* Roboto_SemiCondensed-ThinItalic.ttf */,
+				C6FDBC4EB1AE4AF4930C4DAE /* RussoOne-Regular.ttf */,
 			);
 			name = Resources;
 			path = "";
@@ -458,6 +461,7 @@
 				F0A75801AC8C4ACBBB4A45F8 /* Roboto_SemiCondensed-Thin.ttf in Resources */,
 				722531D3E3CC42B78E343A48 /* Roboto_SemiCondensed-ThinItalic.ttf in Resources */,
 				81D908829A00C850F7668AB4 /* PrivacyInfo.xcprivacy in Resources */,
+				032A64B3FC3F4536887DACD4 /* RussoOne-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
