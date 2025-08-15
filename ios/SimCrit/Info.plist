@@ -32,7 +32,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIAppFonts</key>
@@ -109,6 +109,7 @@
 		<string>Roboto_SemiCondensed-SemiBoldItalic.ttf</string>
 		<string>Roboto_SemiCondensed-Thin.ttf</string>
 		<string>Roboto_SemiCondensed-ThinItalic.ttf</string>
+		<string>RussoOne-Regular.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native'; // added Text
 import Colors from '../constants/colors';
-import { Volume2 } from 'lucide-react-native';
+import { AudioLines } from 'lucide-react-native';
 
 const ToneDisplay = () => {
   return (
     <View style={style.tone}>
       <View style={style.toneIcon}>
         <View style={style.boxTone}>
-          <Volume2 color="white" size={16} />
+          <AudioLines color="white" size={16} />
         </View>
         <Text style={style.toneText}>Push to match the tone</Text>
       </View>
@@ -18,6 +18,8 @@ const ToneDisplay = () => {
 
 const style = StyleSheet.create({
   tone: {
+    position: 'absolute',
+    top: 180,
     alignItems: 'center',
     paddingVertical: 6,
     paddingHorizontal: 10,

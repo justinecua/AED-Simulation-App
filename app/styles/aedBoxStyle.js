@@ -1,49 +1,52 @@
 import { StyleSheet } from 'react-native';
 import Colors from '../constants/colors';
 
+import { Dimensions, Platform } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 const aedStyle = StyleSheet.create({
   aedBox: {
-    marginTop: '-45%',
     gap: 10,
     backgroundColor: '#fff',
     padding: 21,
     borderRadius: 15,
-    width: '90%',
-    height: '60%',
+    width: width * 0.9,
+    height: height * 0.6,
+    maxWidth: 330,
+    maxHeight: 300,
 
-    // iOS shadow
+    // Shadows
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
-
-    // Android shadow
     elevation: 5,
   },
+
   aedScreen: {
     width: '100%',
-    height: '80%',
+    height: '90%',
     backgroundColor: Colors.rhythmBackground,
     borderRadius: 10,
   },
   aedScreenDetails: {
-    marginTop: 10,
+    position: 'absolute',
+    right: 5,
+    top: 8,
     justifyContent: 'flex-end',
     flexDirection: 'row',
-    width: '100%',
   },
   hrBox: {
     backgroundColor: '#fff',
     borderRadius: 9,
     paddingVertical: 4,
     paddingHorizontal: 10,
-    marginRight: 10,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    zIndex: 2,
   },
   hrLabel: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   hrValue: {
@@ -53,6 +56,8 @@ const aedStyle = StyleSheet.create({
   },
 
   aedControls: {
+    marginTop:
+      -20 /* Optional lol, Idk why its position is exceeding from the black screen*/,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -98,15 +103,16 @@ const aedStyle = StyleSheet.create({
     gap: 6,
   },
   aedText: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 26,
+    letterSpacing: 2,
     color: '#1B2A37',
+    fontFamily: 'RussoOne-Regular',
   },
   shockButton: {
     width: 35,
     height: 35,
     backgroundColor: '#FFA500',
-    borderRadius: '50%',
+    borderRadius: 17.5,
     justifyContent: 'center',
     alignItems: 'center',
   },
