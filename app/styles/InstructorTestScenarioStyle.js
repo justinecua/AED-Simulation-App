@@ -2,12 +2,6 @@ import { StyleSheet } from 'react-native';
 import Colors from '../constants/colors';
 
 const style = StyleSheet.create({
-  aedScreenDetails: {
-    marginTop: 10,
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    width: '100%',
-  },
   container: {
     padding: 15,
     flex: 1,
@@ -16,12 +10,13 @@ const style = StyleSheet.create({
   subContainer: {
     flex: 1,
     padding: 2,
+    borderRadius: 15,
     backgroundColor: Colors.background,
     position: 'relative',
   },
   header: {
+    width: '100%',
     flexDirection: 'row',
-    marginTop: 20,
     justifyContent: 'space-between',
     marginBottom: 20,
   },
@@ -48,6 +43,7 @@ const style = StyleSheet.create({
   headerText: {
     color: Colors.rhythmBackground,
     backgroundColor: '#F4F6FA',
+    fontSize: 15,
     fontWeight: 'bold',
     paddingHorizontal: 12,
     paddingVertical: 9,
@@ -67,7 +63,8 @@ const style = StyleSheet.create({
     alignContent: 'center',
     height: '100%',
   },
-  contentButton: {
+
+  contentWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
@@ -120,160 +117,6 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 20,
     backgroundColor: '#FF0000',
-  },
-
-  tone: {
-    alignItems: 'center',
-    padding: 8,
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-  },
-  boxTone: {
-    width: 35,
-    height: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-    backgroundColor: Colors.button,
-    marginRight: 8,
-  },
-  toneIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  toneText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: Colors.text,
-  },
-
-  aedBox: {
-    marginTop: '-10%',
-    gap: 10,
-    backgroundColor: '#fff',
-    padding: 21,
-    borderRadius: 15,
-    width: '90%',
-    height: '50%',
-  },
-  aedScreen: {
-    width: '100%',
-    height: '80%',
-    backgroundColor: Colors.rhythmBackground,
-    borderRadius: 10,
-  },
-
-  hrBox: {
-    backgroundColor: '#fff',
-    borderRadius: 9,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hrLabel: {
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  hrValue: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: Colors.rhythmBackground,
-  },
-
-  aedControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  controlBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  powerBtn: {
-    width: 35,
-    height: 35,
-    marginRight: 10,
-    backgroundColor: '#2F3E46',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  powerText: {
-    color: '#fff',
-    fontSize: 20,
-  },
-  joulesBox: {
-    backgroundColor: '#D9D9D9',
-    borderRadius: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 7,
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 3,
-  },
-
-  jouleText: {
-    fontSize: 13,
-    marginVertical: 2,
-    backgroundColor: Colors.rhythmBackground,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 5,
-    color: '#fff',
-  },
-  aedTextBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  aedText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1B2A37',
-  },
-  shockButton: {
-    width: 35,
-    height: 35,
-    backgroundColor: '#FFA500',
-    borderRadius: '50%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  alert: {
-    flexDirection: 'row',
-    bottom: 20,
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  boxAlert: {
-    width: 35,
-    height: 35,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-    backgroundColor: '#FFA310',
-  },
-  alertIcon: {
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    paddingVertical: 7,
-    paddingHorizontal: 15,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  alertText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: Colors.text,
-    marginLeft: 10,
-    height: '100%',
-    flexDirection: 'row',
   },
 });
 

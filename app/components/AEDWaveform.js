@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import style from '../styles/InstructorTestScenarioStyle';
+import aedStyle from '../styles/aedBoxStyle';
 
 const HEIGHT = 150;
 
@@ -22,40 +22,40 @@ const AEDWaveform = ({ started, currentRhythm, waveform, strokeColors }) => {
   }
 
   return (
-    <View style={style.aedScreen}>
-      <View style={style.aedScreenDetails}>
-        <View style={style.hrBox}>
-          <Text style={style.hrLabel}>HR / </Text>
-          <Text style={style.hrValue}>
+    <View style={aedStyle.aedScreenContainer}>
+      <View style={aedStyle.aedScreenDetails}>
+        <View style={aedStyle.hrBox}>
+          <Text style={aedStyle.hrLabel}>HR </Text>
+          <Text style={aedStyle.hrValue}>
             {started && currentRhythm ? currentRhythm.bpm : 'N/A'}
           </Text>
         </View>
       </View>
 
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '70%',
-        }}
-      >
-        {started && currentRhythm ? (
-          <Svg height={HEIGHT} width="100%">
-            <Path
-              d={getSmoothPath(
-                waveform.map((point, i) => ({
-                  x: i * (point.spacing || 3),
-                  y: HEIGHT / 2 - point.value * 50,
-                })),
-              )}
-              fill="none"
-              stroke={strokeColors[currentRhythm.name]}
-              strokeWidth="3"
-            />
-          </Svg>
-        ) : (
-          <Text style={{ color: '#fff' }}>Click Power Button to Turn On</Text>
-        )}
+      <View style={aedStyle.aedScreen}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          {started && currentRhythm ? (
+            <Svg height={HEIGHT} width="100%">
+              <Path
+                d={getSmoothPath(
+                  waveform.map((point, i) => ({
+                    x: i * (point.spacing || 3),
+                    y: HEIGHT / 2 - point.value * 50,
+                  })),
+                )}
+                fill="none"
+                stroke={strokeColors[currentRhythm.name]}
+                strokeWidth="3"
+              />
+            </Svg>
+          ) : (
+            <Text style={{ color: '#fff', textAlign: 'center' }}>
+              Click Power Button to Turn On
+            </Text>
+          )}
+        </View>
       </View>
     </View>
   );

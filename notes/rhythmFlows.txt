@@ -1,0 +1,87 @@
+Normal Sinus Rhythm (Non-shockable)
+
+Turn on AED
+Stay calm
+Check responsiveness
+Call for help
+Remove pad package
+Cut or tear clothing to expose bare chest
+Open pad package
+Attach pads to patient’s bare chest
+Don’t touch patient. Analyzing… → Show Sinus rhythm
+No shock advised
+Start CPR — push to match the tone
+Push harder
+Good compression
+Stop CPR
+Don’t touch patient. Analyzing… → Show Sinus rhythm
+No shock advised
+(Repeat CPR/analysis cycle)
+
+
+Ventricular Fibrillation (Shockable)
+
+Turn on AED
+Stay calm
+Check responsiveness
+Call for help
+Remove pad package
+Cut or tear clothing to expose bare chest
+Open pad package
+Attach pads to patient’s bare chest
+Don’t touch patient. Analyzing… → Show VFib rhythm
+Shock advised (button glow)
+Don’t touch patient
+Press flashing shock button
+Shock delivered
+Start CPR — push to match the tone
+Push harder
+Good compression
+Stop CPR
+Don’t touch patient. Analyzing… → Show VFib rhythm
+Shock advised (button glow)
+(Repeat shock + CPR cycle)
+
+
+Ventricular Tachycardia (Shockable if pulseless)
+
+Turn on AED
+Stay calm
+Check responsiveness
+Call for help
+Remove pad package
+Cut or tear clothing to expose bare chest
+Open pad package
+Attach pads to patient’s bare chest
+Don’t touch patient. Analyzing… → Show VTach rhythm
+Shock advised (button glow)
+Don’t touch patient
+Press flashing shock button
+Shock delivered
+Start CPR — push to match the tone
+Push harder
+Good compression
+Stop CPR
+Don’t touch patient. Analyzing… → Show VTach rhythm
+Shock advised (button glow)
+(Repeat shock + CPR cycle)
+
+Asystole (Non-shockable)
+
+Turn on AED
+Stay calm
+Check responsiveness
+Call for help
+Remove pad package
+Cut or tear clothing to expose bare chest
+Open pad package
+Attach pads to patient’s bare chest
+Don’t touch patient. Analyzing… → Show Asystole rhythm
+No shock advised
+Start CPR — push to match the tone
+Push harder
+Good compression
+Stop CPR
+Don’t touch patient. Analyzing… → Show Asystole rhythm
+No shock advised
+(Repeat CPR/analysis cycle)

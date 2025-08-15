@@ -1,4 +1,3 @@
-// app/screens/instructor/InstructorTestScenarioScreen.js
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import style from '../../styles/InstructorTestScenarioStyle';
@@ -8,25 +7,62 @@ import Colors from '../../constants/colors';
 import Header from '../../components/Header';
 import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
-import PlayButton from '../../components/PlayButton';
-import StopButton from '../../components/StopButton';
+import aedStyle from '../../styles/aedBoxStyle';
 import useAED from '../../hooks/useAED';
 import { Timer, Wifi, Info, Hand } from 'lucide-react-native';
+import ShockDisplay from '../../components/ShockDisplay';
 
 const StudentAutoModeScreen = ({ goHomeStudent }) => {
-  const { started, currentRhythm, waveform, strokeColors, startAED, stopAED } =
-    useAED();
+  const {
+    started,
+    currentRhythm,
+    waveform,
+    strokeColors,
+    steps,
+    stepIndex,
+    startAED,
+    stopAED,
+    nextStep,
+  } = useAED();
 
   return (
     <View style={style.container}>
       <Header goBack={goHomeStudent} role="student" />
-
+      {/* AED Instructions */}
+      {started && steps.length > 0 && (
+        <View style={{ marginTop: 20, alignItems: 'center' }}>
+          <Text
+            style={{
+              color: Colors.text,
+              fontSize: 18,
+              textAlign: 'center',
+              zIndex: 10,
+            }}
+          >
+            {steps[stepIndex]}
+          </Text>
+          {stepIndex < steps.length - 1 && (
+            <TouchableOpacity
+              style={{
+                marginTop: 10,
+                backgroundColor: Colors.primary,
+                paddingVertical: 8,
+                paddingHorizontal: 20,
+                borderRadius: 8,
+              }}
+              onPress={nextStep}
+            >
+              <Text style={{ color: '#fff', fontSize: 16 }}>Next</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
       <View style={style.subContainer}>
         <View style={style.content}>
           <View style={style2.studentWrapper}>
-            <View style={style.contentButton}>
-              <Text style={style.contentText}>Auto Mode</Text>
-            </View>
+            <TouchableOpacity style={style.contentText}>
+              <Text>Auto Mode</Text>
+            </TouchableOpacity>
 
             <View style={style2.studentSubWrapper}>
               <View style={style.timerIcon}>
@@ -43,11 +79,14 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
             </View>
           </View>
 
-          <TouchableOpacity style={style2.wifiButton}>
-            <Hand color={Colors.text} size={22} />
-          </TouchableOpacity>
+          <View style={style2.studentWrapper2}>
+            <TouchableOpacity style={style2.wifiButton}>
+              <Hand color={Colors.text} size={22} />
+            </TouchableOpacity>
+          </View>
+
           <View style={style.contentCenter}>
-            <View style={style.aedBox}>
+            <View style={aedStyle.aedBox}>
               <AEDWaveform
                 started={started}
                 currentRhythm={currentRhythm}
@@ -63,6 +102,8 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
           </View>
         </View>
       </View>
+
+      {/* <ShockDisplay /> */}
     </View>
   );
 };

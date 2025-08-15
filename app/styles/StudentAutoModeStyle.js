@@ -2,11 +2,24 @@ import { StyleSheet } from 'react-native';
 import Colors from '../constants/colors';
 
 const style2 = StyleSheet.create({
-  studentWrapper: {},
+  studentWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+
+  studentWrapper2: {
+    marginTop: 6,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+  },
+
   studentSubWrapper: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+    gap: 12,
   },
 
   wifiButton: {
