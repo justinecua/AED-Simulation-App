@@ -1,16 +1,16 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native'; // added Text
+import { View, StyleSheet, Text } from 'react-native';
 import Colors from '../constants/colors';
 import { AudioLines } from 'lucide-react-native';
 
-const ToneDisplay = () => {
+const ToneDisplay = ({ text }) => {
   return (
     <View style={style.tone}>
       <View style={style.toneIcon}>
         <View style={style.boxTone}>
-          <AudioLines color="white" size={16} />
+          <AudioLines color="white" size={20} />
         </View>
-        <Text style={style.toneText}>Push to match the tone</Text>
+        <Text style={style.toneText}>{text}</Text>
       </View>
     </View>
   );
@@ -19,17 +19,17 @@ const ToneDisplay = () => {
 const style = StyleSheet.create({
   tone: {
     position: 'absolute',
-    top: 180,
+    bottom: 100,
     alignItems: 'center',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
     justifyContent: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 16,
     backgroundColor: '#ffffff',
     borderRadius: 10,
+    zIndex: 1,
   },
   boxTone: {
-    width: 30,
-    height: 30,
+    padding: 7,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 20,
@@ -41,9 +41,9 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   toneText: {
-    fontSize: 13,
-    fontWeight: '500',
+    fontSize: 14,
     color: Colors.text,
+    fontFamily: 'Poppins-SemiBold',
   },
 });
 

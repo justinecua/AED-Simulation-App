@@ -8,11 +8,14 @@ const style2 = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  studentSubWrapper: {
+    flexDirection: 'column',
+  },
 
   studentWrapper2: {
-    marginTop: 6,
+    marginTop: 10,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
   },
