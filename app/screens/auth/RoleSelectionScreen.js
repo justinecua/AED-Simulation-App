@@ -100,14 +100,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
 
     // Shadow for iOS
-    shadowColor: Colors.subText,
+    shadowColor: '#828795ff',
     shadowOffset: {
       width: 0,
-      height: 5,
+      height: 1,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 7,
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    elevation: 5,
   },
 
   ucIcons: {

@@ -4,14 +4,6 @@ import Colors from '../constants/colors';
 import { AlertTriangle, Info } from 'lucide-react-native';
 
 const ShockDisplay = () => {
-  const instructions = [
-    { id: 1, icon: Info, description: 'Turn On AED' },
-    { id: 2, icon: Info, description: 'Follow voice and text prompts' },
-    { id: 3, icon: Info, description: 'Confirm victim is unresponsive' },
-    { id: 4, icon: Info, description: 'Remove Pads from the device' },
-    { id: 5, icon: Info, description: 'Open Pad Package' },
-  ];
-
   return (
     <View style={style.alert}>
       <View style={style.alertIcon}>

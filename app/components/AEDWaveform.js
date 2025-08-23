@@ -5,7 +5,15 @@ import aedStyle from '../styles/aedBoxStyle';
 
 const HEIGHT = 150;
 
-const AEDWaveform = ({ started, currentRhythm, waveform, strokeColors }) => {
+const AEDWaveform = ({
+  stepIndex,
+  started,
+  currentRhythm,
+  waveform,
+  strokeColors,
+  expectedAction,
+  steps,
+}) => {
   function getSmoothPath(points) {
     if (points.length < 2) return '';
 
@@ -20,6 +28,16 @@ const AEDWaveform = ({ started, currentRhythm, waveform, strokeColors }) => {
     }
     return d;
   }
+
+  const currentStep = steps[stepIndex];
+  const isShowingWaveform =
+    started && currentStep?.action === 'show' && currentRhythm;
+  console.log(
+    'Rendering with action:',
+    currentStep?.action,
+    'Waveform points:',
+    waveform.length,
+  );
 
   return (
     <View style={aedStyle.aedScreenContainer}>
@@ -36,7 +54,31 @@ const AEDWaveform = ({ started, currentRhythm, waveform, strokeColors }) => {
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          {started && currentRhythm ? (
+          {/* AED OFF */}
+          {!started && (
+            <Text style={{ color: 'rgba(211, 214, 241, 1)', fontSize: 13 }}>
+              AED OFF
+            </Text>
+          )}
+
+          {/* {started && steps[stepIndex]?.action === 'power' && (
+            <Text style={{ color: 'rgba(211, 214, 241, 1)', fontSize: 13 }}>
+    
+            </Text>
+          )} */}
+
+          {/* Analyzing phase */}
+          {/* {started && steps[stepIndex]?.action === 'analyze' && (
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ color: '#fff', fontSize: 16 }}>
+                Analyzing rhythm...
+              </Text>
+              <Text style={{ color: '#0f0', fontSize: 20 }}>•••</Text>
+            </View>
+          )} */}
+
+          {/* Waveform only AFTER analysis */}
+          {started && steps[stepIndex]?.action === 'show' && currentRhythm && (
             <Svg height={HEIGHT} width="100%">
               <Path
                 d={getSmoothPath(
@@ -50,9 +92,16 @@ const AEDWaveform = ({ started, currentRhythm, waveform, strokeColors }) => {
                 strokeWidth="3"
               />
             </Svg>
-          ) : (
-            <Text style={{ color: '#fff', textAlign: 'center' }}>
-              Click Power Button to Turn On
+          )}
+          <Text
+            style={{ color: '#0fda45ff', fontSize: 14, fontWeight: 'bold' }}
+          >
+            {currentStep?.text}
+          </Text>
+          {/* Debug: Show current action */}
+          {__DEV__ && started && (
+            <Text style={{ color: '#f4f9f4ff', fontSize: 12 }}>
+              Action: {currentStep?.action}
             </Text>
           )}
         </View>

@@ -9,65 +9,62 @@ import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
 import useAED from '../../hooks/useAED';
-import { Timer, Wifi, Info, Hand } from 'lucide-react-native';
+import { Timer, Wifi, Info, Hand, Star, Wind } from 'lucide-react-native';
 import ShockDisplay from '../../components/ShockDisplay';
+import ModeControls from '../../components/ModeControl';
+import ToneDisplay from '../../components/ToneDisplay';
 
 const StudentAutoModeScreen = ({ goHomeStudent }) => {
   const {
     started,
+    paused,
     currentRhythm,
     waveform,
     strokeColors,
     steps,
     stepIndex,
+    expectedAction,
     startAED,
+    pauseAED,
+    resumeAED,
     stopAED,
     nextStep,
+    timer,
   } = useAED();
 
   return (
     <View style={style.container}>
       <Header goBack={goHomeStudent} role="student" />
-      {/* AED Instructions */}
-      {started && steps.length > 0 && (
-        <View style={{ marginTop: 20, alignItems: 'center' }}>
-          <Text
-            style={{
-              color: Colors.text,
-              fontSize: 18,
-              textAlign: 'center',
-              zIndex: 10,
-            }}
-          >
-            {steps[stepIndex]}
-          </Text>
-          {stepIndex < steps.length - 1 && (
-            <TouchableOpacity
-              style={{
-                marginTop: 10,
-                backgroundColor: Colors.primary,
-                paddingVertical: 8,
-                paddingHorizontal: 20,
-                borderRadius: 8,
-              }}
-              onPress={nextStep}
-            >
-              <Text style={{ color: '#fff', fontSize: 16 }}>Next</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
+
       <View style={style.subContainer}>
         <View style={style.content}>
           <View style={style2.studentWrapper}>
-            <TouchableOpacity style={style.contentText}>
-              <Text>Auto Mode</Text>
-            </TouchableOpacity>
-
+            <View style={style2.studentSubWrapper}>
+              <TouchableOpacity style={style.contentText}>
+                <Text>Auto Mode</Text>
+              </TouchableOpacity>
+            </View>
             <View style={style2.studentSubWrapper}>
               <View style={style.timerIcon}>
                 <Timer color={Colors.text} size={25} />
-                <Text style={style.timerText}>1:58</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
+                    style={{
+                      marginLeft: 2,
+                      color: '#ed1313ff',
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {Math.floor(timer / 60)}:
+                    {(timer % 60).toString().padStart(2, '0')}
+                  </Text>
+                </View>
               </View>
 
               <TouchableOpacity style={style2.wifiButton}>
@@ -80,6 +77,11 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
           </View>
 
           <View style={style2.studentWrapper2}>
+            <TouchableOpacity style={style.contentText}>
+              <Text>
+                Status: {started ? (paused ? 'Paused' : 'Running') : 'Stopped'}
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity style={style2.wifiButton}>
               <Hand color={Colors.text} size={22} />
             </TouchableOpacity>
@@ -92,17 +94,57 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
                 currentRhythm={currentRhythm}
                 waveform={waveform}
                 strokeColors={strokeColors}
+                steps={steps}
+                stepIndex={stepIndex}
+                expectedAction={expectedAction}
               />
-
               <AEDControls
                 started={started}
-                onPowerPress={() => (started ? stopAED() : startAED())}
+                onPowerPress={() => {
+                  if (expectedAction === 'power') nextStep();
+                }}
+                onShockPress={() => {
+                  if (expectedAction === 'shock') nextStep();
+                }}
               />
             </View>
           </View>
         </View>
-      </View>
 
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <ModeControls
+            started={started}
+            paused={paused}
+            onPowerPress={() => {
+              if (!started) {
+                startAED();
+              } else if (paused) {
+                resumeAED();
+              } else if (expectedAction === 'power') {
+                nextStep();
+              }
+            }}
+            onPausePress={pauseAED}
+            onStopPress={stopAED}
+          />
+        </View>
+      </View>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        {started && steps.length > 0 && (
+          <ToneDisplay text={steps[stepIndex]?.text} />
+        )}
+      </View>
       {/* <ShockDisplay /> */}
     </View>
   );
