@@ -1,5 +1,9 @@
 import { StyleSheet } from 'react-native';
 import Colors from '../constants/colors';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 import { Dimensions, Platform } from 'react-native';
 
@@ -10,10 +14,8 @@ const aedStyle = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 21,
     borderRadius: 15,
-    width: width * 0.9,
-    height: height * 0.6,
-    maxWidth: 330,
-    maxHeight: 300,
+    width: wp('80%'),
+    height: hp('35%'),
 
     // Shadows
     shadowColor: '#000',
@@ -37,7 +39,7 @@ const aedStyle = StyleSheet.create({
     flexDirection: 'row',
   },
   hrBox: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.subText,
     borderRadius: 9,
     paddingVertical: 4,
     paddingHorizontal: 10,
@@ -52,7 +54,6 @@ const aedStyle = StyleSheet.create({
   hrValue: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: Colors.rhythmBackground,
   },
 
   aedControls: {
