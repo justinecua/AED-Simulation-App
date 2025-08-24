@@ -1,9 +1,12 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import { Dimensions } from 'react-native';
 import heartRhythms from '../data/heartRhythms';
-import aedSequences from '../data/aedSequences';
+import useAEDTimer from './useAEDTimer';
+import useWaveform from './useWaveform';
+import useAEDSequence from './useAEDSequence';
 
 const screenWidth = Dimensions.get('window').width;
+const aedWidth = screenWidth * 0.7;
 
 const strokeColors = {
   Sinus: '#ffffff',
@@ -13,63 +16,36 @@ const strokeColors = {
 };
 
 export default function useAED() {
-  const intervalRef = useRef(null);
-  const autoTimerRef = useRef(null);
-  const timerIntervalRef = useRef(null);
-  const [timer, setTimer] = useState(0);
+  const { timer, startTimer, stopTimer, resetTimer } = useAEDTimer();
+  const { waveform, drawWaveformPoint, clearWaveform, stopWaveform } =
+    useWaveform(aedWidth);
+  const {
+    steps,
+    stepIndex,
+    expectedAction,
+    loadSequence,
+    pauseSequence,
+    resumeSequence,
+    resetSequence,
+    nextStep,
+    handleAction,
+  } = useAEDSequence();
 
   const [started, setStarted] = useState(false);
   const [paused, setPaused] = useState(false);
   const [currentRhythm, setCurrentRhythm] = useState(null);
-  const [waveform, setWaveform] = useState([]);
-  const [steps, setSteps] = useState([]);
-  const [stepIndex, setStepIndex] = useState(0);
-  const [expectedAction, setExpectedAction] = useState(null);
-  const aedWidth = screenWidth * 0.7;
 
-  const startTimer = () => {
-    if (timerIntervalRef.current) return;
-    timerIntervalRef.current = setInterval(() => {
-      setTimer(prev => prev + 1);
-    }, 1000);
-  };
+  const startAED = () => {
+    // prevent restarting if already started
+    if (started && !paused) return;
 
-  const stopTimer = () => {
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    timerIntervalRef.current = null;
-  };
+    // if resuming from pause, call resumeAED
+    if (started && paused) {
+      resumeAED();
+      return;
+    }
 
-  const resetTimer = () => setTimer(0);
-
-  const drawWaveformPoint = useCallback(
-    (pattern, spacing, patternIndex) => {
-      if (!started || paused) return;
-
-      setWaveform(prev => {
-        const nextPoint = {
-          value: pattern[patternIndex.current],
-          spacing,
-        };
-        patternIndex.current = (patternIndex.current + 1) % pattern.length;
-
-        const maxPoints = Math.floor(aedWidth / spacing);
-        const updated = [...prev, nextPoint];
-        if (updated.length > maxPoints) updated.shift();
-        return updated;
-      });
-
-      const variation = 1 + (Math.random() * 0.06 - 0.03);
-      intervalRef.current = setTimeout(
-        () => drawWaveformPoint(pattern, spacing, patternIndex),
-        50 * variation,
-      );
-    },
-    [started, paused, aedWidth],
-  );
-
-  const startAED = useCallback(() => {
-    if (started) return;
-
+    // brand-new start
     const rhythmKeys = Object.keys(heartRhythms);
     const selectedRhythmKey =
       rhythmKeys[Math.floor(Math.random() * rhythmKeys.length)];
@@ -77,37 +53,28 @@ export default function useAED() {
     const pattern = selectedRhythm.generate();
     const spacing = aedWidth / (pattern.length - 1);
 
-    // Set initial state
     setCurrentRhythm({ name: selectedRhythmKey, bpm: selectedRhythm.bpm });
-    setWaveform([]);
-    const seq = aedSequences[selectedRhythmKey] || [];
-    setSteps(seq);
-    setStepIndex(0);
-    setExpectedAction(seq[0]?.action || null);
+    clearWaveform();
+    loadSequence(selectedRhythmKey);
+
     setStarted(true);
     setPaused(false);
 
     resetTimer();
     startTimer();
 
-    // Start waveform drawing with pattern index reference
     const patternIndex = { current: 0 };
     drawWaveformPoint(pattern, spacing, patternIndex);
+  };
 
-    // Set auto timer if needed
-    if (seq.length > 0 && seq[0].action === 'auto') {
-      autoTimerRef.current = setTimeout(nextStep, 5000);
-    }
-  }, [started, drawWaveformPoint, nextStep, aedWidth]);
-
-  const pauseAED = useCallback(() => {
+  const pauseAED = () => {
     setPaused(true);
-    if (intervalRef.current) clearTimeout(intervalRef.current);
-    if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
-    stopTimer(); // stop timer while paused
-  }, []);
+    stopTimer();
+    stopWaveform();
+    pauseSequence();
+  };
 
-  const resumeAED = useCallback(() => {
+  const resumeAED = () => {
     if (!paused || !started) return;
     setPaused(false);
     startTimer();
@@ -115,61 +82,21 @@ export default function useAED() {
     if (currentRhythm) {
       const pattern = heartRhythms[currentRhythm.name].generate();
       const spacing = aedWidth / (pattern.length - 1);
-      const patternIndex = { current: 0 }; // Create new pattern index
+      const patternIndex = { current: 0 };
       drawWaveformPoint(pattern, spacing, patternIndex);
     }
+    resumeSequence();
+  };
 
-    const currentStep = steps[stepIndex];
-    if (currentStep?.action === 'auto') {
-      autoTimerRef.current = setTimeout(nextStep, 5000);
-    }
-  }, [
-    paused,
-    started,
-    currentRhythm,
-    steps,
-    stepIndex,
-    drawWaveformPoint,
-    nextStep,
-    aedWidth,
-  ]);
-
-  const stopAED = useCallback(() => {
+  const stopAED = () => {
     setStarted(false);
     setPaused(false);
     resetTimer();
     stopTimer();
     setCurrentRhythm(null);
-    setWaveform([]); // Clear waveform
-    setSteps([]);
-    setStepIndex(0);
-    setExpectedAction(null);
-    if (intervalRef.current) clearTimeout(intervalRef.current);
-    if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
-    intervalRef.current = null;
-    autoTimerRef.current = null;
-  }, []);
-
-  const nextStep = useCallback(() => {
-    if (stepIndex < steps.length - 1) {
-      const next = steps[stepIndex + 1];
-      setStepIndex(prev => prev + 1);
-      setExpectedAction(next.action);
-
-      if (next.action === 'auto') {
-        if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
-        autoTimerRef.current = setTimeout(nextStep, 5000);
-      }
-
-      // 👇 NEW: If analyzing, auto-advance to "show" after a delay
-      if (next.action === 'analyze') {
-        setTimeout(() => {
-          setStepIndex(prev => prev + 1);
-          setExpectedAction(steps[stepIndex + 2]?.action || null);
-        }, 3000); // 3 seconds analysis
-      }
-    }
-  }, [steps, stepIndex]);
+    clearWaveform();
+    resetSequence();
+  };
 
   return {
     started,
@@ -186,5 +113,6 @@ export default function useAED() {
     stopAED,
     nextStep,
     timer,
+    handleAction,
   };
 }

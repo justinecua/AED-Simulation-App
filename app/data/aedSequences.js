@@ -6,7 +6,7 @@ const aedSequences = {
     { text: 'Call for help', action: 'auto' },
     { text: 'Remove pad package', action: 'remove' },
     { text: 'Cut or tear clothing to expose bare chest', action: 'auto' },
-    { text: 'Open pad package', action: 'auto' },
+    { text: 'Open pad package', action: 'open' },
     { text: 'Attach pads to patient’s bare chest', action: 'attach' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
@@ -31,7 +31,7 @@ const aedSequences = {
     { text: 'Call for help', action: 'auto' },
     { text: 'Remove pad package', action: 'remove' },
     { text: 'Cut or tear clothing to expose bare chest', action: 'auto' },
-    { text: 'Open pad package', action: 'auto' },
+    { text: 'Open pad package', action: 'open' },
     { text: 'Attach pads to patient’s bare chest', action: 'attach' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
@@ -57,9 +57,9 @@ const aedSequences = {
     { text: 'Stay calm', action: 'auto' },
     { text: 'Check responsiveness', action: 'auto' },
     { text: 'Call for help', action: 'auto' },
-    { text: 'Remove pad package', action: 'auto' },
+    { text: 'Remove pad package', action: 'remove' },
     { text: 'Cut or tear clothing to expose bare chest', action: 'auto' },
-    { text: 'Open pad package', action: 'auto' },
+    { text: 'Open pad package', action: 'open' },
     { text: 'Attach pads to patient’s bare chest', action: 'auto' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
@@ -87,7 +87,7 @@ const aedSequences = {
     { text: 'Call for help', action: 'auto' },
     { text: 'Remove pad package', action: 'remove' },
     { text: 'Cut or tear clothing to expose bare chest', action: 'auto' },
-    { text: 'Open pad package', action: 'auto' },
+    { text: 'Open pad package', action: 'open' },
     { text: 'Attach pads to patient’s bare chest', action: 'attach' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
