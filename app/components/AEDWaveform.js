@@ -32,12 +32,6 @@ const AEDWaveform = ({
   const currentStep = steps[stepIndex];
   const isShowingWaveform =
     started && currentStep?.action === 'show' && currentRhythm;
-  console.log(
-    'Rendering with action:',
-    currentStep?.action,
-    'Waveform points:',
-    waveform.length,
-  );
 
   return (
     <View style={aedStyle.aedScreenContainer}>
@@ -78,7 +72,8 @@ const AEDWaveform = ({
           )} */}
 
           {/* Waveform only AFTER analysis */}
-          {started && steps[stepIndex]?.action === 'show' && currentRhythm && (
+
+          {isShowingWaveform && (
             <Svg height={HEIGHT} width="100%">
               <Path
                 d={getSmoothPath(
@@ -88,22 +83,21 @@ const AEDWaveform = ({
                   })),
                 )}
                 fill="none"
-                stroke={strokeColors[currentRhythm.name]}
+                stroke={strokeColors[currentRhythm?.name]}
                 strokeWidth="3"
               />
             </Svg>
           )}
-          <Text
-            style={{ color: '#0fda45ff', fontSize: 14, fontWeight: 'bold' }}
-          >
+
+          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
             {currentStep?.text}
           </Text>
           {/* Debug: Show current action */}
-          {__DEV__ && started && (
+          {/* {__DEV__ && started && (
             <Text style={{ color: '#f4f9f4ff', fontSize: 12 }}>
               Action: {currentStep?.action}
             </Text>
-          )}
+          )} */}
         </View>
       </View>
     </View>

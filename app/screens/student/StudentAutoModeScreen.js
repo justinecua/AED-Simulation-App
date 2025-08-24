@@ -30,6 +30,7 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
     stopAED,
     nextStep,
     timer,
+    handleAction,
   } = useAED();
 
   return (
@@ -79,10 +80,13 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
           <View style={style2.studentWrapper2}>
             <TouchableOpacity style={style.contentText}>
               <Text>
-                Status: {started ? (paused ? 'Paused' : 'Running') : 'Stopped'}
+                Status: {started ? (paused ? 'Paused' : 'ON') : 'OFF'}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={style2.wifiButton}>
+            <TouchableOpacity
+              style={style2.wifiButton}
+              onPress={() => handleAction('remove')}
+            >
               <Hand color={Colors.text} size={22} />
             </TouchableOpacity>
           </View>
@@ -100,12 +104,8 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
               />
               <AEDControls
                 started={started}
-                onPowerPress={() => {
-                  if (expectedAction === 'power') nextStep();
-                }}
-                onShockPress={() => {
-                  if (expectedAction === 'shock') nextStep();
-                }}
+                onPowerPress={() => handleAction('power')}
+                onShockPress={() => handleAction('shock')}
               />
             </View>
           </View>
