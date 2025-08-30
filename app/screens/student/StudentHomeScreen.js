@@ -24,15 +24,15 @@ import LinearGradient from 'react-native-linear-gradient';
 const StudentHomeScreen = ({ goHome, goStudentAutoMode }) => {
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
-          <LinearGradient
-            colors={['#FFFFFF', '#EEF4FF']}
-            locations={[0, 0.5]}
-            start={{ x: 0, y: 0 }} // Start point of the gradient (top-left)
-            end={{ x: 1, y: 1 }} // End point of the gradient (bottom-right)
-            style={styles.linearGradient}
-          >
+      <LinearGradient
+        colors={['#FFFFFF', '#FFFFFF', '#deeaffff']}
+        locations={[0, 0.3, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.linearGradient}
+      >
+        <ScrollView>
+          <View style={styles.container}>
             <View style={styles.header}>
               <View style={styles.headerSubContainer}>
                 <Text style={styles.Welcome}>Welcome,</Text>
@@ -183,11 +183,11 @@ const StudentHomeScreen = ({ goHome, goStudentAutoMode }) => {
                 </View>
               </View>
             </View>
-          </LinearGradient>
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
 
-      <FloatingHome onPress={goHome} />
+        <FloatingHome onPress={goHome} />
+      </LinearGradient>
     </View>
   );
 };
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
 
     // Shadow for iOS
-    shadowColor: Colors.text,
+    shadowColor: '#618bffff',
     shadowOffset: {
       width: 0,
       height: 5,
@@ -369,13 +369,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-  },
-  container: {
-    height: '100%',
-    display: 'flex',
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 
