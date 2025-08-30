@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     gap: 20,
+    backgroundColor: '#fff',
   },
 
   contentContainer: {
@@ -16,13 +17,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: 10,
     gap: 35,
+    marginTop: -20,
+    position: 'relative',
   },
 
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 10,
   },
 
   descriptionBox: {
@@ -48,7 +50,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     gap: 20,
-    marginBottom: 10,
+    marginBottom: 30,
+    marginTop: -5,
   },
 
   instructionBox: {
@@ -58,8 +61,8 @@ const styles = StyleSheet.create({
   },
 
   instruction: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 10,
+    fontFamily: 'Roboto-Bold',
+    fontSize: 12,
     color: Colors.text,
   },
 
@@ -70,13 +73,13 @@ const styles = StyleSheet.create({
 
   bodyImage: {
     width: 430,
-    height: 470,
+    height: 400,
     resizeMode: 'contain',
   },
 
   padsContainer: {
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',

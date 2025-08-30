@@ -5,6 +5,8 @@ import StudentHomeScreen from '../screens/student/StudentHomeScreen';
 import InstructorHomeScreen from '../screens/instructor/InstructorHomeScreen';
 import InstructorTestScenarioScreen from '../screens/instructor/InstructorTestScenarioScreen';
 import StudentAutoModeScreen from '../screens/student/StudentAutoModeScreen';
+import PadPlacementScreen from '../screens/student/PadPlacementScreen';
+import { AEDProvider } from '../context/AEDContext';
 
 export default function AppNavigator() {
   const [screen, setScreen] = useState('role');
@@ -23,56 +25,69 @@ export default function AppNavigator() {
 
   return (
     <>
-      {screen === 'student' && (
-        <AnimatedScreenTransition direction={direction} keyValue="student">
-          <StudentHomeScreen
-            goHome={() => handleNavigation('role')}
-            goStudentAutoMode={() => handleNavigation('studentAutoMode')}
-          />
-        </AnimatedScreenTransition>
-      )}
+      <AEDProvider>
+        {screen === 'student' && (
+          <AnimatedScreenTransition direction={direction} keyValue="student">
+            <StudentHomeScreen
+              goHome={() => handleNavigation('role')}
+              goStudentAutoMode={() => handleNavigation('studentAutoMode')}
+            />
+          </AnimatedScreenTransition>
+        )}
 
-      {screen === 'instructor' && (
-        <AnimatedScreenTransition direction={direction} keyValue="instructor">
-          <InstructorHomeScreen
-            goHome={() => handleNavigation('role')}
-            onSelectAutoMode={() => handleNavigation('testScenarioInstructor')}
-          />
-        </AnimatedScreenTransition>
-      )}
+        {screen === 'instructor' && (
+          <AnimatedScreenTransition direction={direction} keyValue="instructor">
+            <InstructorHomeScreen
+              goHome={() => handleNavigation('role')}
+              onSelectAutoMode={() =>
+                handleNavigation('testScenarioInstructor')
+              }
+            />
+          </AnimatedScreenTransition>
+        )}
 
-      {screen === 'testScenarioInstructor' && (
-        <AnimatedScreenTransition
-          direction={direction}
-          keyValue="testScenarioInstructor"
-        >
-          <InstructorTestScenarioScreen
-            goHome={() => handleNavigation('role')}
-            goHomeInsctructor={() => handleNavigation('instructor')}
-          />
-        </AnimatedScreenTransition>
-      )}
+        {screen === 'testScenarioInstructor' && (
+          <AnimatedScreenTransition
+            direction={direction}
+            keyValue="testScenarioInstructor"
+          >
+            <InstructorTestScenarioScreen
+              goHome={() => handleNavigation('role')}
+              goHomeInsctructor={() => handleNavigation('instructor')}
+            />
+          </AnimatedScreenTransition>
+        )}
 
-      {screen === 'studentAutoMode' && (
-        <AnimatedScreenTransition
-          direction={direction}
-          keyValue="studentAutoMode"
-        >
-          <StudentAutoModeScreen
-            goHome={() => handleNavigation('role')}
-            goHomeStudent={() => handleNavigation('student')}
-          />
-        </AnimatedScreenTransition>
-      )}
+        {screen === 'studentAutoMode' && (
+          <AnimatedScreenTransition
+            direction={direction}
+            keyValue="studentAutoMode"
+          >
+            <StudentAutoModeScreen
+              goHome={() => handleNavigation('role')}
+              goHomeStudent={() => handleNavigation('student')}
+              goApplyPads={() => handleNavigation('applyPads')}
+            />
+          </AnimatedScreenTransition>
+        )}
 
-      {screen === 'role' && (
-        <AnimatedScreenTransition direction={direction} keyValue="role">
-          <RoleSelectionScreen
-            onSelectStudent={() => handleNavigation('student')}
-            onSelectInstructor={() => handleNavigation('instructor')}
-          />
-        </AnimatedScreenTransition>
-      )}
+        {screen === 'role' && (
+          <AnimatedScreenTransition direction={direction} keyValue="role">
+            <RoleSelectionScreen
+              onSelectStudent={() => handleNavigation('student')}
+              onSelectInstructor={() => handleNavigation('instructor')}
+            />
+          </AnimatedScreenTransition>
+        )}
+
+        {screen === 'applyPads' && (
+          <AnimatedScreenTransition direction={direction} keyValue="applyPads">
+            <PadPlacementScreen
+              goStudentAutoMode={() => handleNavigation('studentAutoMode')}
+            />
+          </AnimatedScreenTransition>
+        )}
+      </AEDProvider>
     </>
   );
 }
