@@ -8,13 +8,13 @@ import Header from '../../components/Header';
 import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
-import useAED from '../../hooks/useAED';
-import { Timer, Wifi, Info, Hand, Star, Wind } from 'lucide-react-native';
+import { useAEDContext } from '../../context/AEDContext';
 import ShockDisplay from '../../components/ShockDisplay';
 import ModeControls from '../../components/ModeControl';
 import ToneDisplay from '../../components/ToneDisplay';
+import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 
-const StudentAutoModeScreen = ({ goHomeStudent }) => {
+const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
   const {
     started,
     paused,
@@ -31,7 +31,9 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
     nextStep,
     timer,
     handleAction,
-  } = useAED();
+    isSwitchOpen,
+    setIsSwitchOpen,
+  } = useAEDContext();
 
   return (
     <View style={style.container}>
@@ -78,17 +80,38 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
           </View>
 
           <View style={style2.studentWrapper2}>
-            <TouchableOpacity style={style.contentText}>
-              <Text>
-                Status: {started ? (paused ? 'Paused' : 'ON') : 'OFF'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={style2.wifiButton}
-              onPress={() => handleAction('remove')}
-            >
-              <Hand color={Colors.text} size={22} />
-            </TouchableOpacity>
+            <View style={style2.studentWrapper2Sub}>
+              <TouchableOpacity style={style.contentText}>
+                <Text>
+                  Status: {started ? (paused ? 'Paused' : 'ON') : 'OFF'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={style2.studentWrapper2SubRight}>
+              <TouchableOpacity
+                style={style2.handButton}
+                onPress={() => handleAction('remove')}
+              >
+                <Hand color={Colors.text} size={22} />
+              </TouchableOpacity>
+
+              {(steps[stepIndex]?.text === 'Open pad package' ||
+                isSwitchOpen) && (
+                <TouchableOpacity
+                  style={[style2.padPackageButton]}
+                  onPress={() => {
+                    handleAction('open');
+                    if (expectedAction === 'open' || isSwitchOpen) {
+                      setIsSwitchOpen(true);
+                      goApplyPads();
+                    }
+                  }}
+                >
+                  <ArrowRightLeft color="#fff" size={22} />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
 
           <View style={style.contentCenter}>
@@ -131,7 +154,10 @@ const StudentAutoModeScreen = ({ goHomeStudent }) => {
               }
             }}
             onPausePress={pauseAED}
-            onStopPress={stopAED}
+            onStopPress={() => {
+              stopAED();
+              setIsSwitchOpen(false); //false so that switch button will dissapear if I click stop button
+            }}
           />
         </View>
       </View>

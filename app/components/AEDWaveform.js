@@ -50,7 +50,13 @@ const AEDWaveform = ({
         >
           {/* AED OFF */}
           {!started && (
-            <Text style={{ color: 'rgba(211, 214, 241, 1)', fontSize: 13 }}>
+            <Text
+              style={{
+                color: 'rgba(211, 214, 241, 1)',
+                fontSize: 13,
+                marginTop: 20,
+              }}
+            >
               AED OFF
             </Text>
           )}
