@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Dimensions } from 'react-native';
 import heartRhythms from '../data/heartRhythms';
 import useAEDTimer from './useAEDTimer';
@@ -35,20 +35,26 @@ export default function useAED() {
   const [paused, setPaused] = useState(false);
   const [currentRhythm, setCurrentRhythm] = useState(null);
 
-  const startAED = () => {
-    // prevent restarting if already started
+  const patternIndexRef = useRef({ current: 0 });
+
+  /**
+   * Start AED - can take a specific rhythm (for Practice Mode)
+   * or fall back to random rhythm (for normal mode).
+   */
+  const startAED = pickedRhythm => {
     if (started && !paused) return;
 
-    // if resuming from pause, call resumeAED
     if (started && paused) {
       resumeAED();
       return;
     }
 
-    // brand-new start
+    // pick provided rhythm OR fallback to random
     const rhythmKeys = Object.keys(heartRhythms);
     const selectedRhythmKey =
+      (pickedRhythm && heartRhythms[pickedRhythm] && pickedRhythm) ||
       rhythmKeys[Math.floor(Math.random() * rhythmKeys.length)];
+
     const selectedRhythm = heartRhythms[selectedRhythmKey];
     const pattern = selectedRhythm.generate();
     const spacing = aedWidth / (pattern.length - 1);
@@ -82,8 +88,8 @@ export default function useAED() {
     if (currentRhythm) {
       const pattern = heartRhythms[currentRhythm.name].generate();
       const spacing = aedWidth / (pattern.length - 1);
-      const patternIndex = { current: 0 };
-      drawWaveformPoint(pattern, spacing, patternIndex);
+      // continue from where we left off
+      drawWaveformPoint(pattern, spacing, patternIndexRef.current);
     }
     resumeSequence();
   };
@@ -96,6 +102,27 @@ export default function useAED() {
     setCurrentRhythm(null);
     clearWaveform();
     resetSequence();
+  };
+
+  const changeRhythm = pickedRhythm => {
+    if (!started) return; // only allow changing while AED is running
+
+    if (pickedRhythm && heartRhythms[pickedRhythm]) {
+      const selectedRhythm = heartRhythms[pickedRhythm];
+      const pattern = selectedRhythm.generate();
+      const spacing = aedWidth / (pattern.length - 1);
+
+      setCurrentRhythm({ name: pickedRhythm, bpm: selectedRhythm.bpm });
+      clearWaveform();
+      loadSequence(pickedRhythm);
+
+      const patternIndex = { current: 0 };
+      drawWaveformPoint(pattern, spacing, patternIndex);
+    }
+  };
+
+  const shockAED = () => {
+    handleAction('shock');
   };
 
   return {
@@ -114,5 +141,7 @@ export default function useAED() {
     nextStep,
     timer,
     handleAction,
+    changeRhythm,
+    shockAED,
   };
 }

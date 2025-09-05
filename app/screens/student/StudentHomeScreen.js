@@ -21,7 +21,7 @@ import {
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const StudentHomeScreen = ({ goHome, goStudentAutoMode }) => {
+const StudentHomeScreen = ({ goHome, goStudentAutoMode, goPracticeMode }) => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -88,7 +88,10 @@ const StudentHomeScreen = ({ goHome, goStudentAutoMode }) => {
                 <Text style={styles.modeDescription}>
                   Try AED simulation in free play mode
                 </Text>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={goPracticeMode}
+                >
                   <Text style={styles.buttonText}>Try Practice</Text>
                 </TouchableOpacity>
               </View>

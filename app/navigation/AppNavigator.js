@@ -5,6 +5,7 @@ import StudentHomeScreen from '../screens/student/StudentHomeScreen';
 import InstructorHomeScreen from '../screens/instructor/InstructorHomeScreen';
 import InstructorTestScenarioScreen from '../screens/instructor/InstructorTestScenarioScreen';
 import StudentAutoModeScreen from '../screens/student/StudentAutoModeScreen';
+import PracticeModeScreen from '../screens/student/PracticeModeScreen';
 
 export default function AppNavigator() {
   const [screen, setScreen] = useState('role');
@@ -28,6 +29,7 @@ export default function AppNavigator() {
           <StudentHomeScreen
             goHome={() => handleNavigation('role')}
             goStudentAutoMode={() => handleNavigation('studentAutoMode')}
+            goPracticeMode={() => handleNavigation('practiceMode')}
           />
         </AnimatedScreenTransition>
       )}
@@ -70,6 +72,13 @@ export default function AppNavigator() {
           <RoleSelectionScreen
             onSelectStudent={() => handleNavigation('student')}
             onSelectInstructor={() => handleNavigation('instructor')}
+          />
+        </AnimatedScreenTransition>
+      )}
+      {screen === 'practiceMode' && (
+        <AnimatedScreenTransition direction={direction} keyValue="practiceMode">
+          <PracticeModeScreen
+            goHomeStudent={() => handleNavigation('student')}
           />
         </AnimatedScreenTransition>
       )}
