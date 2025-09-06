@@ -16,6 +16,7 @@ import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 
 const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
   const {
+    poweredOn,
     started,
     paused,
     currentRhythm,
@@ -24,6 +25,8 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
     steps,
     stepIndex,
     expectedAction,
+    powerOnAED,
+    powerOffAED,
     startAED,
     pauseAED,
     resumeAED,
@@ -33,6 +36,10 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
     handleAction,
     isSwitchOpen,
     setIsSwitchOpen,
+    positions,
+    setPositions,
+    placedPads,
+    setPlacedPads,
   } = useAEDContext();
 
   return (
@@ -83,19 +90,41 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
             <View style={style2.studentWrapper2Sub}>
               <TouchableOpacity style={style.contentText}>
                 <Text>
-                  Status: {started ? (paused ? 'Paused' : 'ON') : 'OFF'}
+                  Status: {!poweredOn ? 'OFF' : paused ? 'PAUSED' : 'ON'}
                 </Text>
               </TouchableOpacity>
             </View>
 
             <View style={style2.studentWrapper2SubRight}>
+              {/* Hand only shows if package is NOT open */}
+              {/* {steps[stepIndex]?.text !== 'Open pad package' &&
+                !isSwitchOpen && (
+                  <TouchableOpacity
+                    style={style2.handButton}
+                    onPress={() => {
+                      handleAction('remove');
+                      setIsSwitchOpen(true);
+                    }}
+                  >
+                    <Hand color={Colors.text} size={22} />
+                  </TouchableOpacity>
+                )} */}
+
               <TouchableOpacity
-                style={style2.handButton}
-                onPress={() => handleAction('remove')}
+                style={[
+                  style2.handButton,
+                  steps[stepIndex]?.action !== 'remove' && { opacity: 0.5 },
+                ]}
+                disabled={steps[stepIndex]?.action !== 'remove'}
+                onPress={() => {
+                  handleAction('remove');
+                  setIsSwitchOpen(true);
+                }}
               >
                 <Hand color={Colors.text} size={22} />
               </TouchableOpacity>
 
+              {/* Pad package button shows if step says open OR already open */}
               {(steps[stepIndex]?.text === 'Open pad package' ||
                 isSwitchOpen) && (
                 <TouchableOpacity
@@ -124,10 +153,28 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
                 steps={steps}
                 stepIndex={stepIndex}
                 expectedAction={expectedAction}
+                displayText={
+                  steps[stepIndex]?.action == 'show'
+                    ? null
+                    : steps[stepIndex]?.text
+                }
               />
               <AEDControls
-                started={started}
-                onPowerPress={() => handleAction('power')}
+                started={poweredOn}
+                onPowerPress={() => {
+                  if (!poweredOn) {
+                    powerOnAED();
+                    if (expectedAction === 'power') nextStep();
+                  } else {
+                    powerOffAED();
+                    setIsSwitchOpen(false);
+                    setPositions({
+                      'Pad 1': { x: 15, y: 10 },
+                      'Pad 2': { x: 10, y: 75 },
+                    });
+                    setPlacedPads({ 'Pad 1': false, 'Pad 2': false });
+                  }
+                }}
                 onShockPress={() => handleAction('shock')}
               />
             </View>
@@ -145,18 +192,21 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
             started={started}
             paused={paused}
             onPowerPress={() => {
-              if (!started) {
-                startAED();
-              } else if (paused) {
-                resumeAED();
-              } else if (expectedAction === 'power') {
-                nextStep();
-              }
+              startAED();
             }}
             onPausePress={pauseAED}
             onStopPress={() => {
+              powerOffAED();
               stopAED();
-              setIsSwitchOpen(false); //false so that switch button will dissapear if I click stop button
+              setIsSwitchOpen(false);
+              setPositions({
+                'Pad 1': { x: 15, y: 10 },
+                'Pad 2': { x: 10, y: 75 },
+              });
+              setPlacedPads({
+                'Pad 1': false,
+                'Pad 2': false,
+              });
             }}
           />
         </View>
