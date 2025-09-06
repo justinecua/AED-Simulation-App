@@ -112,7 +112,8 @@ const aedStyle = StyleSheet.create({
   shockButton: {
     width: 35,
     height: 35,
-    backgroundColor: '#FFA500',
+    backgroundColor: Colors.heartRateBackground,
+    //    backgroundColor: '#FFA500',
     borderRadius: 17.5,
     justifyContent: 'center',
     alignItems: 'center',

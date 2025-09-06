@@ -22,30 +22,45 @@ export default function useAED() {
   const {
     steps,
     stepIndex,
+    setStepIndex,
     expectedAction,
     loadSequence,
     pauseSequence,
     resumeSequence,
     resetSequence,
     nextStep,
+    prevStep,
     handleAction,
   } = useAEDSequence();
 
+  const [poweredOn, setPoweredOn] = useState(false);
   const [started, setStarted] = useState(false);
+
   const [paused, setPaused] = useState(false);
   const [currentRhythm, setCurrentRhythm] = useState(null);
 
-  const startAED = () => {
-    // prevent restarting if already started
-    if (started && !paused) return;
+  const powerOnAED = () => {
+    setPoweredOn(true);
+  };
 
-    // if resuming from pause, call resumeAED
+  const powerOffAED = () => {
+    setPoweredOn(false);
+    setStarted(false);
+    setPaused(false);
+    resetTimer();
+    stopTimer();
+    setCurrentRhythm(null);
+    clearWaveform();
+    resetSequence();
+  };
+
+  const startAED = () => {
+    if (started && !paused) return;
     if (started && paused) {
       resumeAED();
       return;
     }
 
-    // brand-new start
     const rhythmKeys = Object.keys(heartRhythms);
     const selectedRhythmKey =
       rhythmKeys[Math.floor(Math.random() * rhythmKeys.length)];
@@ -89,6 +104,7 @@ export default function useAED() {
   };
 
   const stopAED = () => {
+    setPoweredOn(false);
     setStarted(false);
     setPaused(false);
     resetTimer();
@@ -99,6 +115,7 @@ export default function useAED() {
   };
 
   return {
+    poweredOn,
     started,
     paused,
     currentRhythm,
@@ -106,12 +123,16 @@ export default function useAED() {
     strokeColors,
     steps,
     stepIndex,
+    setStepIndex,
     expectedAction,
+    powerOnAED,
+    powerOffAED,
     startAED,
     pauseAED,
     resumeAED,
     stopAED,
     nextStep,
+    prevStep,
     timer,
     handleAction,
   };

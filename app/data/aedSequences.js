@@ -10,7 +10,7 @@ const aedSequences = {
     { text: 'Attach pads to patient’s bare chest', action: 'attach' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show Sinus rhythm', action: 'show' },
+    { text: 'Showing Sinus Rhythm', action: 'show' },
 
     { text: 'No shock advised', action: 'auto' },
     { text: 'Start CPR — push to match the tone', action: 'cpr' },
@@ -19,7 +19,7 @@ const aedSequences = {
     { text: 'Stop CPR', action: 'auto' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show Sinus rhythm', action: 'show' },
+    { text: 'Showing Sinus Rhythm', action: 'show' },
     { text: 'No shock advised', action: 'auto' },
     { text: '(Repeat CPR/analysis cycle)', action: 'auto' },
   ],
@@ -35,11 +35,11 @@ const aedSequences = {
     { text: 'Attach pads to patient’s bare chest', action: 'attach' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show VFib rhythm', action: 'show' },
+    { text: 'Showing VFib Rhythm', action: 'show' },
 
-    { text: 'Shock advised (button glow)', action: 'shockGlow' },
+    { text: 'Shock advised', action: 'auto' },
     { text: 'Don’t touch patient', action: 'auto' },
-    { text: 'Press flashing shock button', action: 'shock' },
+    { text: 'Press flashing shock button', action: 'press shock' },
     { text: 'Shock delivered', action: 'auto' },
     { text: 'Start CPR — push to match the tone', action: 'cpr' },
     { text: 'Push harder', action: 'cpr' },
@@ -47,8 +47,8 @@ const aedSequences = {
     { text: 'Stop CPR', action: 'auto' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show VFib rhythm', action: 'show' },
-    { text: 'Shock advised (button glow)', action: 'auto' },
+    { text: 'Showing VFib Rhythm', action: 'show' },
+    { text: 'Shock advised', action: 'auto' },
     { text: '(Repeat shock + CPR cycle)', action: 'auto' },
   ],
 
@@ -63,9 +63,9 @@ const aedSequences = {
     { text: 'Attach pads to patient’s bare chest', action: 'auto' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show VTach rhythm', action: 'show' },
+    { text: 'Showing VTach Rhythm', action: 'show' },
 
-    { text: 'Shock advised (button glow)', action: 'auto' },
+    { text: 'Shock advised', action: 'auto' },
     { text: 'Don’t touch patient', action: 'auto' },
     { text: 'Press flashing shock button', action: 'shock' },
     { text: 'Shock delivered', action: 'auto' },
@@ -75,8 +75,8 @@ const aedSequences = {
     { text: 'Stop CPR', action: 'auto' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show VTach rhythm', action: 'show' },
-    { text: 'Shock advised (button glow)', action: 'auto' },
+    { text: 'Showing VTach Rhythm', action: 'show' },
+    { text: 'Shock advised', action: 'auto' },
     { text: '(Repeat shock + CPR cycle)', action: 'auto' },
   ],
 
@@ -91,7 +91,7 @@ const aedSequences = {
     { text: 'Attach pads to patient’s bare chest', action: 'attach' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show Asystole rhythm', action: 'show' },
+    { text: 'Showing VTach Rhythm', action: 'show' },
 
     { text: 'No shock advised', action: 'auto' },
     { text: 'Start CPR — push to match the tone', action: 'cpr' },
@@ -100,7 +100,7 @@ const aedSequences = {
     { text: 'Stop CPR', action: 'auto' },
 
     { text: 'Don’t touch patient. Analyzing…', action: 'analyze' },
-    { text: 'Show Asystole rhythm', action: 'show' },
+    { text: 'Showing VTach Rhythm', action: 'show' },
     { text: 'No shock advised', action: 'auto' },
     { text: '(Repeat CPR/analysis cycle)', action: 'auto' },
   ],
