@@ -13,6 +13,7 @@ const AEDWaveform = ({
   strokeColors,
   expectedAction,
   steps,
+  displayText,
 }) => {
   function getSmoothPath(points) {
     if (points.length < 2) return '';
@@ -95,9 +96,11 @@ const AEDWaveform = ({
             </Svg>
           )}
 
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
-            {currentStep?.text}
-          </Text>
+          {displayText && (
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
+              {displayText}
+            </Text>
+          )}
           {/* Debug: Show current action */}
           {/* {__DEV__ && started && (
             <Text style={{ color: '#f4f9f4ff', fontSize: 12 }}>

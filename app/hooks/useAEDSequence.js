@@ -57,6 +57,10 @@ export default function useAEDSequence() {
     }
   };
 
+  const prevStep = () => {
+    setStepIndex(prev => (prev > 0 ? prev - 1 : 0));
+  };
+
   const handleAction = action => {
     if (expectedAction === action) {
       nextStep();
@@ -66,12 +70,14 @@ export default function useAEDSequence() {
   return {
     steps,
     stepIndex,
+    setStepIndex,
     expectedAction,
     loadSequence,
     pauseSequence,
     resumeSequence,
     resetSequence,
     nextStep,
+    prevStep,
     handleAction,
   };
 }

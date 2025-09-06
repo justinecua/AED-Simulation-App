@@ -14,7 +14,7 @@ const AEDControls = ({ started, onPowerPress, onShockPress }) => {
         <View style={aedStyle.joulesBox}>
           <ChevronUp color="black" size={13} />
           <ChevronDown color="black" size={13} />
-          <Text style={aedStyle.jouleText}>150 J</Text>
+          <Text style={aedStyle.jouleText}>0 J</Text>
         </View>
       </View>
 
