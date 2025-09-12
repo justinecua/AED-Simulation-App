@@ -154,9 +154,10 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
                 stepIndex={stepIndex}
                 expectedAction={expectedAction}
                 displayText={
-                  steps[stepIndex]?.action == 'show'
-                    ? null
-                    : steps[stepIndex]?.text
+                  // hide if current step is analyze OR if we've already passed analyze
+                  steps.some((s, i) => i <= stepIndex && s.action === 'analyze')
+                    ? ''
+                    : steps[stepIndex]?.text ?? ''
                 }
               />
               <AEDControls
@@ -176,6 +177,9 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
                   }
                 }}
                 onShockPress={() => handleAction('shock')}
+                flashing={
+                  steps[stepIndex]?.text === 'Press flashing shock button'
+                } // 👈 here
               />
             </View>
           </View>
