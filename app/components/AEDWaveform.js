@@ -32,7 +32,12 @@ const AEDWaveform = ({
 
   const currentStep = steps[stepIndex];
   const isShowingWaveform =
-    started && currentStep?.action === 'show' && currentRhythm;
+    started &&
+    currentRhythm &&
+    (currentStep?.action === 'show' ||
+      steps[stepIndex - 1]?.action === 'analyze' ||
+      (stepIndex > 0 &&
+        steps.some((s, i) => i < stepIndex && s.action === 'analyze')));
 
   return (
     <View style={aedStyle.aedScreenContainer}>
@@ -55,7 +60,6 @@ const AEDWaveform = ({
               style={{
                 color: 'rgba(211, 214, 241, 1)',
                 fontSize: 13,
-                marginTop: 20,
               }}
             >
               AED OFF

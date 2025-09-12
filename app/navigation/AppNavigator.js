@@ -6,6 +6,7 @@ import InstructorHomeScreen from '../screens/instructor/InstructorHomeScreen';
 import InstructorTestScenarioScreen from '../screens/instructor/InstructorTestScenarioScreen';
 import StudentAutoModeScreen from '../screens/student/StudentAutoModeScreen';
 import PadPlacementScreen from '../screens/student/PadPlacementScreen';
+import ConnectToInstructorScreen from '../screens/student/ConnectToInstructorScreen';
 import { AEDProvider } from '../context/AEDContext';
 
 export default function AppNavigator() {
@@ -31,6 +32,9 @@ export default function AppNavigator() {
             <StudentHomeScreen
               goHome={() => handleNavigation('role')}
               goStudentAutoMode={() => handleNavigation('studentAutoMode')}
+              goConnectToInstructor={() =>
+                handleNavigation('connectInstructor')
+              }
             />
           </AnimatedScreenTransition>
         )}
@@ -84,6 +88,17 @@ export default function AppNavigator() {
           <AnimatedScreenTransition direction={direction} keyValue="applyPads">
             <PadPlacementScreen
               goStudentAutoMode={() => handleNavigation('studentAutoMode')}
+            />
+          </AnimatedScreenTransition>
+        )}
+        {screen === 'connectInstructor' && (
+          <AnimatedScreenTransition
+            direction={direction}
+            keyValue="connectInstructor"
+          >
+            <ConnectToInstructorScreen
+              goHome={() => handleNavigation('role')}
+              goBack={() => handleNavigation('student')}
             />
           </AnimatedScreenTransition>
         )}
