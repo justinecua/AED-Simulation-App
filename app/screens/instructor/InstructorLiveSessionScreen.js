@@ -17,7 +17,7 @@ import Header from '../../components/Header';
 import SessionFlowControl from '../../components/SessionFlowControl';
 import RhythmButton from '../../components/RhythmButton';
 
-const InstructorLiveSessionScreen = () => {
+const InstructorLiveSessionScreen = ({ goBack }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const [values, setValues] = useState({});
 
@@ -47,7 +47,7 @@ const InstructorLiveSessionScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Header role="instructor" />
+      <Header role="instructor" goBack={goBack} />
 
       <View style={styles.section}>
         <View style={styles.sectionTitle}>

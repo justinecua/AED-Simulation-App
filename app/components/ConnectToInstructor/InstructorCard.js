@@ -13,9 +13,11 @@ const InstructorCard = ({ name, id, onConnect }) => {
         <Text style={styles.studentName}>{name}</Text>
         <Text style={styles.studentId}>{id}</Text>
       </View>
-      <TouchableOpacity style={styles.connectButton} onPress={onConnect}>
-        <Text style={styles.buttonText}>Connect</Text>
-      </TouchableOpacity>
+      {onConnect && (
+        <TouchableOpacity style={styles.connectButton} onPress={onConnect}>
+          <Text style={styles.buttonText}>Connect</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

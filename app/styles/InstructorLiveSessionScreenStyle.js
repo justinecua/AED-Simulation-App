@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     gap: 6,
-    backgroundColor: '#fff', // Required for shadow to be visible
+    backgroundColor: '#fff',
 
     // iOS Shadow
     shadowColor: Colors.text,
