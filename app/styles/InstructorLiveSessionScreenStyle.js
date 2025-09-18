@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import Colors from '../constants/colors';
+import { Dimensions } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -89,7 +90,6 @@ const styles = StyleSheet.create({
 
   controlLabel: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 8,
     flexShrink: 1,
     flexWrap: 'wrap',
     color: Colors.text,

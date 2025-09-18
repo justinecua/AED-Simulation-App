@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 import heartRhythms from '../data/heartRhythms';
 import useAEDTimer from './useAEDTimer';
@@ -35,7 +35,20 @@ export default function useAED() {
   const [paused, setPaused] = useState(false);
   const [currentRhythm, setCurrentRhythm] = useState(null);
 
-  const startAED = () => {
+  const changeRhythm = rhythmKey => {
+    // Stop AED if running
+    stopTimer();
+    stopWaveform();
+    resetSequence();
+
+    setStarted(false);
+    setPaused(false);
+
+    // call startAED again with the new rhythm
+    startAED(rhythmKey);
+  };
+
+  const startAED = rhythmKey => {
     // prevent restarting if already started
     if (started && !paused) return;
 
@@ -46,16 +59,16 @@ export default function useAED() {
     }
 
     // brand-new start
-    const rhythmKeys = Object.keys(heartRhythms);
+    const rhythmKeys = rhythmKey || Object.keys(heartRhythms);
     const selectedRhythmKey =
       rhythmKeys[Math.floor(Math.random() * rhythmKeys.length)];
-    const selectedRhythm = heartRhythms[selectedRhythmKey];
+    const selectedRhythm = heartRhythms[rhythmKey || selectedRhythmKey];
     const pattern = selectedRhythm.generate();
     const spacing = aedWidth / (pattern.length - 1);
 
-    setCurrentRhythm({ name: selectedRhythmKey, bpm: selectedRhythm.bpm });
+    setCurrentRhythm({ name: rhythmKey, bpm: selectedRhythm.bpm });
     clearWaveform();
-    loadSequence(selectedRhythmKey);
+    loadSequence(rhythmKey || selectedRhythmKey);
 
     setStarted(true);
     setPaused(false);
@@ -107,6 +120,7 @@ export default function useAED() {
     steps,
     stepIndex,
     expectedAction,
+    changeRhythm,
     startAED,
     pauseAED,
     resumeAED,

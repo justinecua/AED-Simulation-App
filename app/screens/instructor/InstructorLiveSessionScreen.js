@@ -82,7 +82,12 @@ const InstructorLiveSessionScreen = () => {
         <View style={styles.rhythmContainer}>
           {/* Map for rhythm control buttons */}
           {rhythmControlData.map((item, index) => (
-            <RhythmButton key={index} label={item.label} Icon={item.icon} />
+            <RhythmButton
+              key={index}
+              label={item.label}
+              Icon={item.icon}
+              fontSize={8}
+            />
           ))}
         </View>
       </View>

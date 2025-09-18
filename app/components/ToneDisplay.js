@@ -3,9 +3,9 @@ import { View, StyleSheet, Text } from 'react-native';
 import Colors from '../constants/colors';
 import { AudioLines } from 'lucide-react-native';
 
-const ToneDisplay = ({ text }) => {
+const ToneDisplay = ({ displayTop, text }) => {
   return (
-    <View style={style.tone}>
+    <View style={[style.tone, displayTop ? style.top : style.bottom]}>
       <View style={style.toneIcon}>
         <View style={style.boxTone}>
           <AudioLines color="white" size={20} />
@@ -17,9 +17,14 @@ const ToneDisplay = ({ text }) => {
 };
 
 const style = StyleSheet.create({
+  top: {
+    top: 80,
+  },
+  bottom: {
+    bottom: 100,
+  },
   tone: {
     position: 'absolute',
-    bottom: 100,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 6,
