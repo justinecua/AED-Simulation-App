@@ -18,19 +18,24 @@ import {
   BadgeInfo,
   History,
   Home,
+  Wifi,
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-const InstructorHomeScreen = ({ goHome, onSelectAutoMode }) => {
+const InstructorHomeScreen = ({
+  goHome,
+  onSelectAutoMode,
+  goConnectToStudent,
+}) => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <LinearGradient
-            colors={['#FFFFFF', '#EEF4FF']}
-            locations={[0, 0.5]}
-            start={{ x: 0, y: 0 }} // Start point of the gradient (top-left)
-            end={{ x: 1, y: 1 }} // End point of the gradient (bottom-right)
+            colors={['#FFFFFF', '#FFFFFF', '#deeaffff']}
+            locations={[0, 0.3, 1]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
             style={styles.linearGradient}
           >
             <View style={styles.header}>
@@ -67,15 +72,17 @@ const InstructorHomeScreen = ({ goHome, onSelectAutoMode }) => {
 
               <View style={styles.mode}>
                 <View style={styles.modeIcon}>
-                  <BluetoothSearching color="white" size={23} />
+                  <Wifi color="white" size={23} />
                 </View>
 
-                <Text style={styles.modeTitle}>Connect to Instructor</Text>
+                <Text style={styles.modeTitle}>Connect to Student</Text>
                 <Text style={styles.modeDescription}>
-                  Join your instructor's session via Bluetooth
+                  Scan available students to join your session
                 </Text>
                 <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText}>Connect</Text>
+                  <Text style={styles.buttonText} onPress={goConnectToStudent}>
+                    Connect via Wifi
+                  </Text>
                 </TouchableOpacity>
               </View>
 
