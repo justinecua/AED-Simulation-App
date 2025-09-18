@@ -89,9 +89,12 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   Text: {
+    marginTop: 20,
+    marginBottom: 10,
     color: Colors.text,
     fontSize: 15,
     fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
   },
   // STUDENTS
   studentContainer: {
@@ -99,7 +102,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   studentCount: {
-    color: Colors.text,
+    marginBottom: 20,
+    color: '#64748B',
     fontSize: 15,
     fontFamily: 'Poppins-Bold',
   },
@@ -119,11 +123,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
+    shadowRadius: 20,
   },
   userBox: {
     padding: 16,
@@ -151,7 +156,7 @@ const styles = StyleSheet.create({
   },
   connectButton: {
     marginTop: 6,
-    backgroundColor: Colors.rhythmBackground,
+    backgroundColor: Colors.subText,
     paddingHorizontal: 30,
     paddingVertical: 7,
     borderRadius: 7,
@@ -159,13 +164,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: '#64748B',
     fontSize: 11,
     fontFamily: 'Poppins-Medium',
   },
 
+  ipConnectiontContainer: {
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    width: '100%',
+  },
+
+  ipConnectLabel: {
+    width: '100%',
+    textAlign: 'left',
+    marginBottom: 10,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+
+  ipConnectButton: {
+    marginTop: 10,
+    width: '100%',
+    padding: 12,
+    borderRadius: 5,
+    backgroundColor: Colors.subText,
+  },
+
+  ipConnectButtonText: {
+    textAlign: 'center',
+    width: '100%',
+    fontWeight: '500',
+    color: '#64748B',
+  },
+
+  ipConnectInput: {
+    width: '100%',
+    borderColor: '#d4d4d4ff',
+    borderWidth: 1,
+    borderRadius: 5,
+    color: '#94A3B8',
+    fontWeight: '600',
+    marginTop: 10,
+  },
+
   noResultContainer: {
-    marginTop: 30,
+    marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,

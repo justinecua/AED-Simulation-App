@@ -6,8 +6,10 @@ import InstructorHomeScreen from '../screens/instructor/InstructorHomeScreen';
 import InstructorTestScenarioScreen from '../screens/instructor/InstructorTestScenarioScreen';
 import StudentAutoModeScreen from '../screens/student/StudentAutoModeScreen';
 import PadPlacementScreen from '../screens/student/PadPlacementScreen';
-import ConnectToInstructorScreen from '../screens/student/ConnectToInstructorScreen';
+import StudentConnectScreen from '../screens/student/StudentConnectScreen';
 import { AEDProvider } from '../context/AEDContext';
+import InstructorLiveSessionScreen from '../screens/instructor/InstructorLiveSessionScreen';
+import InstructorHostScreen from '../screens/instructor/InstructorHostScreen';
 
 export default function AppNavigator() {
   const [screen, setScreen] = useState('role');
@@ -46,6 +48,7 @@ export default function AppNavigator() {
               onSelectAutoMode={() =>
                 handleNavigation('testScenarioInstructor')
               }
+              goConnectToStudent={() => handleNavigation('connectStudent')}
             />
           </AnimatedScreenTransition>
         )}
@@ -96,11 +99,27 @@ export default function AppNavigator() {
             direction={direction}
             keyValue="connectInstructor"
           >
-            <ConnectToInstructorScreen
+            <StudentConnectScreen
               goHome={() => handleNavigation('role')}
               goBack={() => handleNavigation('student')}
+              goLiveSession={() => handleNavigation('studentAutoMode')}
             />
           </AnimatedScreenTransition>
+        )}
+
+        {screen === 'connectStudent' && (
+          <InstructorHostScreen
+            goHome={() => handleNavigation('role')}
+            goBack={() => handleNavigation('instructor')}
+            goLiveSession={() => handleNavigation('liveSession')}
+          />
+        )}
+
+        {screen === 'liveSession' && (
+          <InstructorLiveSessionScreen
+            goHome={() => handleNavigation('role')}
+            goBack={() => handleNavigation('connectStudent')}
+          />
         )}
       </AEDProvider>
     </>
