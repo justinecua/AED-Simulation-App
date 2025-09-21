@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Info, Timer } from 'lucide-react-native';
 
@@ -36,8 +36,9 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
     setPositions,
     placedPads,
     setPlacedPads,
+    handleAction,
   } = useAEDContext();
-
+  const attachHandledRef = useRef(false);
   const handleMove = (x, y, label) => {
     setPositions(p => ({ ...p, [label]: { x, y } }));
     const { w, h } = padSizes[label];
@@ -70,42 +71,23 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
     setPlacedPads(prev => ({ ...prev, [label]: distance < 40 }));
     setPositions(p => ({ ...p, [label]: { x, y } }));
   };
-  const [padsCompleted, setPadsCompleted] = useState(false);
 
   useEffect(() => {
-    if (steps[stepIndex]?.action === 'analyze') {
-      const timer = setTimeout(() => {
-        nextStep();
-      }, 1000);
-
-      return () => clearTimeout(timer);
+    if (steps[stepIndex]?.action !== 'attach') {
+      attachHandledRef.current = false;
+      return;
     }
-  }, [stepIndex, steps]);
 
-  useEffect(() => {
     const allPlaced = Object.values(placedPads).every(Boolean);
 
-    if (allPlaced && !padsCompleted && steps[stepIndex]?.action !== 'analyze') {
-      setPadsCompleted(true);
-
-      const analyzeStepIndex = steps.findIndex(s => s.action === 'analyze');
-      if (analyzeStepIndex !== -1) {
-        setStepIndex(analyzeStepIndex);
-      } else {
-        nextStep();
-      }
+    if (allPlaced && !attachHandledRef.current) {
+      attachHandledRef.current = true;
+      handleAction('attach');
     }
-
-    if (!allPlaced && padsCompleted) {
-      setPadsCompleted(false);
-      const attachStepIndex = steps.findIndex(s => s.action === 'attach');
-      if (attachStepIndex !== -1) {
-        setStepIndex(attachStepIndex);
-      } else if (stepIndex > 0) {
-        prevStep();
-      }
+    if (!allPlaced) {
+      attachHandledRef.current = false;
     }
-  }, [placedPads, padsCompleted, steps, stepIndex]);
+  }, [placedPads, stepIndex, steps, handleAction]);
 
   return (
     <View style={{ flex: 1 }}>

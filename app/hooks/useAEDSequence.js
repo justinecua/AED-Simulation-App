@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import Sound from 'react-native-sound';
 import aedSequences from '../data/aedSequences';
 
 export default function useAEDSequence() {
@@ -6,20 +7,75 @@ export default function useAEDSequence() {
   const [stepIndex, setStepIndex] = useState(0);
   const [expectedAction, setExpectedAction] = useState(null);
   const autoTimerRef = useRef(null);
+  const soundRef = useRef(null);
+  const genRef = useRef(0);
 
   useEffect(() => {
     const currentStep = steps[stepIndex];
     setExpectedAction(currentStep?.action || null);
 
-    if (currentStep?.action === 'auto') {
+    const myGen = ++genRef.current;
+
+    if (soundRef.current) {
+      soundRef.current.stop(() => {
+        soundRef.current?.release?.();
+        soundRef.current = null;
+      });
+    }
+
+    if (currentStep?.audio) {
+      const s = new Sound(currentStep.audio, Sound.MAIN_BUNDLE, error => {
+        if (myGen !== genRef.current) {
+          s.release?.();
+          return;
+        }
+        if (!error) {
+          if (
+            currentStep.action !== 'auto' &&
+            currentStep.action !== 'analyze'
+          ) {
+            s.setNumberOfLoops(-1);
+          }
+          soundRef.current = s;
+          s.play(success => {
+            if (myGen !== genRef.current) {
+              s.release?.();
+              return;
+            }
+            if (
+              currentStep.action === 'auto' ||
+              currentStep.action === 'analyze'
+            ) {
+              s.release?.();
+              soundRef.current = null;
+              if (success) nextStep();
+            }
+          });
+        } else {
+          if (
+            currentStep.action === 'auto' ||
+            currentStep.action === 'analyze'
+          ) {
+            nextStep();
+          }
+        }
+      });
+    } else if (currentStep?.action === 'auto') {
       autoTimerRef.current = setTimeout(() => {
-        nextStep();
+        if (myGen === genRef.current) nextStep();
       }, 1000);
     }
 
     return () => {
+      genRef.current++;
       if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
       autoTimerRef.current = null;
+      if (soundRef.current) {
+        soundRef.current.stop(() => {
+          soundRef.current?.release?.();
+          soundRef.current = null;
+        });
+      }
     };
   }, [stepIndex, steps]);
 
@@ -35,11 +91,16 @@ export default function useAEDSequence() {
     setExpectedAction(null);
     if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
     autoTimerRef.current = null;
+    if (soundRef.current) {
+      soundRef.current.stop(() => soundRef.current.release());
+      soundRef.current = null;
+    }
   };
 
   const pauseSequence = () => {
     if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
     autoTimerRef.current = null;
+    if (soundRef.current) soundRef.current.pause();
   };
 
   const resumeSequence = () => {
@@ -47,6 +108,7 @@ export default function useAEDSequence() {
     if (currentStep?.action === 'auto') {
       autoTimerRef.current = setTimeout(nextStep, 1000);
     }
+    if (soundRef.current) soundRef.current.play();
   };
 
   const nextStep = () => {
@@ -63,6 +125,12 @@ export default function useAEDSequence() {
 
   const handleAction = action => {
     if (expectedAction === action) {
+      if (soundRef.current) {
+        soundRef.current.stop(() => {
+          soundRef.current.release();
+          soundRef.current = null;
+        });
+      }
       nextStep();
     }
   };
