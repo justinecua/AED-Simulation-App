@@ -102,7 +102,7 @@ const StudentConnectScreen = ({ goBack }) => {
       <ConnectionDialog
         visible={dialogVisible}
         id={readableId}
-        role="student"
+        role="Instructor"
         status={status}
         onContinue={handleContinue}
       />

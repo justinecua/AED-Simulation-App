@@ -76,7 +76,7 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
       <ConnectionDialog
         visible={dialogVisible}
         id={readableId}
-        role="student"
+        role="Student"
         status={status}
         onContinue={handleContinue}
       />
