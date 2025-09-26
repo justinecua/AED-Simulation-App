@@ -9,10 +9,7 @@ const ConnectionDialog = ({ visible, role, readableId, onContinue }) => {
       <View style={styles.overlay}>
         <View style={styles.dialog}>
           <Text style={styles.title}>Connected</Text>
-          <Text style={styles.message}>
-            {role} connected successfully!{'\n'}
-            ID: <Text style={styles.id}>{readableId}</Text>
-          </Text>
+          <Text style={styles.message}>{role} connected successfully!</Text>
           <TouchableOpacity style={styles.button} onPress={onContinue}>
             <Text style={styles.buttonText}>Continue</Text>
           </TouchableOpacity>

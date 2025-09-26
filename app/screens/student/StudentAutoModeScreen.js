@@ -125,13 +125,12 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
               </TouchableOpacity>
 
               {/* Pad package button shows if step says open OR already open */}
-              {(steps[stepIndex]?.text === 'Open pad package' ||
-                isSwitchOpen) && (
+              {steps[stepIndex]?.text === 'Open pad package' && (
                 <TouchableOpacity
                   style={[style2.padPackageButton]}
                   onPress={() => {
                     handleAction('open');
-                    if (expectedAction === 'open' || isSwitchOpen) {
+                    if (expectedAction === 'open') {
                       setIsSwitchOpen(true);
                       goApplyPads();
                     }
@@ -154,7 +153,6 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
                 stepIndex={stepIndex}
                 expectedAction={expectedAction}
                 displayText={
-                  // hide if current step is analyze OR if we've already passed analyze
                   steps.some((s, i) => i <= stepIndex && s.action === 'analyze')
                     ? ''
                     : steps[stepIndex]?.text ?? ''
@@ -179,7 +177,7 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
                 onShockPress={() => handleAction('shock')}
                 flashing={
                   steps[stepIndex]?.text === 'Press flashing shock button'
-                } // 👈 here
+                }
               />
             </View>
           </View>

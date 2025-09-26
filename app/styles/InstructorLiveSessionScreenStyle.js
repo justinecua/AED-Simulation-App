@@ -1,13 +1,17 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 import Colors from '../constants/colors';
+
+const { width } = Dimensions.get('window');
+const scale = size => Math.round((size * width) / 375);
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
+    flexGrow: 1,
     alignItems: 'center',
     padding: 15,
     gap: 20,
     paddingBottom: 80,
+    backgroundColor: Colors.background,
   },
 
   section: {
@@ -24,18 +28,18 @@ const styles = StyleSheet.create({
 
   mainTitle: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 16,
+    fontSize: scale(16),
     color: Colors.text,
   },
 
   student: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 11,
+    fontSize: scale(12),
     color: Colors.text,
   },
 
   responseBox: {
-    padding: 20,
+    padding: scale(16),
     backgroundColor: Colors.subText,
     borderRadius: 10,
   },
@@ -44,13 +48,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
     color: Colors.text,
-    fontSize: 12,
+    fontSize: scale(12),
   },
 
   sessionFlowControls: {
     width: '100%',
-    paddingHorizontal: 10,
-    flexWrap: 'wrap', // allow wrapping across rows
+    flexWrap: 'wrap',
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -58,39 +61,38 @@ const styles = StyleSheet.create({
   controlRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 15,
+    justifyContent: 'flex-start',
   },
 
   controlBox: {
-    padding: 10,
+    width: '48%',
+    marginVertical: 6,
+    marginHorizontal: '1%',
+    padding: scale(12),
     borderRadius: 10,
-    width: '30%',
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    gap: 6,
-    backgroundColor: '#fff',
 
-    // iOS Shadow
+    // Shadows
     shadowColor: Colors.text,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
-
-    // Android Shadow
     elevation: 6,
   },
 
   controlIcon: {
-    padding: 6,
+    padding: 9,
     backgroundColor: Colors.button,
     borderRadius: 50,
   },
 
   controlLabel: {
     fontFamily: 'Poppins-Regular',
-    fontSize: 8,
+    fontSize: scale(13),
     flexShrink: 1,
+    marginTop: 3,
     flexWrap: 'wrap',
     color: Colors.text,
   },
@@ -100,26 +102,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    alignItems: 'center',
     gap: 15,
   },
 
   rhythmBox: {
-    padding: 12,
+    padding: scale(12),
     borderRadius: 10,
-    width: '45%',
+    flexBasis: width < 500 ? '45%' : '30%', // ✅ adaptive for tablets
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
-    backgroundColor: '#fff', // Required for shadow to be visible
+    backgroundColor: '#fff',
 
-    // iOS Shadow
     shadowColor: Colors.text,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
-
-    // Android Shadow
     elevation: 6,
   },
 
@@ -132,20 +130,19 @@ const styles = StyleSheet.create({
   },
 
   dropdownContainer: {
-    width: '45%',
+    flexBasis: width < 500 ? '45%' : '30%',
+    marginVertical: 5,
   },
 
   dropdown: {
     backgroundColor: Colors.rhythmBackground,
     borderRadius: 10,
     paddingHorizontal: 10,
-    // iOS Shadow
+
     shadowColor: Colors.text,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
-
-    // Android Shadow
     elevation: 10,
   },
 
@@ -157,7 +154,7 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: Colors.subText,
     fontFamily: 'Poppins-Regular',
-    fontSize: 9,
+    fontSize: scale(10),
     textAlign: 'center',
   },
 });

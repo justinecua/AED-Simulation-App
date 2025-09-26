@@ -29,15 +29,14 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
       <ScrollView>
         <View style={styles.container}>
           <HeaderBar goBack={goBack} />
-
           <BluetoothRadar
-            isSearching={isSearching && students.length === 0}
+            isSearching={isSearching}
             onToggleSearch={toggleHosting}
           />
 
           <Text style={styles.Text}>
             {isHosting
-              ? `Hosting on ${hostIp}:5000`
+              ? `Hosting on ${hostIp}`
               : 'Press Wi-Fi to start a session.'}
           </Text>
 
@@ -76,7 +75,7 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
       <ConnectionDialog
         visible={dialogVisible}
         id={readableId}
-        role="student"
+        role="Student"
         status={status}
         onContinue={handleContinue}
       />

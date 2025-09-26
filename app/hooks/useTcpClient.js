@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import TcpSocket from 'react-native-tcp-socket';
 import DeviceInfo from 'react-native-device-info';
 import { makeReadableId } from '../shared/id';
+import dgram from 'react-native-udp';
 
 const PORT = 5000;
+const DISCOVERY_PORT = 5001;
 
 export default function useTcpClient({ onConnected } = {}) {
   const [socket, setSocket] = useState(null);
@@ -11,7 +13,6 @@ export default function useTcpClient({ onConnected } = {}) {
   const [status, setStatus] = useState('Idle');
   const [instructors, setInstructors] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-
   const [readableId, setReadableId] = useState('');
   const [dialogVisible, setDialogVisible] = useState(false);
 
@@ -20,7 +21,6 @@ export default function useTcpClient({ onConnected } = {}) {
     return () => socket?.destroy();
   }, []);
 
-  /** Connect only when user presses Connect button */
   const connectTo = ip => {
     if (!ip) return setStatus('Enter instructor IP first.');
     if (socket) return setStatus('Already connected.');
@@ -30,8 +30,6 @@ export default function useTcpClient({ onConnected } = {}) {
       const rid = makeReadableId('STU');
       setReadableId(rid);
       setDialogVisible(true);
-
-      // only send hello, don’t claim success yet
       client.write(JSON.stringify({ type: 'hello', role: 'student', id: rid }));
       setStatus('Waiting for instructor to confirm…');
     });
@@ -54,27 +52,29 @@ export default function useTcpClient({ onConnected } = {}) {
     setSocket(client);
   };
 
-  /** Wi-Fi search: only populates instructor list */
   const handleToggleSearch = async () => {
     setIsSearching(prev => {
-      if (prev) return false; // stop searching
+      if (prev) {
+        setStatus('Idle');
+        return false;
+      }
 
       setInstructors([]);
       setStatus('Searching…');
 
-      setTimeout(async () => {
-        const isEmu = await DeviceInfo.isEmulator();
-        if (isEmu) {
-          // just add found instructor — no connect yet
-          setInstructors([
-            { id: 'HOST#5000', name: 'Instructor', address: '10.0.2.2' },
-          ]);
-          setStatus('Instructor found (press Connect)');
-        } else {
-          setStatus('Enter IP manually.');
-        }
-        setIsSearching(false);
-      }, 1200);
+      const udpSocket = dgram.createSocket('udp4');
+      udpSocket.bind(DISCOVERY_PORT);
+      udpSocket.on('message', msg => {
+        try {
+          const data = JSON.parse(msg.toString());
+          if (data.type === 'instructor') {
+            setInstructors([
+              { id: data.ip, name: 'Instructor', address: data.ip },
+            ]);
+            setStatus('Instructor found (press Connect)');
+          }
+        } catch {}
+      });
 
       return true;
     });
