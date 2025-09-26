@@ -10,6 +10,7 @@ import StudentConnectScreen from '../screens/student/StudentConnectScreen';
 import { AEDProvider } from '../context/AEDContext';
 import InstructorLiveSessionScreen from '../screens/instructor/InstructorLiveSessionScreen';
 import InstructorHostScreen from '../screens/instructor/InstructorHostScreen';
+import InstructorScenarioBuilder from '../screens/instructor/InstructorScenarioBuilder';
 
 export default function AppNavigator() {
   const [screen, setScreen] = useState('role');
@@ -49,6 +50,7 @@ export default function AppNavigator() {
                 handleNavigation('testScenarioInstructor')
               }
               goConnectToStudent={() => handleNavigation('connectStudent')}
+              goScenarioBuilder={() => handleNavigation('scenarioBuilder')}
             />
           </AnimatedScreenTransition>
         )}
@@ -120,6 +122,17 @@ export default function AppNavigator() {
             goHome={() => handleNavigation('role')}
             goBack={() => handleNavigation('connectStudent')}
           />
+        )}
+        {screen === 'scenarioBuilder' && (
+          <AnimatedScreenTransition
+            direction={direction}
+            keyValue="scenarioBuilder"
+          >
+            <InstructorScenarioBuilder
+              goHome={() => handleNavigation('role')}
+              goBack={() => handleNavigation('instructor')}
+            />
+          </AnimatedScreenTransition>
         )}
       </AEDProvider>
     </>

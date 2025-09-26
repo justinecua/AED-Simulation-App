@@ -47,8 +47,8 @@ const StudentHomeScreen = ({
               <View style={styles.hSubContainer}>
                 <Text style={styles.hsubTitle}>Ready to</Text>
                 <Text style={styles.hsubTitleMid}>begin</Text>
-                <Text style={styles.hsubTitle2}>your</Text>
-                <Text style={styles.hsubTitle}>training?</Text>
+                <Text style={styles.hsubTitle2}>your training</Text>
+                {/* <Text style={styles.hsubTitle}>training?</Text> */}
               </View>
             </View>
 

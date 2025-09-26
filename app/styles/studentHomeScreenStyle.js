@@ -1,43 +1,54 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import Colors from '../constants/colors';
+
+const { width, height } = Dimensions.get('window');
+
+// Responsive helpers
+const scale = width / 375; // base iPhone X width
+const vscale = height / 812; // base iPhone X height
+const normalize = size => Math.round(size * scale);
+const vnormalize = size => Math.round(size * vscale);
+
+// Circle size
+const circleSize = width * 0.15;
 
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: vnormalize(20),
   },
   homeButton: {
     position: 'absolute',
-    top: 40,
-    right: 20,
+    top: vnormalize(40),
+    right: normalize(20),
     backgroundColor: Colors.button,
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingVertical: vnormalize(6),
+    paddingHorizontal: normalize(14),
     borderRadius: 20,
     zIndex: 100,
   },
   homeButtonText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: normalize(12),
     fontWeight: 'bold',
   },
 
   rscTitleText: {
     color: Colors.button,
-    fontWeight: 700,
-    fontSize: 15,
+    fontWeight: '700',
+    fontSize: normalize(15),
   },
   rsDetailsDate: {
-    fontSize: 12.5,
+    fontSize: normalize(12.5),
   },
   rsDetailsTitle: {
-    fontWeight: 700,
-    fontSize: 15,
+    fontWeight: '700',
+    fontSize: normalize(15),
   },
   rsDetails: {
-    marginLeft: 10,
+    marginLeft: normalize(10),
   },
   rsCardSub: {
     flexDirection: 'row',
@@ -45,8 +56,8 @@ const styles = StyleSheet.create({
   },
   rsCard: {
     borderRadius: 10,
-    padding: 10,
-    marginTop: 10,
+    padding: normalize(10),
+    marginTop: normalize(10),
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
@@ -54,73 +65,69 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.recentSessionCard,
   },
   rscIcon: {
-    width: 50,
-    padding: 13,
-    borderRadius: '50%',
+    width: circleSize,
+    height: circleSize,
+    borderRadius: circleSize / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: Colors.button,
   },
+
   recentSessionsContainer: {
-    padding: 16,
+    padding: normalize(16),
     borderRadius: 10,
-    marginTop: 15,
+    marginTop: normalize(15),
     width: '100%',
     backgroundColor: '#ffffff',
-    // Shadow for iOS
     shadowColor: Colors.text,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 7,
   },
+
   modeDescription: {
     fontFamily: 'Poppins',
-    fontSize: 13,
-    marginBottom: 5,
+    fontSize: normalize(13),
+    marginBottom: vnormalize(5),
     color: Colors.text,
   },
   modeTitle: {
-    fontSize: 13,
+    fontSize: normalize(13),
     color: Colors.text,
     fontFamily: 'Poppins-SemiBold',
   },
   button: {
     backgroundColor: Colors.button,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingVertical: vnormalize(8),
+    paddingHorizontal: normalize(20),
     borderRadius: 20,
-    marginTop: 10,
+    marginTop: vnormalize(10),
     alignItems: 'center',
   },
-
   buttonText: {
     color: 'white',
-    fontSize: 11,
+    fontSize: normalize(10),
     fontFamily: 'Poppins-SemiBold',
     textTransform: 'none',
   },
 
   modeIcon: {
-    width: '36%',
-    padding: 15,
-    borderRadius: '50%',
+    width: circleSize,
+    height: circleSize,
+    borderRadius: circleSize / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: Colors.button,
-    marginBottom: 12,
+    marginBottom: vnormalize(12),
   },
   mode: {
-    padding: 20,
+    padding: normalize(20),
     width: '48%',
     backgroundColor: '#ffffff',
     borderRadius: 15,
-
-    // Shadow for iOS
     shadowColor: Colors.text,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 7,
@@ -130,20 +137,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: normalize(12),
   },
+
   hsubTitleMid: {
-    marginTop: -3,
-    marginLeft: 9,
-    marginRight: 4,
-    fontSize: 27,
+    marginTop: vnormalize(-3),
+    marginLeft: normalize(9),
+    marginRight: normalize(4),
+    fontSize: normalize(27),
     fontFamily: 'Poppins-SemiBold',
   },
   hsubTitle2: {
-    marginRight: 15,
-    marginBottom: -6,
-    marginTop: -3,
-    fontSize: 27,
+    marginRight: normalize(15),
+    marginBottom: vnormalize(-6),
+    marginTop: vnormalize(-3),
+    fontSize: normalize(27),
     fontFamily: 'Poppins-Regular',
   },
   hSubContainer: {
@@ -152,28 +160,29 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   hsubTitle: {
-    marginBottom: -6,
-    marginTop: -3,
-    fontSize: 27,
+    marginBottom: vnormalize(-6),
+    marginTop: vnormalize(-3),
+    fontSize: normalize(27),
     fontFamily: 'Poppins-Regular',
   },
   Student: {
-    marginLeft: 10,
+    marginLeft: normalize(10),
     fontWeight: 'bold',
     color: Colors.button,
-    fontSize: 36,
+    fontSize: normalize(36),
     fontFamily: 'Poppins-Regular',
   },
   Welcome: {
-    fontSize: 36,
+    fontSize: normalize(36),
     fontFamily: 'Poppins-Regular',
   },
+
   headerSubContainer: {
     flexDirection: 'row',
   },
   header: {
-    marginTop: 30,
-    marginBottom: 40,
+    marginTop: vnormalize(30),
+    marginBottom: vnormalize(40),
     width: '100%',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -183,7 +192,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: normalize(16),
   },
   container: {
     height: '100%',

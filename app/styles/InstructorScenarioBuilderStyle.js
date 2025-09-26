@@ -7,6 +7,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 15,
     gap: 20,
+    flex: '1',
+    height: '100%',
+    backgroundColor: Colors.background,
   },
 
   scenarioBuilder: {

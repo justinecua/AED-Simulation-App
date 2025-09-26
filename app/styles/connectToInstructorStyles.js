@@ -1,14 +1,17 @@
 import { StyleSheet } from 'react-native';
 import Colors from '../constants/colors';
+import { Dimensions } from 'react-native';
+const { height, width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    width: '100%',
+    width: width,
+    minHeight: height,
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#F8FAFC',
   },
+
   // HEADER
   topDisplay: {
     flexDirection: 'row',
@@ -122,8 +125,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 10,
     alignItems: 'center',
+    height: '170',
     justifyContent: 'center',
-
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
