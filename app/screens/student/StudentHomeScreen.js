@@ -21,12 +21,25 @@ import {
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styles from '../../styles/studentHomeScreenStyle';
+import { getOrCreateStudentId } from '../../data/roleIds';
+import { useEffect } from 'react';
 
 const StudentHomeScreen = ({
   goHome,
   goStudentAutoMode,
   goConnectToInstructor,
 }) => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const id = await getOrCreateStudentId();
+        console.log('Student ID:', id);
+      } catch (e) {
+        console.warn('Error loading Student ID:', e);
+      }
+    })();
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
@@ -47,7 +60,7 @@ const StudentHomeScreen = ({
               <View style={styles.hSubContainer}>
                 <Text style={styles.hsubTitle}>Ready to</Text>
                 <Text style={styles.hsubTitleMid}>begin</Text>
-                <Text style={styles.hsubTitle2}>your training</Text>
+                <Text style={styles.hsubTitle2}>your training?</Text>
                 {/* <Text style={styles.hsubTitle}>training?</Text> */}
               </View>
             </View>

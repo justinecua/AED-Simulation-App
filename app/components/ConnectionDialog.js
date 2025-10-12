@@ -1,15 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { getOrCreateInstructorId, getOrCreateStudentId } from '../data/roleIds';
 
-const ConnectionDialog = ({ visible, role, readableId, onContinue }) => {
+const ConnectionDialog = ({
+  visible,
+  role,
+  id: idProp,
+  status,
+  onContinue,
+}) => {
+  const [id, setId] = useState('');
+
+  useEffect(() => {
+    if (!visible) return;
+
+    (async () => {
+      try {
+        if (idProp) {
+          setId(idProp);
+          return;
+        }
+
+        const r = (role || '').toString().toLowerCase();
+        if (r === 'instructor') {
+          const existing = await getOrCreateInstructorId();
+          setId(existing);
+        } else {
+          const existing = await getOrCreateStudentId();
+          setId(existing);
+        }
+      } catch (e) {
+        console.warn('ConnectionDialog: failed to load ID', e);
+      }
+    })();
+  }, [visible, role, idProp]);
+
   if (!visible) return null;
 
   return (
     <Modal transparent animationType="fade" visible={visible}>
       <View style={styles.overlay}>
-        <View style={styles.dialog}>
+        <View className="dialog" style={styles.dialog}>
           <Text style={styles.title}>Connected</Text>
-          <Text style={styles.message}>{role} connected successfully!</Text>
+
+          {!!status && <Text style={styles.message}>{status}</Text>}
+
+          <Text style={styles.message}>
+            Your ID: <Text style={styles.id}>{id || '...'}</Text>
+          </Text>
+
           <TouchableOpacity style={styles.button} onPress={onContinue}>
             <Text style={styles.buttonText}>Continue</Text>
           </TouchableOpacity>
@@ -35,14 +74,15 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
   },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  message: { fontSize: 16, textAlign: 'center', marginBottom: 20 },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
+  message: { fontSize: 15, textAlign: 'center', marginBottom: 10 },
   id: { fontWeight: 'bold', color: '#2563eb' },
   button: {
     backgroundColor: '#2563eb',
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 8,
+    marginTop: 6,
   },
   buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
 });

@@ -14,7 +14,7 @@ import InstructorCard from '../../components/ConnectToInstructor/InstructorCard'
 import useTcpClient from '../../hooks/useTcpClient';
 import ConnectionDialog from '../../components/ConnectionDialog';
 
-const StudentConnectScreen = ({ goBack }) => {
+const StudentConnectScreen = ({ goBack, goLiveSession }) => {
   const {
     status,
     targetIp,
@@ -26,7 +26,9 @@ const StudentConnectScreen = ({ goBack }) => {
     dialogVisible,
     readableId,
     handleContinue,
-  } = useTcpClient();
+  } = useTcpClient({
+    onConnected: () => goLiveSession(),
+  });
 
   const handleConnect = ip => connectTo(ip || targetIp);
   const noResults = !isSearching && instructors.length === 0;
@@ -101,8 +103,8 @@ const StudentConnectScreen = ({ goBack }) => {
 
       <ConnectionDialog
         visible={dialogVisible}
+        role="student"
         id={readableId}
-        role="Instructor"
         status={status}
         onContinue={handleContinue}
       />

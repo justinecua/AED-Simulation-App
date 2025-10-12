@@ -5,6 +5,9 @@ import FloatingHome from '../../components/FloatingHome';
 import { Play, Wifi, Hand, History } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styles from '../../styles/instructorHomeStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getOrCreateInstructorId } from '../../data/roleIds';
+import { useEffect } from 'react';
 
 const InstructorHomeScreen = ({
   goHome,
@@ -12,9 +15,19 @@ const InstructorHomeScreen = ({
   goConnectToStudent,
   goScenarioBuilder,
 }) => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const id = await getOrCreateInstructorId();
+        console.log('Instructor ID:', id);
+      } catch (e) {
+        console.warn('Error loading Instructor ID:', e);
+      }
+    })();
+  }, []);
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView>
         <View style={styles.container}>
           <LinearGradient
             colors={['#FFFFFF', '#FFFFFF', '#deeaffff']}
@@ -31,9 +44,9 @@ const InstructorHomeScreen = ({
               </View>
 
               <View style={styles.hSubContainer}>
-                <Text style={styles.hsubTitle}>Start a session and</Text>
-                <Text style={styles.hsubTitleMid}>guide</Text>
-                <Text style={styles.hsubTitle2}>your student</Text>
+                <Text style={styles.hsubTitle}>
+                  Start a session and guide your student
+                </Text>
                 {/* <Text style={styles.hsubTitle}>student!</Text> */}
               </View>
             </View>
