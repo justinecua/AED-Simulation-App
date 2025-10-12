@@ -5,8 +5,8 @@ import styles from '../../styles/connectToInstructorStyles';
 import HeaderBar from '../../components/ConnectToInstructor/HeaderBar';
 import BluetoothRadar from '../../components/ConnectToInstructor/BluetoothRadar';
 import InstructorCard from '../../components/ConnectToInstructor/InstructorCard';
-import useTcpServer from '../../hooks/useTcpServer';
 import ConnectionDialog from '../../components/ConnectionDialog';
+import { useTcpServerContext } from '../../context/TcpServerContext';
 
 const InstructorHostScreen = ({ goBack, goLiveSession }) => {
   const {
@@ -20,7 +20,7 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
     readableId,
     handleContinue,
     status,
-  } = useTcpServer({ onStudentConnected: goLiveSession });
+  } = useTcpServerContext();
 
   const toggleHosting = () => (isHosting ? stopHosting() : startHosting());
 
@@ -74,10 +74,13 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
       </ScrollView>
       <ConnectionDialog
         visible={dialogVisible}
+        role="instructor"
         id={readableId}
-        role="Student"
         status={status}
-        onContinue={handleContinue}
+        onContinue={() => {
+          handleContinue();
+          goLiveSession?.();
+        }}
       />
     </>
   );

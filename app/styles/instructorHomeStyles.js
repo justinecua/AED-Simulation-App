@@ -9,7 +9,6 @@ const circleSize = normalize(50);
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flexGrow: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingBottom: normalize(20),
@@ -19,6 +18,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     backgroundColor: '#ffffff',
     alignItems: 'center',
+
     justifyContent: 'center',
   },
   linearGradient: {
@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: normalize(16),
+    height: '100%',
   },
   header: {
     marginTop: normalize(30),
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: normalize(11),
+    fontSize: normalize(10),
     fontFamily: 'Poppins-SemiBold',
   },
   recentSessionsContainer: {

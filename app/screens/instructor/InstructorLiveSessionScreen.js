@@ -16,10 +16,13 @@ import styles from '../../styles/InstructorLiveSessionScreenStyle';
 import Header from '../../components/Header';
 import SessionFlowControl from '../../components/SessionFlowControl';
 import RhythmButton from '../../components/RhythmButton';
+import useTcpServer from '../../hooks/useTcpServer';
+import { useTcpServerContext } from '../../context/TcpServerContext';
 
 const InstructorLiveSessionScreen = ({ goBack }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const [values, setValues] = useState({});
+  const { students, readableId } = useTcpServerContext();
 
   const flowControlData = [
     { label: 'Start Simulation', icon: Play },
@@ -52,11 +55,16 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
       <View style={styles.section}>
         <View style={styles.sectionTitle}>
           <Text style={styles.mainTitle}>Student's Response</Text>
-          <Text style={styles.student}>Connected to Student #</Text>
+          <Text style={styles.student}>
+            Connected Students: {students.length}
+          </Text>
         </View>
-        <View style={styles.responseBox}>
-          <Text style={styles.response}>Student # Response</Text>
-        </View>
+
+        {students.map(s => (
+          <View key={s.id} style={styles.responseBox}>
+            <Text style={styles.response}>{s.name || s.id} Response</Text>
+          </View>
+        ))}
       </View>
       <View style={styles.section}>
         <View style={styles.sectionTitle}>
