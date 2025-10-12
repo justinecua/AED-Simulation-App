@@ -10,7 +10,7 @@ const normalize = size => Math.round(size * scale);
 const vnormalize = size => Math.round(size * vscale);
 
 // Circle size
-const circleSize = width * 0.15;
+const circleSize = width * 0.13;
 
 const styles = StyleSheet.create({
   scrollContainer: {
