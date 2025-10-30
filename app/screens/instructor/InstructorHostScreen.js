@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { Users } from 'lucide-react-native';
 import styles from '../../styles/connectToInstructorStyles';
@@ -10,37 +10,50 @@ import { useTcpServerContext } from '../../context/TcpServerContext';
 
 const InstructorHostScreen = ({ goBack, goLiveSession }) => {
   const {
-    isHosting,
-    hostIp,
-    students,
-    isSearching,
-    startHosting,
-    stopHosting,
-    dialogVisible,
-    readableId,
-    handleContinue,
-    status,
+    isServer,
+    setIsServer,
+    ipAddress,
+    connectionStatus,
+    message,
+    inputMsg,
+    setInputMsg,
+    sendMessage,
   } = useTcpServerContext();
 
-  const toggleHosting = () => (isHosting ? stopHosting() : startHosting());
+  const [students, setStudents] = useState([]);
+  useEffect(() => {
+    setIsServer(true);
+  }, []);
+
+  useEffect(() => {
+    if (connectionStatus === 'Connected') {
+      setStudents([{ id: '1', name: 'Student', address: ipAddress }]);
+    } else if (
+      connectionStatus === 'Disconnected' ||
+      connectionStatus === 'Not hosting'
+    ) {
+      setStudents([]);
+    }
+  }, [connectionStatus]);
+  const toggleHosting = () => setIsServer(!isServer);
 
   return (
     <>
       <ScrollView>
         <View style={styles.container}>
           <HeaderBar goBack={goBack} />
+
           <BluetoothRadar
-            isSearching={isSearching}
+            isSearching={isServer}
             onToggleSearch={toggleHosting}
           />
 
           <Text style={styles.Text}>
-            {isHosting
-              ? `Hosting on ${hostIp}`
+            {isServer
+              ? `Hosting on ${ipAddress}:5000`
               : 'Press Wi-Fi to start a session.'}
           </Text>
 
-          {/* Students */}
           {students.length > 0 ? (
             <>
               <Text style={styles.studentCount}>
@@ -61,26 +74,28 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
             <View style={styles.noResultContainer}>
               <Users color="#94A3B8" size={25} />
               <Text style={styles.noResultTitle}>
-                {isHosting ? 'Waiting for Students…' : 'Session Not Active'}
+                {isServer ? 'Waiting for Students…' : 'Session Not Active'}
               </Text>
               <Text style={styles.noResultText}>
-                {isHosting
+                {isServer
                   ? 'Share this IP with students to join.'
                   : 'Enable hotspot or ensure same Wi-Fi before starting.'}
               </Text>
             </View>
           )}
+
+          {message !== '' && (
+            <Text style={{ color: '#475569', marginTop: 10 }}>{message}</Text>
+          )}
         </View>
       </ScrollView>
+
       <ConnectionDialog
-        visible={dialogVisible}
+        visible={connectionStatus === 'Connected'}
         role="instructor"
-        id={readableId}
-        status={status}
-        onContinue={() => {
-          handleContinue();
-          goLiveSession?.();
-        }}
+        id={ipAddress}
+        status={connectionStatus}
+        onContinue={() => goLiveSession?.()}
       />
     </>
   );

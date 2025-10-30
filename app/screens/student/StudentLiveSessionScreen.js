@@ -1,13 +1,5 @@
-// screens/student/StudentLiveSessionScreen.js
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import style from '../../styles/InstructorTestScenarioStyle';
 import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
@@ -17,10 +9,9 @@ import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
 import { useAEDContext } from '../../context/AEDContext';
-import ModeControls from '../../components/ModeControl';
 import ToneDisplay from '../../components/ToneDisplay';
 import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
-import useTcpClient from '../../hooks/useTcpClient';
+import { useTcpServerContext } from '../../context/TcpServerContext';
 
 const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
   const {
@@ -37,7 +28,6 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     powerOffAED,
     startAED,
     pauseAED,
-    stopAED,
     nextStep,
     timer,
     handleAction,
@@ -49,39 +39,36 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     setPlacedPads,
   } = useAEDContext();
 
-  const { socket, readableId } = useTcpClient();
-  const [messages, setMessages] = useState([]);
+  const { sendMessage, connectionStatus, message } = useTcpServerContext();
   const [input, setInput] = useState('');
 
-  // ✅ receive instructor messages
   useEffect(() => {
-    if (!socket) return;
-    const onData = data => {
-      try {
-        const msg = JSON.parse(data.toString());
-        if (msg.type === 'chat' && msg.from === 'instructor') {
-          setMessages(prev => [
-            ...prev,
-            { from: 'instructor', text: msg.text },
-          ]);
-        }
-      } catch {}
-    };
-    socket.on('data', onData);
-    return () => socket.off?.('data', onData);
-  }, [socket]);
+    console.log('📩 Incoming message:', message);
 
-  // ✅ send student message
-  const sendMessage = () => {
-    if (!input.trim() || !socket) return;
-    const payload = {
-      type: 'chat',
-      from: 'student',
-      id: readableId,
-      text: input.trim(),
-    };
-    socket.write(JSON.stringify(payload));
-    setMessages(prev => [...prev, { from: 'student', text: input.trim() }]);
+    if (message.startsWith('SET_RHYTHM:')) {
+      const rhythm = message.split(':')[1];
+      console.log('🫀 Set rhythm to:', rhythm);
+      setCurrentRhythm({ name: rhythm, bpm: heartRhythms[rhythm].bpm });
+      return;
+    }
+
+    switch (message) {
+      case 'START_SIMULATION':
+        startAED();
+        break;
+      case 'STOP_SIMULATION':
+        powerOffAED();
+        break;
+      case 'PAUSE_SIMULATION':
+        pauseAED();
+        break;
+    }
+  }, [message]);
+
+  //  Send message to instructor
+  const sendStudentMessage = () => {
+    if (!input.trim()) return;
+    sendMessage(input.trim());
     setInput('');
   };
 
@@ -187,9 +174,11 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                 onPowerPress={() => {
                   if (!poweredOn) {
                     powerOnAED();
+                    startAED();
                     if (expectedAction === 'power') nextStep();
                   } else {
                     powerOffAED();
+                    pauseAED();
                     setIsSwitchOpen(false);
                     setPositions({
                       'Pad 1': { x: 15, y: 10 },
@@ -206,6 +195,11 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
             </View>
           </View>
         </View>
+        {/* Connection Status */}
+        <Text style={{ color: '#475569', marginVertical: 6 }}>
+          {connectionStatus}
+        </Text>
+        <Text style={{ color: '#64748b' }}>Last message: {message}</Text>
       </View>
 
       {/* Tone + Chat */}

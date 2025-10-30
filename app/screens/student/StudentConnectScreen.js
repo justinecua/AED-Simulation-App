@@ -11,27 +11,25 @@ import styles from '../../styles/connectToInstructorStyles';
 import HeaderBar from '../../components/ConnectToInstructor/HeaderBar';
 import BluetoothRadar from '../../components/ConnectToInstructor/BluetoothRadar';
 import InstructorCard from '../../components/ConnectToInstructor/InstructorCard';
-import useTcpClient from '../../hooks/useTcpClient';
 import ConnectionDialog from '../../components/ConnectionDialog';
+import { useTcpServerContext } from '../../context/TcpServerContext';
 
 const StudentConnectScreen = ({ goBack, goLiveSession }) => {
   const {
-    status,
-    targetIp,
-    setTargetIp,
-    instructors,
-    isSearching,
-    connectTo,
-    handleToggleSearch,
-    dialogVisible,
-    readableId,
-    handleContinue,
-  } = useTcpClient({
-    onConnected: () => goLiveSession(),
-  });
+    connectionStatus,
+    ipServer,
+    setIpServer,
+    scanForHosts,
+    availableHosts,
+    sendMessage,
+  } = useTcpServerContext();
 
-  const handleConnect = ip => connectTo(ip || targetIp);
-  const noResults = !isSearching && instructors.length === 0;
+  const handleConnect = ip => {
+    setIpServer(ip);
+    sendMessage('HELLO_STUDENT'); // send handshake keyword
+  };
+
+  const noResults = availableHosts.length === 0;
 
   return (
     <>
@@ -39,43 +37,37 @@ const StudentConnectScreen = ({ goBack, goLiveSession }) => {
         <View style={styles.container}>
           <HeaderBar goBack={goBack} />
 
-          <BluetoothRadar
-            isSearching={isSearching}
-            onToggleSearch={handleToggleSearch}
-          />
+          <BluetoothRadar isSearching={false} onToggleSearch={scanForHosts} />
 
           <Text style={styles.Text}>
-            {isSearching
-              ? 'Searching for available sessions…'
+            {connectionStatus.includes('Connected')
+              ? 'Connected to Instructor.'
               : 'Press Wi-Fi to search or enter IP below.'}
           </Text>
 
-          {/* Instructors */}
-          {instructors.length > 0 && (
+          {availableHosts.length > 0 ? (
             <>
               <Text style={styles.studentCount}>
-                {instructors.length} Instructor
-                {instructors.length > 1 ? 's' : ''} Available
+                {availableHosts.length} Instructor
+                {availableHosts.length > 1 ? 's' : ''} Available
               </Text>
+
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 style={styles.studentCarousel}
               >
-                {instructors.map(ins => (
+                {availableHosts.map((ins, index) => (
                   <InstructorCard
-                    key={ins.id}
-                    name={ins.name}
-                    id={ins.id}
-                    onConnect={() => handleConnect(ins.address)}
+                    key={index}
+                    name={`Instructor`}
+                    id={ins.ip}
+                    onConnect={() => handleConnect(ins.ip)}
                   />
                 ))}
               </ScrollView>
             </>
-          )}
-
-          {/* Empty state + Manual connect */}
-          {noResults && (
+          ) : (
             <View style={styles.noResultContainer}>
               <Users color="#94A3B8" size={25} />
               <Text style={styles.noResultTitle}>No Active Sessions</Text>
@@ -84,29 +76,29 @@ const StudentConnectScreen = ({ goBack, goLiveSession }) => {
               </Text>
 
               <TextInput
-                placeholder="e.g. 192.168.1.23"
-                value={targetIp}
-                onChangeText={setTargetIp}
+                placeholder="e.g. 10.0.2.2"
+                value={ipServer}
+                onChangeText={setIpServer}
                 style={styles.ipConnectInput}
               />
+
               <TouchableOpacity
-                onPress={() => handleConnect(targetIp)}
+                onPress={() => handleConnect(ipServer)}
                 style={styles.ipConnectButton}
               >
                 <Text style={styles.ipConnectButtonText}>Join Session</Text>
               </TouchableOpacity>
-              {/* <Text style={{ color: '#64748b', paddingTop: 4 }}>{status}</Text> */}
             </View>
           )}
         </View>
       </ScrollView>
 
       <ConnectionDialog
-        visible={dialogVisible}
+        visible={connectionStatus.includes('Connected')}
         role="student"
-        id={readableId}
-        status={status}
-        onContinue={handleContinue}
+        id={ipServer}
+        status={connectionStatus}
+        onContinue={goLiveSession}
       />
     </>
   );

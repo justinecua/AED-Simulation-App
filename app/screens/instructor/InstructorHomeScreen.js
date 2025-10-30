@@ -73,7 +73,7 @@ const InstructorHomeScreen = ({
                 <View style={styles.modeIcon}>
                   <Wifi color="white" size={23} />
                 </View>
-                <Text style={styles.modeTitle}>Connect to Student</Text>
+                <Text style={styles.modeTitle}>Connect Device</Text>
                 <Text style={styles.modeDescription}>
                   Scan and connect to a nearby student device
                 </Text>
