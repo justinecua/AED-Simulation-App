@@ -12,7 +12,7 @@ const SessionFlowControl = ({ label, Icon }) => (
         size={Dimensions.get('window').width * 0.05}
       />
     </View>
-    <Text style={styles.controlLabel}>{label}</Text>
+    <Text style={[styles.controlLabel, { fontSize: 8 }]}>{label}</Text>
   </TouchableOpacity>
 );
 

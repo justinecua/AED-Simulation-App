@@ -4,15 +4,15 @@ import { TouchableOpacity, View, Text, Dimensions } from 'react-native';
 import Colors from '../constants/colors';
 import styles from '../styles/InstructorLiveSessionScreenStyle';
 
-const RhythmButton = ({ label, Icon }) => (
-  <TouchableOpacity style={styles.rhythmBox}>
+const RhythmButton = ({ label, Icon, fontSize, onPress }) => (
+  <TouchableOpacity style={styles.rhythmBox} onPress={onPress}>
     <View style={styles.controlIcon}>
       <Icon
         color={Colors.subText}
         size={Dimensions.get('window').width * 0.05}
       />
     </View>
-    <Text style={styles.controlLabel}>{label}</Text>
+    <Text style={[styles.controlLabel, { fontSize }]}>{label}</Text>
   </TouchableOpacity>
 );
 
