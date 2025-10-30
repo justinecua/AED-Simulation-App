@@ -7,6 +7,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     gap: 20,
+    backgroundColor: '#fff',
+    flex: 1,
   },
 
   contentContainer: {
@@ -16,13 +18,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: 10,
     gap: 35,
+    marginTop: -20,
+    position: 'relative',
+    flex: 1,
   },
 
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 10,
   },
 
   descriptionBox: {
@@ -48,7 +52,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     gap: 20,
-    marginBottom: 10,
+    marginBottom: 30,
+    marginTop: -15,
   },
 
   instructionBox: {
@@ -58,8 +63,8 @@ const styles = StyleSheet.create({
   },
 
   instruction: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 10,
+    fontFamily: 'Roboto-Bold',
+    fontSize: 12,
     color: Colors.text,
   },
 
@@ -70,37 +75,17 @@ const styles = StyleSheet.create({
 
   bodyImage: {
     width: 430,
-    height: 470,
+    height: 400,
     resizeMode: 'contain',
   },
 
   padsContainer: {
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 20,
-  },
-
-  verticalPad: {
-    backgroundColor: Colors.heartRateBackground,
-    paddingVertical: 23,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-
-  horizontalPad: {
-    backgroundColor: Colors.heartRateBackground,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-
-  pad: {
-    fontFamily: 'Poppins-Regular',
-    color: '#fff',
-    fontSize: 8,
   },
 
   alertBox: {
@@ -123,6 +108,66 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: 12,
     color: Colors.text,
+  },
+
+  aedPad: {
+    width: 60,
+    height: 65,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: Colors.primary,
+  },
+
+  padUpperRight: {
+    width: 50,
+    height: 60,
+    backgroundColor: '#fff',
+    borderColor: Colors.primary,
+  },
+
+  padLowerLeft: {
+    width: 65,
+    height: 45,
+    backgroundColor: '#fff',
+    borderColor: Colors.primary,
+  },
+
+  padCorrect: {
+    borderColor: '#4CAF50',
+    shadowColor: '#4CAF50',
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 6,
+  },
+
+  padInner: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  padLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.text,
+    marginBottom: 4,
+  },
+
+  padConnector: {
+    width: 15,
+    height: 3,
+    backgroundColor: '#666',
+    borderRadius: 2,
+  },
+
+  padGuide: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
   },
 });
 

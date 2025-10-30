@@ -19,7 +19,6 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
-    marginTop: 20,
   },
   boxIcon: {
     width: 40,
@@ -44,7 +43,7 @@ const style = StyleSheet.create({
   headerText: {
     color: Colors.rhythmBackground,
     backgroundColor: '#F4F6FA',
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: 'bold',
     paddingHorizontal: 12,
     paddingVertical: 9,

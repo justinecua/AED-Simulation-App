@@ -13,6 +13,7 @@ const AEDWaveform = ({
   strokeColors,
   expectedAction,
   steps,
+  displayText,
 }) => {
   function getSmoothPath(points) {
     if (points.length < 2) return '';
@@ -31,7 +32,12 @@ const AEDWaveform = ({
 
   const currentStep = steps[stepIndex];
   const isShowingWaveform =
-    started && currentStep?.action === 'show' && currentRhythm;
+    started &&
+    currentRhythm &&
+    (currentStep?.action === 'show' ||
+      steps[stepIndex - 1]?.action === 'analyze' ||
+      (stepIndex > 0 &&
+        steps.some((s, i) => i < stepIndex && s.action === 'analyze')));
 
   return (
     <View style={aedStyle.aedScreenContainer}>
@@ -50,7 +56,12 @@ const AEDWaveform = ({
         >
           {/* AED OFF */}
           {!started && (
-            <Text style={{ color: 'rgba(211, 214, 241, 1)', fontSize: 13 }}>
+            <Text
+              style={{
+                color: 'rgba(211, 214, 241, 1)',
+                fontSize: 13,
+              }}
+            >
               AED OFF
             </Text>
           )}
@@ -89,9 +100,11 @@ const AEDWaveform = ({
             </Svg>
           )}
 
-          <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
-            {currentStep?.text}
-          </Text>
+          {displayText && (
+            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
+              {displayText}
+            </Text>
+          )}
           {/* Debug: Show current action */}
           {/* {__DEV__ && started && (
             <Text style={{ color: '#f4f9f4ff', fontSize: 12 }}>
