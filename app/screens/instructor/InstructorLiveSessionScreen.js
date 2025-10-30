@@ -1,133 +1,155 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {
   Play,
   Square,
   Pause,
-  Hand,
-  Zap,
   Activity,
+  Settings,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react-native';
 
 import styles from '../../styles/InstructorLiveSessionScreenStyle';
 import Header from '../../components/Header';
-import SessionFlowControl from '../../components/SessionFlowControl';
-import RhythmButton from '../../components/RhythmButton';
-import useTcpServer from '../../hooks/useTcpServer';
 import { useTcpServerContext } from '../../context/TcpServerContext';
+import aedSequences from '../../data/aedSequences';
 
 const InstructorLiveSessionScreen = ({ goBack }) => {
   const [openIndex, setOpenIndex] = useState(null);
   const [values, setValues] = useState({});
-  const { students, readableId } = useTcpServerContext();
+  const [controlMode, setControlMode] = useState(true);
+  const [selectedRhythm, setSelectedRhythm] = useState('Sinus');
+
+  const { connectionStatus, message, sendMessage, setIsServer } =
+    useTcpServerContext();
+
+  useEffect(() => {
+    setIsServer(true);
+  }, []);
 
   const flowControlData = [
-    { label: 'Start Simulation', icon: Play },
-    { label: 'Stop Simulation', icon: Square },
-    { label: 'Pause Simulation', icon: Pause },
-    { label: 'Pads Advised', icon: Hand },
-    { label: 'Shock Advised', icon: Zap },
-    { label: 'No Shock Advised', icon: Zap },
+    { label: 'Start Simulation', send: 'START_SIMULATION', icon: Play },
+    { label: 'Stop Simulation', send: 'STOP_SIMULATION', icon: Square },
+    { label: 'Pause Simulation', send: 'PAUSE_SIMULATION', icon: Pause },
   ];
 
-  const rhythmControlData = [
-    { label: 'Normal Sinus', icon: Activity },
-    { label: 'Ventricular Fibrillation', icon: Activity },
-    { label: 'Rhythm 3', icon: Activity },
-    { label: 'Rhythm 4', icon: Activity },
-  ];
+  const rhythms = ['Sinus', 'VFib', 'VTach', 'Asystole'];
 
-  const prompts = [
-    'Initial Response',
-    'Pad Application',
-    'Analysis',
-    'Shock Delivery',
-    'CPR Guidance',
-  ];
+  const handleControlMode = () => {
+    const mode = !controlMode;
+    setControlMode(mode);
+    sendMessage(mode ? 'CONTROL_MODE_ON' : 'CONTROL_MODE_OFF');
+  };
+
+  const handleRhythmSelect = rhythm => {
+    setSelectedRhythm(rhythm);
+    sendMessage(`SET_RHYTHM:${rhythm}`);
+  };
+
+  const handlePlayStep = (rhythm, stepIndex) => {
+    const step = aedSequences[rhythm][stepIndex];
+    if (step) {
+      sendMessage(`PLAY_STEP:${rhythm}:${stepIndex}`);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Header role="instructor" goBack={goBack} />
 
+      {/* Connection */}
       <View style={styles.section}>
-        <View style={styles.sectionTitle}>
-          <Text style={styles.mainTitle}>Student's Response</Text>
-          <Text style={styles.student}>
-            Connected Students: {students.length}
-          </Text>
-        </View>
+        <Text style={styles.mainTitle}>Student Connection:</Text>
+        <Text style={{ color: '#475569' }}>{connectionStatus}</Text>
+        <Text style={{ color: '#64748b' }}>Last message: {message}</Text>
+      </View>
 
-        {students.map(s => (
-          <View key={s.id} style={styles.responseBox}>
-            <Text style={styles.response}>{s.name || s.id} Response</Text>
-          </View>
+      {/* Control Mode */}
+      <View style={styles.section}>
+        <TouchableOpacity
+          onPress={handleControlMode}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: controlMode ? '#10B981' : '#F59E0B',
+            padding: 10,
+            borderRadius: 8,
+          }}
+        >
+          <Settings size={20} color="#fff" />
+          <Text style={{ color: '#fff', marginLeft: 8 }}>
+            {controlMode ? 'Instructor-Controlled' : 'Auto Mode'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Flow Controls */}
+      <View style={styles.section}>
+        <Text style={styles.mainTitle}>Simulation Controls:</Text>
+        <View style={{ flexWrap: 'wrap', flexDirection: 'row', gap: 10 }}>
+          {flowControlData.map((item, i) => (
+            <TouchableOpacity
+              key={i}
+              onPress={() => sendMessage(item.send)}
+              style={{
+                backgroundColor: '#2563EB',
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 10,
+                borderRadius: 8,
+              }}
+            >
+              <item.icon size={20} color="#fff" />
+              <Text style={{ color: '#fff', marginLeft: 8 }}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Rhythm Selection */}
+      <View style={styles.section}>
+        <Text style={styles.mainTitle}>Rhythms:</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+          {rhythms.map(r => (
+            <TouchableOpacity
+              key={r}
+              onPress={() => handleRhythmSelect(r)}
+              style={{
+                backgroundColor: selectedRhythm === r ? '#10B981' : '#475569',
+                padding: 10,
+                borderRadius: 8,
+              }}
+            >
+              <Text style={{ color: '#fff' }}>{r}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* AED Step Prompts */}
+      <View style={styles.section}>
+        <Text style={styles.mainTitle}>
+          {selectedRhythm} Steps ({aedSequences[selectedRhythm].length})
+        </Text>
+        {aedSequences[selectedRhythm].map((s, i) => (
+          <TouchableOpacity
+            key={i}
+            onPress={() => handlePlayStep(selectedRhythm, i)}
+            style={{
+              backgroundColor: '#6366F1',
+              marginVertical: 4,
+              padding: 10,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ color: '#fff', fontWeight: '500' }}>
+              {i + 1}. {s.text}
+            </Text>
+            <Text style={{ color: '#cbd5e1', fontSize: 12 }}>🎧 {s.audio}</Text>
+          </TouchableOpacity>
         ))}
-      </View>
-      <View style={styles.section}>
-        <View style={styles.sectionTitle}>
-          <Text style={styles.mainTitle}>Session Flow Controls:</Text>
-        </View>
-        <View style={styles.sessionFlowControls}>
-          <View style={styles.controlRow}>
-            {/* Map for flow control buttons */}
-            {flowControlData.map((item, index) => (
-              <SessionFlowControl
-                key={index}
-                label={item.label}
-                Icon={item.icon}
-              />
-            ))}
-          </View>
-        </View>
-      </View>
-      <View style={styles.section}>
-        <View style={styles.sectionTitle}>
-          <Text style={styles.mainTitle}>Rhythms:</Text>
-        </View>
-        <View style={styles.rhythmContainer}>
-          {/* Map for rhythm control buttons */}
-          {rhythmControlData.map((item, index) => (
-            <RhythmButton key={index} label={item.label} Icon={item.icon} />
-          ))}
-        </View>
-      </View>
-      <View style={styles.section}>
-        <View style={styles.sectionTitle}>
-          <Text style={styles.mainTitle}>Audio Prompts:</Text>
-        </View>
-        <View style={styles.promptContainer}>
-          {prompts.map((label, index) => (
-            <View key={label} style={styles.dropdownContainer}>
-              <DropDownPicker
-                open={openIndex === index}
-                value={values[index]}
-                items={[
-                  { label: `${label} Prompt 1`, value: '1' },
-                  { label: `${label} Prompt 2`, value: '2' },
-                ]}
-                setOpen={() => setOpenIndex(index === openIndex ? null : index)}
-                setValue={val => setValues(prev => ({ ...prev, [index]: val }))}
-                setItems={() => {}}
-                placeholder={label}
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownMenu}
-                textStyle={styles.dropdownText}
-                ArrowDownIconComponent={() => (
-                  <ChevronDown size={20} color="#fff" />
-                )}
-                ArrowUpIconComponent={() => (
-                  <ChevronUp size={20} color="#fff" />
-                )}
-                zIndex={5000 - index}
-                zIndexInverse={1000 + index}
-                dropDownDirection="BOTTOM"
-              />
-            </View>
-          ))}
-        </View>
       </View>
     </ScrollView>
   );

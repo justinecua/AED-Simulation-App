@@ -89,11 +89,14 @@ export default function useAEDSequence() {
     setSteps([]);
     setStepIndex(0);
     setExpectedAction(null);
+
     if (autoTimerRef.current) clearTimeout(autoTimerRef.current);
     autoTimerRef.current = null;
+
     if (soundRef.current) {
-      soundRef.current.stop(() => soundRef.current.release());
+      const s = soundRef.current;
       soundRef.current = null;
+      s.stop(() => s.release());
     }
   };
 

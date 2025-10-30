@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     padding: 15,
     gap: 20,
     paddingBottom: 80,
-    backgroundColor: Colors.background,
+    backgroundColor: '#ffffff',
   },
 
   section: {
