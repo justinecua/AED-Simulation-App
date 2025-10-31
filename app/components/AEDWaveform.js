@@ -8,6 +8,7 @@ const HEIGHT = 150;
 const AEDWaveform = ({
   stepIndex,
   started,
+  paused,
   currentRhythm,
   waveform,
   strokeColors,
