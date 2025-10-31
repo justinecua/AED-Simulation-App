@@ -3,24 +3,29 @@ import { View, StyleSheet, Text } from 'react-native';
 import Colors from '../constants/colors';
 import { AlertTriangle, Info } from 'lucide-react-native';
 
-const ShockDisplay = () => {
+const ShockDisplay = ({ displayTop, shockText }) => {
   return (
-    <View style={style.alert}>
+    <View style={[style.alert, displayTop ? style.top : style.bottom]}>
       <View style={style.alertIcon}>
         <View style={style.boxAlert}>
           <AlertTriangle color="white" size={16} />
         </View>
-        <Text style={style.alertText}>Shocked Advised</Text>
+        <Text style={style.alertText}>{shockText}</Text>
       </View>
     </View>
   );
 };
 
 const style = StyleSheet.create({
+  top: {
+    top: 80,
+  },
+  bottom: {
+    bottom: 30,
+  },
   alert: {
     flexDirection: 'row',
     position: 'absolute',
-    bottom: 30,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

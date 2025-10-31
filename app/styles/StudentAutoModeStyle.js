@@ -19,7 +19,12 @@ const style2 = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-
+  studentWrapper2Sub: {
+    height: '100%',
+  },
+  studentWrapper2SubRight: {
+    flexDirection: 'row',
+  },
   studentSubWrapper: {
     flexDirection: 'row',
     gap: 12,
@@ -32,6 +37,25 @@ const style2 = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 20,
     backgroundColor: '#ffff',
+  },
+
+  handButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    backgroundColor: '#ffff',
+  },
+
+  padPackageButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    backgroundColor: Colors.button,
+    marginLeft: 10,
   },
 });
 
