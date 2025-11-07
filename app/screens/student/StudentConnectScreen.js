@@ -26,7 +26,7 @@ const StudentConnectScreen = ({ goBack, goLiveSession }) => {
 
   const handleConnect = ip => {
     setIpServer(ip);
-    sendMessage('HELLO_STUDENT'); // send handshake keyword
+    sendMessage('HELLO_STUDENT');
   };
 
   const noResults = availableHosts.length === 0;

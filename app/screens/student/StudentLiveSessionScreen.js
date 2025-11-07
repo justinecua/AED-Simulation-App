@@ -8,62 +8,47 @@ import Header from '../../components/Header';
 import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
-import { useAEDContext } from '../../context/AEDContext';
 import ToneDisplay from '../../components/ToneDisplay';
 import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 import { useTcpServerContext } from '../../context/TcpServerContext';
+import useLiveAEDClient from '../../hooks/useLiveAEDClient';
+import SessionFlowControl from '../../components/SessionFlowControl';
 
 const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
   const {
-    poweredOn,
-    started,
-    paused,
     currentRhythm,
-    waveform,
-    strokeColors,
     steps,
     stepIndex,
+    isPlaying,
+    strokeColors,
+    timer,
+    started,
+    poweredOn,
+    paused,
+    instructorStarted,
+    waveform,
     expectedAction,
-    powerOnAED,
-    powerOffAED,
+    handleAction,
     startAED,
     pauseAED,
+    powerOnAED,
+    powerOffAED,
     nextStep,
-    timer,
-    handleAction,
-    isSwitchOpen,
     setIsSwitchOpen,
-    positions,
     setPositions,
-    placedPads,
     setPlacedPads,
-  } = useAEDContext();
+    displayMessage,
+  } = useLiveAEDClient();
 
   const { sendMessage, connectionStatus, message } = useTcpServerContext();
   const [input, setInput] = useState('');
 
-  useEffect(() => {
-    console.log('📩 Incoming message:', message);
-
-    if (message.startsWith('SET_RHYTHM:')) {
-      const rhythm = message.split(':')[1];
-      console.log('🫀 Set rhythm to:', rhythm);
-      setCurrentRhythm({ name: rhythm, bpm: heartRhythms[rhythm].bpm });
-      return;
-    }
-
-    switch (message) {
-      case 'START_SIMULATION':
-        startAED();
-        break;
-      case 'STOP_SIMULATION':
-        powerOffAED();
-        break;
-      case 'PAUSE_SIMULATION':
-        pauseAED();
-        break;
-    }
-  }, [message]);
+  // Unified display text: show first step while OFF, current step after ON
+  const uiStepText = (() => {
+    if (!instructorStarted || steps.length === 0) return '';
+    if (!poweredOn) return steps[0]?.text || '';
+    return steps[stepIndex]?.text || '';
+  })();
 
   //  Send message to instructor
   const sendStudentMessage = () => {
@@ -80,9 +65,17 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
         <View style={style.content}>
           {/* Header Row */}
           <View style={style2.studentWrapper}>
-            <View style={style2.studentSubWrapper}>
+            <View className={style2.studentSubWrapper}>
               <TouchableOpacity style={style.contentText}>
-                <Text>Live Session</Text>
+                <Text
+                  style={{
+                    fontSize: 13,
+                    flexShrink: 1,
+                    textAlign: 'right',
+                  }}
+                >
+                  Live Session: {connectionStatus}
+                </Text>
               </TouchableOpacity>
             </View>
             <View style={style2.studentSubWrapper}>
@@ -101,9 +94,6 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                 </Text>
               </View>
 
-              <TouchableOpacity style={style2.wifiButton}>
-                <Wifi color={Colors.text} size={22} />
-              </TouchableOpacity>
               <TouchableOpacity style={style2.wifiButton}>
                 <Info color={Colors.text} size={22} />
               </TouchableOpacity>
@@ -158,27 +148,36 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
               <AEDWaveform
                 started={started}
                 currentRhythm={currentRhythm}
-                waveform={waveform}
+                waveform={currentRhythm?.waveform ?? []}
                 strokeColors={strokeColors}
                 steps={steps}
                 stepIndex={stepIndex}
                 expectedAction={expectedAction}
-                displayText={
-                  steps.some((s, i) => i <= stepIndex && s.action === 'analyze')
-                    ? ''
-                    : steps[stepIndex]?.text ?? ''
-                }
+                // Single source of truth for displayed step text
+                displayText={uiStepText}
               />
               <AEDControls
                 started={poweredOn}
                 onPowerPress={() => {
                   if (!poweredOn) {
-                    powerOnAED();
-                    startAED();
-                    if (expectedAction === 'power') nextStep();
+                    if (instructorStarted) {
+                      powerOnAED();
+                      startAED();
+                      sendMessage('Student powered on the AED');
+
+                      // Always skip step 0 after powering ON
+                      if (steps.length > 1) {
+                        nextStep();
+                      }
+                    } else {
+                      sendMessage(
+                        'Instructor has not started the simulation yet',
+                      );
+                    }
                   } else {
                     powerOffAED();
                     pauseAED();
+                    sendMessage('Student turned off the AED');
                     setIsSwitchOpen(false);
                     setPositions({
                       'Pad 1': { x: 15, y: 10 },
@@ -195,18 +194,63 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
             </View>
           </View>
         </View>
+
         {/* Connection Status */}
-        <Text style={{ color: '#475569', marginVertical: 6 }}>
-          {connectionStatus}
-        </Text>
-        <Text style={{ color: '#64748b' }}>Last message: {message}</Text>
+        <View
+          style={{
+            backgroundColor: '#f8fafc',
+            borderRadius: 12,
+            padding: 10,
+            marginVertical: 10,
+            marginHorizontal: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            shadowColor: '#959595ff',
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+            elevation: 2,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              padding: 5,
+            }}
+          >
+            <Wifi
+              color={
+                connectionStatus?.toLowerCase().includes('connected')
+                  ? '#22c55e'
+                  : connectionStatus?.toLowerCase().includes('connecting')
+                  ? '#eab308'
+                  : '#ef4444'
+              }
+              size={22}
+            />
+            <Text
+              style={{
+                marginLeft: 10,
+                color: '#64748b',
+                fontSize: 12.5,
+                flexShrink: 1,
+                textAlign: 'right',
+                fontWeight: '900',
+              }}
+            >
+              {displayMessage}
+            </Text>
+          </View>
+        </View>
       </View>
 
       {/* Tone + Chat */}
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        {started && steps.length > 0 && (
-          <ToneDisplay text={steps[stepIndex]?.text} />
-        )}
+        {started && steps.length > 0 && <ToneDisplay text={uiStepText} />}
       </View>
     </View>
   );

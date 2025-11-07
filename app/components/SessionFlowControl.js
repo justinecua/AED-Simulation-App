@@ -1,18 +1,19 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, Dimensions } from 'react-native';
-
 import Colors from '../constants/colors';
 import styles from '../styles/InstructorLiveSessionScreenStyle';
 
-const SessionFlowControl = ({ label, Icon }) => (
-  <TouchableOpacity style={styles.controlBox}>
+const SessionFlowControl = ({ label, Icon, onPress }) => (
+  <TouchableOpacity style={styles.controlBox} onPress={onPress}>
     <View style={styles.controlIcon}>
       <Icon
         color={Colors.subText}
         size={Dimensions.get('window').width * 0.05}
       />
     </View>
-    <Text style={[styles.controlLabel, { fontSize: 8 }]}>{label}</Text>
+    <Text style={[styles.controlLabel, { fontSize: 13, marginTop: 6 }]}>
+      {label}
+    </Text>
   </TouchableOpacity>
 );
 

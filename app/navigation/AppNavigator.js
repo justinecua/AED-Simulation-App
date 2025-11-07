@@ -13,6 +13,9 @@ import InstructorHostScreen from '../screens/instructor/InstructorHostScreen';
 import InstructorScenarioBuilder from '../screens/instructor/InstructorScenarioBuilder';
 import StudentLiveSessionScreen from '../screens/student/StudentLiveSessionScreen';
 import { TcpServerProvider } from '../context/TcpServerContext';
+import { LiveInstructorProvider } from '../context/LiveInstructorContext';
+import LivePadPlacementScreen from '../screens/student/LivePadPlacementScreen';
+import { LiveAEDClientProvider } from '../context/LiveAEDClientContext';
 
 export default function AppNavigator() {
   const [screen, setScreen] = useState('role');
@@ -119,18 +122,22 @@ export default function AppNavigator() {
           )}
 
           {screen === 'connectStudent' && (
-            <InstructorHostScreen
-              goHome={() => handleNavigation('role')}
-              goBack={() => handleNavigation('instructor')}
-              goLiveSession={() => handleNavigation('liveSession')}
-            />
+            <LiveInstructorProvider>
+              <InstructorHostScreen
+                goHome={() => handleNavigation('role')}
+                goBack={() => handleNavigation('instructor')}
+                goLiveSession={() => handleNavigation('liveSession')}
+              />
+            </LiveInstructorProvider>
           )}
 
           {screen === 'liveSession' && (
-            <InstructorLiveSessionScreen
-              goHome={() => handleNavigation('role')}
-              goBack={() => handleNavigation('connectStudent')}
-            />
+            <LiveInstructorProvider>
+              <InstructorLiveSessionScreen
+                goHome={() => handleNavigation('role')}
+                goBack={() => handleNavigation('connectStudent')}
+              />
+            </LiveInstructorProvider>
           )}
           {screen === 'scenarioBuilder' && (
             <AnimatedScreenTransition
@@ -143,16 +150,31 @@ export default function AppNavigator() {
               />
             </AnimatedScreenTransition>
           )}
-          {screen === 'studentLiveSession' && (
-            <AnimatedScreenTransition
-              direction={direction}
-              keyValue="studentLiveSession"
-            >
-              <StudentLiveSessionScreen
-                goHomeStudent={() => handleNavigation('student')}
-                goApplyPads={() => handleNavigation('applyPads')}
-              />
-            </AnimatedScreenTransition>
+          {(screen === 'studentLiveSession' || screen === 'livePads') && (
+            <LiveAEDClientProvider>
+              {screen === 'studentLiveSession' && (
+                <AnimatedScreenTransition
+                  direction={direction}
+                  keyValue="studentLiveSession"
+                >
+                  <StudentLiveSessionScreen
+                    goHomeStudent={() => handleNavigation('student')}
+                    goApplyPads={() => handleNavigation('livePads')}
+                  />
+                </AnimatedScreenTransition>
+              )}
+
+              {screen === 'livePads' && (
+                <AnimatedScreenTransition
+                  direction={direction}
+                  keyValue="livePads"
+                >
+                  <LivePadPlacementScreen
+                    goLiveSession={() => handleNavigation('studentLiveSession')}
+                  />
+                </AnimatedScreenTransition>
+              )}
+            </LiveAEDClientProvider>
           )}
         </AEDProvider>
       </TcpServerProvider>

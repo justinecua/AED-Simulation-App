@@ -71,46 +71,74 @@ export default function useTcpServerEmu() {
   }, [isServer]);
 
   const sendMessage = (text = '') => {
+    const msg = text.trim();
+    if (!msg) return;
+
     if (isServer) {
-      // Instructor
-      if (socketRef.current) {
-        socketRef.current.write(text || '');
-        setMessage(text.trim());
-      } else {
-        console.warn('No connected student');
+      // 🧠 Instructor (Server)
+      const socket = socketRef.current;
+      if (!socket) {
+        console.warn('⚠️ No connected student socket');
+        return;
+      }
+
+      // ✅ guard: only send if not destroyed
+      if (socket.destroyed) {
+        console.warn('⚠️ Tried to send on destroyed socket');
+        return;
+      }
+
+      try {
+        socket.write(msg);
+        setMessage(msg);
+      } catch (err) {
+        console.warn('⚠️ Failed to send message (server):', err.message);
       }
     } else {
-      // Student
-      if (!socketRef.current) {
+      // 🧠 Student (Client)
+      const socket = socketRef.current;
+
+      // if not yet connected, create connection
+      if (!socket) {
         const client = TcpSocket.createConnection(
           { port: PORT, host: ipServer },
           () => {
-            setConnectionStatus(' Connected to instructor');
-            if (text) client.write(text);
-            setMessage(text ? `You (Student): ${text}` : 'Connected!');
+            setConnectionStatus('Connected');
+            client.write(msg);
+            setMessage(`You (Student): ${msg}`);
           },
         );
 
         client.on('data', data => {
-          const msg = data.toString();
-          console.log('📩 Received from instructor:', msg);
-          setMessage(msg.trim());
+          const received = data.toString();
+          console.log('📩 Received from instructor:', received);
+          setMessage(received.trim());
         });
 
         client.on('error', err => {
-          console.warn('Client error:', err);
-          setConnectionStatus(' Connection failed');
+          console.warn('⚠️ Client error:', err.message);
+          setConnectionStatus('Connection failed');
         });
 
         client.on('close', () => {
+          console.log('🔌 Client socket closed');
           setConnectionStatus('Disconnected');
         });
 
         socketRef.current = client;
       } else {
-        // already connected
-        socketRef.current.write(text);
-        setMessage(text.trim()); // ✅ keep the raw text only
+        // ✅ guard: only send if still active
+        if (socket.destroyed) {
+          console.warn('⚠️ Tried to send on destroyed socket (client)');
+          return;
+        }
+
+        try {
+          socket.write(msg);
+          setMessage(`You (Student): ${msg}`);
+        } catch (err) {
+          console.warn('⚠️ Failed to send message (client):', err.message);
+        }
       }
     }
   };
