@@ -6,14 +6,14 @@ import aedStyle from '../styles/aedBoxStyle';
 const HEIGHT = 150;
 
 const AEDWaveform = ({
-  stepIndex,
+  stepIndex = 0,
   started,
   paused,
   currentRhythm,
   waveform,
   strokeColors,
   expectedAction,
-  steps,
+  steps = [],
   displayText,
 }) => {
   function getSmoothPath(points) {

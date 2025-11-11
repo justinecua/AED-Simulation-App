@@ -1,24 +1,46 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-
+import { View, Text, TouchableOpacity } from 'react-native';
 import style from '../../styles/InstructorTestScenarioStyle';
-import aedStyle from '../../styles/aedBoxStyle';
+import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
 
 import Header from '../../components/Header';
 import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
-import PlayButton from '../../components/PlayButton';
-import StopButton from '../../components/StopButton';
-import useAED from '../../hooks/useAED';
-import ToneDisplay from '../../components/ToneDisplay';
+import aedStyle from '../../styles/aedBoxStyle';
+import { useAEDContext } from '../../context/AEDContext';
 import ShockDisplay from '../../components/ShockDisplay';
+import ModeControls from '../../components/ModeControl';
+import ToneDisplay from '../../components/ToneDisplay';
+import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 
-import { Timer } from 'lucide-react-native';
-
-const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
-  const { started, currentRhythm, waveform, strokeColors, startAED, stopAED } =
-    useAED();
+const InstructorTestScenarioScreen = ({ goHome, goHomeInsctructor, goApplyPads, goScenarios }) => {
+  const {
+    poweredOn,
+    started,
+    paused,
+    currentRhythm,
+    waveform,
+    strokeColors,
+    steps,
+    stepIndex,
+    expectedAction,
+    powerOnAED,
+    powerOffAED,
+    startAED,
+    pauseAED,
+    resumeAED,
+    stopAED,
+    nextStep,
+    timer,
+    handleAction,
+    isSwitchOpen,
+    setIsSwitchOpen,
+    positions,
+    setPositions,
+    placedPads,
+    setPlacedPads,
+  } = useAEDContext();
 
   return (
     <View style={style.container}>
@@ -26,23 +48,77 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
 
       <View style={style.subContainer}>
         <View style={style.content}>
-          <View style={style.contentWrapper}>
-            <Text style={style.contentText}>Test Scenario Mode</Text>
-            <Text style={style.contentText}>Change Scenario</Text>
-          </View>
-
-          <View style={style.wrapperButton}>
-            <View style={style.timerIcon}>
-              <Timer color={Colors.text} size={25} />
-              <Text style={style.timerText}>1:58</Text>
+          <View style={style2.studentWrapper}>
+            <View style={style2.studentSubWrapper}>
+              <TouchableOpacity style={style.contentText}>
+                <Text>Test Scenario Mode</Text>
+              </TouchableOpacity>
             </View>
-            <View style={style.button}>
-              <PlayButton onPress={startAED} />
-              <StopButton onPress={stopAED} />
+            <View style={style2.studentSubWrapper}>
+              <TouchableOpacity onPress={goScenarios} style={style.contentText}>
+                <Text>Change Scenario</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
-          {/* <ToneDisplay /> */}
+
+
+          <View style={style2.studentWrapper2}>
+            <View style={style.wrapper2Sub}>
+              <TouchableOpacity style={style.timerBox}>
+                <Timer color={Colors.text} size={20} />
+                <Text style={style.timerText}>
+                  {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={style2.studentWrapper2SubRight}>
+              {/* Hand only shows if package is NOT open */}
+              {/* {steps[stepIndex]?.text !== 'Open pad package' &&
+                !isSwitchOpen && (
+                  <TouchableOpacity
+                    style={style2.handButton}
+                    onPress={() => {
+                      handleAction('remove');
+                      setIsSwitchOpen(true);
+                    }}
+                  >
+                    <Hand color={Colors.text} size={22} />
+                  </TouchableOpacity>
+                )} */}
+
+              <TouchableOpacity
+                style={[
+                  style2.handButton,
+                  steps[stepIndex]?.action !== 'remove' && { opacity: 0.5 },
+                ]}
+                disabled={steps[stepIndex]?.action !== 'remove'}
+                onPress={() => {
+                  handleAction('remove');
+                  setIsSwitchOpen(true);
+                }}
+              >
+                <Hand color={Colors.text} size={22} />
+              </TouchableOpacity>
+
+              {/* Pad package button shows if step says open OR already open */}
+              {steps[stepIndex]?.text === 'Open pad package' && (
+                <TouchableOpacity
+                  style={[style2.padPackageButton]}
+                  onPress={() => {
+                    handleAction('open');
+                    if (expectedAction === 'open') {
+                      setIsSwitchOpen(true);
+                      goApplyPads();
+                    }
+                  }}
+                >
+                  <ArrowRightLeft color="#fff" size={22} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
 
           <View style={style.contentCenter}>
             <View style={aedStyle.aedBox}>
@@ -51,18 +127,81 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
                 currentRhythm={currentRhythm}
                 waveform={waveform}
                 strokeColors={strokeColors}
+                steps={steps}
+                stepIndex={stepIndex}
+                expectedAction={expectedAction}
+                displayText={
+                  steps.some((s, i) => i <= stepIndex && s.action === 'analyze')
+                    ? ''
+                    : steps[stepIndex]?.text ?? ''
+                }
               />
-
               <AEDControls
-                started={started}
-                onPowerPress={() => (started ? stopAED() : startAED())}
+                started={poweredOn}
+                onPowerPress={() => {
+                  if (!poweredOn) {
+                    powerOnAED();
+                    if (expectedAction === 'power') nextStep();
+                  } else {
+                    powerOffAED();
+                    setIsSwitchOpen(false);
+                    setPositions({
+                      'Pad 1': { x: 15, y: 10 },
+                      'Pad 2': { x: 10, y: 75 },
+                    });
+                    setPlacedPads({ 'Pad 1': false, 'Pad 2': false });
+                  }
+                }}
+                onShockPress={() => handleAction('shock')}
+                flashing={
+                  steps[stepIndex]?.text === 'Press flashing shock button'
+                }
               />
             </View>
           </View>
-          {/* 
-          <ShockDisplay /> */}
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <ModeControls
+            started={started}
+            paused={paused}
+            onPowerPress={() => {
+              startAED();
+            }}
+            onPausePress={pauseAED}
+            onStopPress={() => {
+              powerOffAED();
+              stopAED();
+              setIsSwitchOpen(false);
+              setPositions({
+                'Pad 1': { x: 15, y: 10 },
+                'Pad 2': { x: 10, y: 75 },
+              });
+              setPlacedPads({
+                'Pad 1': false,
+                'Pad 2': false,
+              });
+            }}
+          />
         </View>
       </View>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        {started && steps.length > 0 && (
+          <ToneDisplay text={steps[stepIndex]?.text} />
+        )}
+      </View>
+      {/* <ShockDisplay /> */}
     </View>
   );
 };
