@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -22,12 +22,13 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import styles from '../../styles/studentHomeScreenStyle';
 import { getOrCreateStudentId } from '../../data/roleIds';
-import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const StudentHomeScreen = ({
   goHome,
   goStudentAutoMode,
   goConnectToInstructor,
+  goSimulationTips,
 }) => {
   useEffect(() => {
     (async () => {
@@ -39,6 +40,46 @@ const StudentHomeScreen = ({
       }
     })();
   }, []);
+
+  const [sessions, setSessions] = useState([]);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      const data = await AsyncStorage.getItem('aed_sessions');
+      if (data) setSessions(JSON.parse(data));
+    };
+    fetchSessions();
+  }, []);
+
+  const formatDate = iso => {
+    if (!iso) return '';
+    const date = new Date(iso);
+
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+
+    const formatted = date.toLocaleString('en-US', options);
+
+    // Replace the comma before the time with a dash for a cleaner style
+    return formatted.replace(', ', ' - ');
+  };
+
+  const formatTime = totalSeconds => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    if (minutes === 0) {
+      return `${seconds} sec`;
+    } else {
+      return `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -67,14 +108,16 @@ const StudentHomeScreen = ({
 
             <View style={styles.modesContainer}>
               <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <Play color="white" size={23} />
-                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.modeIcon}>
+                    <Play color="white" size={23} />
+                  </View>
 
-                <Text style={styles.modeTitle}>Start AED Auto Mode</Text>
-                <Text style={styles.modeDescription}>
-                  Begin simulation without instructor supervision
-                </Text>
+                  <Text style={styles.modeTitle}>Start AED Auto Mode</Text>
+                  <Text style={styles.modeDescription}>
+                    Begin simulation without instructor supervision
+                  </Text>
+                </View>
                 <TouchableOpacity
                   style={styles.button}
                   onPress={goStudentAutoMode}
@@ -84,14 +127,16 @@ const StudentHomeScreen = ({
               </View>
 
               <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <LucideWifi color="white" size={23} />
-                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.modeIcon}>
+                    <LucideWifi color="white" size={23} />
+                  </View>
 
-                <Text style={styles.modeTitle}>Connect to Instructor</Text>
-                <Text style={styles.modeDescription}>
-                  Join your instructor's session via Wifi
-                </Text>
+                  <Text style={styles.modeTitle}>Connect to Instructor</Text>
+                  <Text style={styles.modeDescription}>
+                    Join your instructor's session via Wifi
+                  </Text>
+                </View>
                 <TouchableOpacity style={styles.button}>
                   <Text
                     style={styles.buttonText}
@@ -103,29 +148,36 @@ const StudentHomeScreen = ({
               </View>
 
               <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <Hand color="white" size={23} />
-                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.modeIcon}>
+                    <Hand color="white" size={23} />
+                  </View>
 
-                <Text style={styles.modeTitle}>Practice Mode</Text>
-                <Text style={styles.modeDescription}>
-                  Try AED simulation in free play mode
-                </Text>
+                  <Text style={styles.modeTitle}>Practice Mode</Text>
+                  <Text style={styles.modeDescription}>
+                    Try AED simulation in free play mode
+                  </Text>
+                </View>
                 <TouchableOpacity style={styles.button}>
                   <Text style={styles.buttonText}>Try Practice</Text>
                 </TouchableOpacity>
               </View>
 
               <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <BadgeInfo color="white" size={23} />
-                </View>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.modeIcon}>
+                    <BadgeInfo color="white" size={23} />
+                  </View>
 
-                <Text style={styles.modeTitle}>Simulation Tips</Text>
-                <Text style={styles.modeDescription}>
-                  Learn how to apply pads and recognize rhythms
-                </Text>
-                <TouchableOpacity style={styles.button}>
+                  <Text style={styles.modeTitle}>Simulation Tips</Text>
+                  <Text style={styles.modeDescription}>
+                    Learn how to apply pads and recognize rhythms
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={goSimulationTips}
+                >
                   <Text style={styles.buttonText}>View Tips</Text>
                 </TouchableOpacity>
               </View>
@@ -135,7 +187,37 @@ const StudentHomeScreen = ({
               <View style={styles.rscTitle}>
                 <Text style={styles.rscTitleText}>Recent Sessions</Text>
               </View>
-              <View style={styles.rsCard}>
+
+              <View>
+                {sessions.length === 0 ? (
+                  <View style={styles.emptySession}>
+                    <Text style={styles.emptyText}>No sessions yet</Text>
+                  </View>
+                ) : (
+                  sessions.slice(0, 4).map((session, index) => (
+                    <View style={styles.rsCard} key={index}>
+                      <View style={styles.rsCardSub}>
+                        <View style={styles.rscIcon}>
+                          <History color="white" size={23} />
+                        </View>
+                        <View style={styles.rsDetails}>
+                          <Text style={styles.rsDetailsTitle}>
+                            {session.type}
+                          </Text>
+                          <Text style={styles.rsDetailsDate}>
+                            {formatDate(session.startTime)}
+                          </Text>
+                        </View>
+                      </View>
+                      <View>
+                        <Text>{formatTime(session.totalTime)}</Text>
+                      </View>
+                    </View>
+                  ))
+                )}
+              </View>
+
+              {/* <View style={styles.rsCard}>
                 <View style={styles.rsCardSub}>
                   <View style={styles.rscIcon}>
                     <History color="white" size={23} />
@@ -204,7 +286,7 @@ const StudentHomeScreen = ({
                 <View>
                   <Text>3 min 42 sec</Text>
                 </View>
-              </View>
+              </View> */}
             </View>
           </View>
         </ScrollView>

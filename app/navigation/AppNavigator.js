@@ -12,6 +12,7 @@ import InstructorLiveSessionScreen from '../screens/instructor/InstructorLiveSes
 import InstructorHostScreen from '../screens/instructor/InstructorHostScreen';
 import InstructorScenarioBuilder from '../screens/instructor/InstructorScenarioBuilder';
 import StudentLiveSessionScreen from '../screens/student/StudentLiveSessionScreen';
+import SimulationTipsScreen from '../screens/student/SimulationTipsScreen';
 import { TcpServerProvider } from '../context/TcpServerContext';
 
 export default function AppNavigator() {
@@ -40,6 +41,9 @@ export default function AppNavigator() {
                 goStudentAutoMode={() => handleNavigation('studentAutoMode')}
                 goConnectToInstructor={() =>
                   handleNavigation('connectInstructor')
+                }
+                goSimulationTips={() =>
+                  handleNavigation('studentSimulationTips')
                 }
               />
             </AnimatedScreenTransition>
@@ -149,6 +153,18 @@ export default function AppNavigator() {
               keyValue="studentLiveSession"
             >
               <StudentLiveSessionScreen
+                goHomeStudent={() => handleNavigation('student')}
+                goApplyPads={() => handleNavigation('applyPads')}
+              />
+            </AnimatedScreenTransition>
+          )}
+          {screen === 'studentSimulationTips' && (
+            <AnimatedScreenTransition
+              direction={direction}
+              keyValue="studentSimulationTips"
+            >
+              <SimulationTipsScreen
+                goHome={() => handleNavigation('role')}
                 goHomeStudent={() => handleNavigation('student')}
                 goApplyPads={() => handleNavigation('applyPads')}
               />

@@ -14,7 +14,11 @@ import ModeControls from '../../components/ModeControl';
 import ToneDisplay from '../../components/ToneDisplay';
 import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 
-const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
+const StudentAutoModeScreen = ({
+  goHomeStudent,
+  goApplyPads,
+  sessionType = 'Auto Mode',
+}) => {
   const {
     poweredOn,
     started,
@@ -51,7 +55,7 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
           <View style={style2.studentWrapper}>
             <View style={style2.studentSubWrapper}>
               <TouchableOpacity style={style.contentText}>
-                <Text>Auto Mode</Text>
+                <Text>{sessionType}</Text>
               </TouchableOpacity>
             </View>
             <View style={style2.studentSubWrapper}>
@@ -199,7 +203,7 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
             onPausePress={pauseAED}
             onStopPress={() => {
               powerOffAED();
-              stopAED();
+              stopAED(sessionType);
               setIsSwitchOpen(false);
               setPositions({
                 'Pad 1': { x: 15, y: 10 },

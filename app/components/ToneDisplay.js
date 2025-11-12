@@ -18,7 +18,7 @@ const ToneDisplay = ({ displayTop, text }) => {
 
 const style = StyleSheet.create({
   top: {
-    top: 80,
+    top: 150,
   },
   bottom: {
     bottom: 100,
