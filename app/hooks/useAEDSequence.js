@@ -9,6 +9,7 @@ export default function useAEDSequence() {
   const autoTimerRef = useRef(null);
   const soundRef = useRef(null);
   const genRef = useRef(0);
+  const [manualMode, setManualMode] = useState(false);
 
   useEffect(() => {
     const currentStep = steps[stepIndex];
@@ -43,8 +44,9 @@ export default function useAEDSequence() {
               return;
             }
             if (
-              currentStep.action === 'auto' ||
-              currentStep.action === 'analyze'
+              (currentStep.action === 'auto' ||
+                currentStep.action === 'analyze') &&
+              !manualMode
             ) {
               s.release?.();
               soundRef.current = null;
@@ -53,14 +55,15 @@ export default function useAEDSequence() {
           });
         } else {
           if (
-            currentStep.action === 'auto' ||
-            currentStep.action === 'analyze'
+            (currentStep.action === 'auto' ||
+              currentStep.action === 'analyze') &&
+            !manualMode
           ) {
             nextStep();
           }
         }
       });
-    } else if (currentStep?.action === 'auto') {
+    } else if (currentStep?.action === 'auto' && !manualMode) {
       autoTimerRef.current = setTimeout(() => {
         if (myGen === genRef.current) nextStep();
       }, 1000);
@@ -79,7 +82,8 @@ export default function useAEDSequence() {
     };
   }, [stepIndex, steps]);
 
-  const loadSequence = rhythmKey => {
+  const loadSequence = (rhythmKey, isManual = false) => {
+    setManualMode(isManual);
     const seq = aedSequences[rhythmKey];
     setSteps(seq);
     setStepIndex(0);

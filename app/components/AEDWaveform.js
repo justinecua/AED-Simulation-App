@@ -101,6 +101,19 @@ const AEDWaveform = ({
             </Svg>
           )}
 
+          {started && steps[stepIndex] && (
+            <Text
+              style={{
+                color: '#fff',
+                fontSize: 13,
+                marginTop: 10,
+                textAlign: 'center',
+              }}
+            >
+              {steps[stepIndex].text}
+            </Text>
+          )}
+
           {displayText && (
             <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
               {displayText}

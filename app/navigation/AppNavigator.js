@@ -13,6 +13,7 @@ import InstructorHostScreen from '../screens/instructor/InstructorHostScreen';
 import InstructorScenarioBuilder from '../screens/instructor/InstructorScenarioBuilder';
 import StudentLiveSessionScreen from '../screens/student/StudentLiveSessionScreen';
 import { TcpServerProvider } from '../context/TcpServerContext';
+import PracticeModeScreen from '../screens/student/PracticeModeScreen';
 
 export default function AppNavigator() {
   const [screen, setScreen] = useState('role');
@@ -41,6 +42,7 @@ export default function AppNavigator() {
                 goConnectToInstructor={() =>
                   handleNavigation('connectInstructor')
                 }
+                goPracticeMode={() => handleNavigation('practiceMode')}
               />
             </AnimatedScreenTransition>
           )}
@@ -116,6 +118,13 @@ export default function AppNavigator() {
                 goLiveSession={() => handleNavigation('studentLiveSession')}
               />
             </AnimatedScreenTransition>
+          )}
+
+          {screen === 'practiceMode' && (
+            <PracticeModeScreen
+              goBack={() => handleNavigation('student')}
+              goHomeStudent={() => handleNavigation('student')}
+            />
           )}
 
           {screen === 'connectStudent' && (

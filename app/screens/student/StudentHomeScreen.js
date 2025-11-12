@@ -28,6 +28,7 @@ const StudentHomeScreen = ({
   goHome,
   goStudentAutoMode,
   goConnectToInstructor,
+  goPracticeMode,
 }) => {
   useEffect(() => {
     (async () => {
@@ -111,7 +112,10 @@ const StudentHomeScreen = ({
                 <Text style={styles.modeDescription}>
                   Try AED simulation in free play mode
                 </Text>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={goPracticeMode}
+                >
                   <Text style={styles.buttonText}>Try Practice</Text>
                 </TouchableOpacity>
               </View>

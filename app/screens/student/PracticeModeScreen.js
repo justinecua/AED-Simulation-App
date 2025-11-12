@@ -5,16 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  Modal,
+  ScrollView,
 } from 'react-native';
-// COMPONENTS
 import Colors from '../../constants/colors';
 import Header from '../../components/Header';
 import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
 import useAED from '../../hooks/useAED';
-// IMPORTS
-import { Picker } from '@react-native-picker/picker';
 import {
   ArrowLeft,
   ArrowRight,
@@ -24,9 +23,9 @@ import {
   Timer,
 } from 'lucide-react-native';
 
-const PracticeModeScreen = ({ goHomeStudent }) => {
+const PracticeModeScreen = ({ goHomeStudent, goBack }) => {
   const [rhythm, setRhythm] = useState('Sinus');
-  const [localStepIndex, setLocalStepIndex] = useState(0);
+  const [showRhythmPopup, setShowRhythmPopup] = useState(false);
 
   const {
     started,
@@ -36,6 +35,7 @@ const PracticeModeScreen = ({ goHomeStudent }) => {
     strokeColors,
     steps,
     stepIndex,
+    setStepIndex,
     expectedAction,
     startAED,
     stopAED,
@@ -43,146 +43,161 @@ const PracticeModeScreen = ({ goHomeStudent }) => {
     resumeAED,
     shockAED,
     changeRhythm,
-    timer, // <-- added timer
+    timer,
   } = useAED();
 
   const handlePowerPress = () => {
     if (!started) {
-      startAED(rhythm);
-      setLocalStepIndex(0);
+      startAED(rhythm, true);
     } else {
       stopAED();
-      setLocalStepIndex(0);
     }
   };
+
+  const rhythms = ['Sinus', 'VFib', 'VTach', 'Asystole'];
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f9f9f9" />
       <View style={{ marginTop: 12 }}>
-        <Header />
+        <Header goHomeStudent={goHomeStudent} goBack={goBack} />
       </View>
 
-      <View style={styles.subContainer}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Practice Mode</Text>
+      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+        <View style={styles.subContainer}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Practice Mode</Text>
 
-          {/* TIMER */}
-          <View style={styles.timerIcon}>
-            <Timer color={Colors.text} size={20} />
-            <Text style={styles.timerText}>
-              {Math.floor(timer / 60)}:
-              {(timer % 60).toString().padStart(2, '0')}
-            </Text>
-          </View>
-        </View>
-
-        {/* PICKER */}
-        <View style={{ marginTop: 10 }}>
-          <Text style={styles.pickerTitle}>Patient Rhythm:</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={rhythm}
-              onValueChange={val => {
-                setRhythm(val);
-                changeRhythm(val);
-                setLocalStepIndex(0);
-              }}
-              style={{ height: 55, color: !started ? 'gray' : '#000' }}
-              enabled={started}
-            >
-              <Picker.Item label="Sinus" value="Sinus" />
-              <Picker.Item label="V-Fib" value="VFib" />
-              <Picker.Item label="V-Tach" value="VTach" />
-              <Picker.Item label="Asystole" value="Asystole" />
-            </Picker>
-          </View>
-        </View>
-
-        {/* AED */}
-        <View style={styles.contentCenter}>
-          <View style={aedStyle.aedBox}>
-            <AEDWaveform
-              started={started}
-              paused={paused}
-              currentRhythm={currentRhythm}
-              waveform={waveform}
-              strokeColors={strokeColors}
-              steps={steps}
-              stepIndex={localStepIndex}
-              expectedAction={expectedAction}
-            />
-            <AEDControls
-              started={started}
-              onShockPress={shockAED}
-              onPowerPress={handlePowerPress}
-            />
-          </View>
-        </View>
-
-        {/* BUTTONS */}
-        <View style={styles.wrapperButton}>
-          <TouchableOpacity style={styles.controlBtn}>
-            <View style={styles.iconBox}>
-              <Pause color="white" size={16} />
+            {/* TIMER */}
+            <View style={styles.timerIcon}>
+              <Timer color={Colors.text} size={20} />
+              <Text style={styles.timerText}>
+                {Math.floor(timer / 60)}:
+                {(timer % 60).toString().padStart(2, '0')}
+              </Text>
             </View>
-            <Text
-              style={styles.controlText}
+          </View>
+
+          {/* RHYTHM PICKER */}
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.pickerTitle}>Patient Rhythm:</Text>
+            <TouchableOpacity
+              style={[styles.pickerContainer, { opacity: !started ? 0.5 : 1 }]}
+              disabled={!started}
+              onPress={() => setShowRhythmPopup(true)}
+            >
+              <Text style={{ padding: 15, fontSize: 15 }}>{rhythm}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* RHYTHM MODAL */}
+          <Modal transparent visible={showRhythmPopup} animationType="fade">
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalBox}>
+                {rhythms.map(r => (
+                  <TouchableOpacity
+                    key={r}
+                    style={{ padding: 14 }}
+                    onPress={() => {
+                      setRhythm(r);
+                      changeRhythm(r);
+                      setShowRhythmPopup(false);
+                    }}
+                  >
+                    <Text style={{ fontSize: 16 }}>{r}</Text>
+                  </TouchableOpacity>
+                ))}
+
+                <TouchableOpacity onPress={() => setShowRhythmPopup(false)}>
+                  <Text
+                    style={{
+                      padding: 14,
+                      textAlign: 'center',
+                      fontWeight: 'bold',
+                      color: 'red',
+                    }}
+                  >
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          {/* AED MAIN DISPLAY */}
+          <View style={styles.contentCenter}>
+            <View style={aedStyle.aedBox}>
+              <AEDWaveform
+                started={started}
+                paused={paused}
+                currentRhythm={currentRhythm}
+                waveform={waveform}
+                strokeColors={strokeColors}
+                steps={steps}
+                stepIndex={stepIndex}
+                expectedAction={expectedAction}
+              />
+              <AEDControls
+                started={started}
+                onShockPress={shockAED}
+                onPowerPress={handlePowerPress}
+              />
+            </View>
+          </View>
+
+          {/* SIMULATION CONTROL BUTTONS */}
+          <View style={styles.buttonGrid}>
+            <TouchableOpacity
+              style={styles.controlCard}
               onPress={() => (paused ? resumeAED() : pauseAED())}
             >
-              Pause
-            </Text>
-          </TouchableOpacity>
+              <View style={styles.iconCircle}>
+                <Pause color="white" size={18} />
+              </View>
+              <Text style={styles.controlText}>Pause Simulation</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.controlCard} onPress={stopAED}>
+              <View style={styles.iconCircle}>
+                <Square color="white" size={18} />
+              </View>
+              <Text style={styles.controlText}>Stop Simulation</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.controlCard}
+              onPress={() => setStepIndex(prev => Math.max(prev - 1, 0))}
+            >
+              <View style={styles.iconCircle}>
+                <ArrowLeft color="white" size={18} />
+              </View>
+              <Text style={styles.controlText}>Back Simulation</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.controlCard}
+              onPress={() => setStepIndex(prev => prev + 1)}
+            >
+              <View style={styles.iconCircle}>
+                <ArrowRight color="white" size={18} />
+              </View>
+              <Text style={styles.controlText}>Next Simulation</Text>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
-            style={[styles.controlBtn, { flex: 1 }]}
-            onPress={stopAED}
-          >
-            <View style={styles.iconBox}>
-              <Square color="white" size={16} />
-            </View>
-            <Text style={styles.controlText}>Stop</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Back / Next */}
-        <View style={styles.wrapperButton}>
-          <TouchableOpacity
-            style={styles.controlBtn}
-            onPress={() => setLocalStepIndex(prev => Math.max(prev - 1, 0))}
-          >
-            <View style={styles.iconBox}>
-              <ArrowLeft color="white" size={16} />
-            </View>
-            <Text style={styles.controlText}>Back</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.controlBtn, { flex: 1 }]}
-            onPress={() => setLocalStepIndex(prev => prev + 1)}
-          >
-            <View style={styles.iconBox}>
-              <ArrowRight color="white" size={16} />
-            </View>
-            <Text style={styles.controlText}>Next</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Close */}
-        <View style={{ marginTop: 6, flexDirection: 'row' }}>
-          <TouchableOpacity
-            style={styles.controlBtn}
+            style={styles.closeCardNew}
             onPress={() => {
               if (goHomeStudent) goHomeStudent();
             }}
           >
-            <View style={styles.iconBox}>
-              <X color="white" size={16} />
+            <View style={styles.iconCircle}>
+              <X color="white" size={20} />
             </View>
-            <Text style={styles.controlText}>Close</Text>
+            <Text style={styles.closeText}>Close Simulation</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -191,16 +206,14 @@ export default PracticeModeScreen;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
     flex: 1,
     backgroundColor: '#ffffff',
   },
   subContainer: {
     flex: 1,
-    padding: 12,
+    padding: 15,
     borderRadius: 15,
     backgroundColor: Colors.background,
-    position: 'relative',
   },
   header: {
     width: '100%',
@@ -243,36 +256,78 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBox: {
+    width: 240,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 8,
+  },
   contentCenter: {
     marginTop: 16,
     alignItems: 'center',
   },
-  controlBtn: {
-    flex: 1,
+
+  // --- Simulation Button Styles ---
+  buttonGrid: {
+    marginTop: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  controlCard: {
+    width: '48%',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    marginVertical: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    alignItems: 'center',
+  },
+  closeCardNew: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
     backgroundColor: '#fff',
-    marginHorizontal: 4,
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginTop: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
-  wrapperButton: {
-    marginTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+  closeText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#333',
+    marginLeft: 12,
+    textAlign: 'center',
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#007BFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   controlText: {
-    fontSize: 15,
-    fontWeight: '600',
-    marginLeft: 10,
+    fontSize: 14,
+    fontWeight: '500',
     color: '#333',
-  },
-  iconBox: {
-    backgroundColor: '#333',
-    padding: 6,
-    borderRadius: 6,
+    textAlign: 'center',
   },
 });

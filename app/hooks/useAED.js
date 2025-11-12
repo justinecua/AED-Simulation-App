@@ -38,6 +38,7 @@ export default function useAED() {
 
   const [paused, setPaused] = useState(false);
   const [currentRhythm, setCurrentRhythm] = useState(null);
+  const [manualMode, setManualMode] = useState(false);
 
   const powerOnAED = () => {
     setPoweredOn(true);
@@ -54,12 +55,14 @@ export default function useAED() {
     resetSequence();
   };
 
-  const startAED = () => {
+  const startAED = (rhythmKey, isManual = false) => {
     if (started && !paused) return;
     if (started && paused) {
       resumeAED();
       return;
     }
+
+    setManualMode(isManual);
 
     const rhythmKeys = Object.keys(heartRhythms);
     const selectedRhythmKey =
@@ -70,7 +73,7 @@ export default function useAED() {
 
     setCurrentRhythm({ name: selectedRhythmKey, bpm: selectedRhythm.bpm });
     clearWaveform();
-    loadSequence(selectedRhythmKey);
+    loadSequence(rhythmKey, manualMode);
 
     setStarted(true);
     setPaused(false);
@@ -114,6 +117,24 @@ export default function useAED() {
     resetSequence();
   };
 
+  const changeRhythm = newRhythmName => {
+    if (!started) return;
+
+    setCurrentRhythm({
+      name: newRhythmName,
+      bpm: heartRhythms[newRhythmName].bpm,
+    });
+
+    clearWaveform();
+    loadSequence(newRhythmName, manualMode);
+
+    const pattern = heartRhythms[newRhythmName].generate();
+    const spacing = aedWidth / (pattern.length - 1);
+    const patternIndex = { current: 0 };
+
+    drawWaveformPoint(pattern, spacing, patternIndex);
+  };
+
   return {
     poweredOn,
     started,
@@ -135,5 +156,6 @@ export default function useAED() {
     prevStep,
     timer,
     handleAction,
+    changeRhythm,
   };
 }
