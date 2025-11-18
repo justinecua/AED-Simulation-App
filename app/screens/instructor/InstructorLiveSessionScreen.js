@@ -21,6 +21,7 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
     sendReset,
     sendSimulationControl,
     currentStepIndex,
+    studentPoweredOn,
   } = useLiveInstructor();
 
   const rhythms = ['Sinus', 'VFib', 'VTach', 'Asystole'];
@@ -34,44 +35,7 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
     { label: 'No Shock Advised', icon: Zap, send: 'NO_SHOCK' },
   ];
 
-  const readableMessage = useMemo(() => {
-    if (!message) return 'No response yet.';
-
-    const cleanMessage = message.replace(/^Student:\s*/, '').trim();
-
-    try {
-      const obj = JSON.parse(cleanMessage);
-      const { type, data } = obj;
-
-      switch (type) {
-        case 'SET_RHYTHM':
-          return `Rhythm set to ${data}`;
-        case 'PLAY_STEP':
-          return `Played step ${data?.index + 1 || 1} (${
-            data?.rhythm || 'Unknown Rhythm'
-          }).`;
-        case 'SIM_CONTROL':
-          if (data === 'START') return '';
-          if (data === 'STOP') return 'Simulation stopped';
-          if (data === 'PAUSE') return 'Simulation paused';
-          return `Simulation control: ${data}`;
-        case 'NEXT_STEP':
-          return 'Advanced to the next step';
-        case 'PREV_STEP':
-          return 'Returned to the previous step';
-        case 'STOP_AUDIO':
-          return 'Audio stopped';
-        case 'RESET_AED':
-          return 'AED reset';
-        case 'CONTROL_MODE':
-          return `Control mode changed to ${data}`;
-        default:
-          return 'Received a new signal';
-      }
-    } catch {
-      return cleanMessage;
-    }
-  }, [message]);
+  const readableMessage = message;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -147,11 +111,18 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
             <Text style={{ color: '#fff' }}>Previous</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={!studentPoweredOn}
             onPress={sendNextStep}
-            style={{ backgroundColor: '#475569', padding: 10, borderRadius: 8 }}
+            style={{
+              backgroundColor: '#475569',
+              padding: 10,
+              borderRadius: 8,
+              opacity: studentPoweredOn ? 1 : 0.4,
+            }}
           >
             <Text style={{ color: '#fff' }}>Next</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             onPress={sendStopAudio}
             style={{ backgroundColor: '#ef4444', padding: 10, borderRadius: 8 }}
@@ -179,9 +150,11 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
           return (
             <TouchableOpacity
               key={i}
-              disabled={isPowerStep} // Instructor cannot turn on AED
+              disabled={isPowerStep || !studentPoweredOn}
               onPress={() => {
-                if (!isPowerStep) sendPlayStep(selectedRhythm, i);
+                if (!isPowerStep && studentPoweredOn) {
+                  sendPlayStep(selectedRhythm, i);
+                }
               }}
               style={{
                 marginVertical: 4,
@@ -192,7 +165,9 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
                   : isCurrent
                   ? '#bbf7d0'
                   : '#f8fafc',
-                opacity: isPowerStep ? 0.4 : 1,
+
+                // Make it visually disabled if AED is OFF
+                opacity: isPowerStep || !studentPoweredOn ? 0.4 : 1,
               }}
             >
               <Text style={{ color: '#334155', fontWeight: '500' }}>

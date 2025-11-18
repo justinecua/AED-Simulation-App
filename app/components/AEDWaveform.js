@@ -39,6 +39,7 @@ const AEDWaveform = ({
       steps[stepIndex - 1]?.action === 'analyze' ||
       (stepIndex > 0 &&
         steps.some((s, i) => i < stepIndex && s.action === 'analyze')));
+  const shouldShowText = !isShowingWaveform;
 
   return (
     <View style={aedStyle.aedScreenContainer}>
@@ -101,7 +102,7 @@ const AEDWaveform = ({
             </Svg>
           )}
 
-          {displayText && (
+          {shouldShowText && displayText && (
             <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
               {displayText}
             </Text>

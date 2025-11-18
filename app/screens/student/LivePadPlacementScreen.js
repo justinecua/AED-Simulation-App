@@ -12,6 +12,7 @@ import Wire from '../../components/PadPlacement/wire';
 import DraggablePad from '../../components/PadPlacement/draggablePad';
 import { targets, padSizes } from '../../components/PadPlacement/padConfig';
 import { useLiveAEDClientContext } from '../../context/LiveAEDClientContext';
+import { useTcpServerContext } from '../../context/TcpServerContext';
 
 const LivePadPlacementScreen = ({ goLiveSession }) => {
   const {
@@ -32,9 +33,11 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
   } = useLiveAEDClientContext();
 
   const attachHandledRef = useRef(false);
+  const { sendMessage } = useTcpServerContext();
 
   const handleMove = (x, y, label) => {
     setPositions(p => ({ ...p, [label]: { x, y } }));
+
     const { w, h } = padSizes[label];
     const padCenter = { x: x + w / 2, y: y + h / 2 };
     const targetCenter = {
@@ -47,7 +50,23 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
       padCenter.y - targetCenter.y,
     );
 
-    setPlacedPads(prev => ({ ...prev, [label]: distance < 40 }));
+    const isPlaced = distance < 40;
+
+    // Update local UI
+    setPlacedPads(prev => ({ ...prev, [label]: isPlaced }));
+
+    // 🔥 SEND UPDATE TO INSTRUCTOR IN REAL TIME
+    sendMessage(
+      JSON.stringify({
+        type: 'PAD_STATUS',
+        data: {
+          label,
+          placed: isPlaced,
+          x,
+          y,
+        },
+      }),
+    );
   };
 
   const handleRelease = (x, y, label) => {
@@ -57,13 +76,29 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
       x: targets[label].x + w / 2,
       y: targets[label].y + h / 2,
     };
+
     const distance = Math.hypot(
       padCenter.x - targetCenter.x,
       padCenter.y - targetCenter.y,
     );
 
-    setPlacedPads(prev => ({ ...prev, [label]: distance < 40 }));
+    const isPlaced = distance < 40;
+
+    setPlacedPads(prev => ({ ...prev, [label]: isPlaced }));
     setPositions(p => ({ ...p, [label]: { x, y } }));
+
+    // 🔥 SEND FINAL POSITION UPDATE
+    sendMessage(
+      JSON.stringify({
+        type: 'PAD_STATUS',
+        data: {
+          label,
+          placed: isPlaced,
+          x,
+          y,
+        },
+      }),
+    );
   };
 
   useEffect(() => {
@@ -76,6 +111,14 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
 
     if (allPlaced && !attachHandledRef.current) {
       attachHandledRef.current = true;
+
+      sendMessage(
+        JSON.stringify({
+          type: 'STUDENT_ACTION',
+          data: 'PADS_CORRECTLY_PLACED',
+        }),
+      );
+
       handleAction('attach');
     }
 
@@ -83,6 +126,7 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
       attachHandledRef.current = false;
     }
   }, [placedPads, stepIndex, steps, handleAction]);
+
   useEffect(() => {
     if (steps[stepIndex]?.action === 'attach') {
       if (poweredOn && started) {
@@ -172,6 +216,9 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
                 onRelease={handleRelease}
                 padStyle={[
                   styles.aedPad,
+                  label === 'Pad 1'
+                    ? styles.padUpperRight
+                    : styles.padLowerLeft,
                   placedPads[label] && styles.padCorrect,
                 ]}
                 padSize={padSizes[label]}

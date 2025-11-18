@@ -38,9 +38,21 @@ export default function useTcpServerEmu() {
 
             // After handshake, handle normal messages
             socket.on('data', payload => {
-              const incoming = payload.toString();
-              console.log('📩 Student says:', incoming);
-              setMessage(`Student: ${incoming}`);
+              const raw = payload.toString();
+              console.log('📩 RAW TCP:', raw);
+
+              // 🧠 Split combined JSON objects e.g. ...}{...
+              const parts = raw
+                .replace(/}\s*{/g, '}|{') // insert separator
+                .split('|'); // split into separate JSON strings
+
+              parts.forEach(part => {
+                const cleaned = part.trim();
+                if (!cleaned) return;
+
+                console.log('📩 Parsed packet:', cleaned);
+                setMessage(cleaned); // send one clean message at a time
+              });
             });
 
             socket.on('close', () => {

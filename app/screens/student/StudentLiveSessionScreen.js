@@ -11,8 +11,7 @@ import aedStyle from '../../styles/aedBoxStyle';
 import ToneDisplay from '../../components/ToneDisplay';
 import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 import { useTcpServerContext } from '../../context/TcpServerContext';
-import useLiveAEDClient from '../../hooks/useLiveAEDClient';
-import SessionFlowControl from '../../components/SessionFlowControl';
+import { useLiveAEDClientContext } from '../../context/LiveAEDClientContext';
 
 const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
   const {
@@ -38,7 +37,8 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     setPositions,
     setPlacedPads,
     displayMessage,
-  } = useLiveAEDClient();
+    setDisplayMessage,
+  } = useLiveAEDClientContext();
 
   const { sendMessage, connectionStatus, message } = useTcpServerContext();
   const [input, setInput] = useState('');
@@ -56,6 +56,14 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     sendMessage(input.trim());
     setInput('');
   };
+
+  useEffect(() => {
+    if (!currentRhythm) return;
+    const key = currentRhythm.name || currentRhythm.label || currentRhythm.id;
+    console.log('Current Rhythm:', key);
+    console.log('Stroke color used:', strokeColors?.[key]);
+    console.log('StrokeColors keys:', Object.keys(strokeColors));
+  }, [currentRhythm, strokeColors]);
 
   return (
     <View style={style.container}>
@@ -130,6 +138,15 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                   style={[style2.padPackageButton]}
                   onPress={() => {
                     handleAction('open');
+
+                    //  SEND A SIGNAL TO INSTRUCTOR
+                    sendMessage(
+                      JSON.stringify({
+                        type: 'STUDENT_ACTION',
+                        data: 'OPEN_PAD_PACKAGE',
+                      }),
+                    );
+
                     if (expectedAction === 'open') {
                       setIsSwitchOpen(true);
                       goApplyPads();
@@ -148,14 +165,14 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
               <AEDWaveform
                 started={started}
                 currentRhythm={currentRhythm}
-                waveform={currentRhythm?.waveform ?? []}
+                waveform={waveform}
                 strokeColors={strokeColors}
                 steps={steps}
                 stepIndex={stepIndex}
                 expectedAction={expectedAction}
-                // Single source of truth for displayed step text
                 displayText={uiStepText}
               />
+
               <AEDControls
                 started={poweredOn}
                 onPowerPress={() => {
@@ -171,6 +188,14 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                       }
                     } else {
                       sendMessage(
+                        JSON.stringify({
+                          type: 'STUDENT_POWER_BEFORE_START',
+                          data: null,
+                        }),
+                      );
+
+                      //  Student sees their own warning
+                      setDisplayMessage(
                         'Instructor has not started the simulation yet',
                       );
                     }

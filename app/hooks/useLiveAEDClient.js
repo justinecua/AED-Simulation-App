@@ -1,12 +1,18 @@
-// useLiveAEDClient.js
 import { useEffect, useState, useRef } from 'react';
 import Sound from 'react-native-sound';
 import aedSequences from '../data/aedSequences';
 import heartRhythms from '../data/heartRhythms';
 import { useTcpServerContext } from '../context/TcpServerContext';
+import useWaveform from './useWaveform';
+import { Dimensions } from 'react-native';
+import strokeColors from '../data/strokeColors';
+
+const aedWidth = Dimensions.get('window').width * 0.7;
 
 export default function useLiveAEDClient() {
   const { message } = useTcpServerContext();
+  const { waveform, drawWaveformPoint, clearWaveform, stopWaveform } =
+    useWaveform(aedWidth);
 
   const [currentRhythm, setCurrentRhythm] = useState(null);
   const [steps, setSteps] = useState([]);
@@ -35,7 +41,6 @@ export default function useLiveAEDClient() {
 
   const autoTimerRef = useRef(null);
 
-  // 🔊 NEW: strong sound control
   const soundRef = useRef(null); // holds the current Sound instance immediately
   const tokenRef = useRef(0); // monotonic token to invalidate older loads
   const lastPlayKeyRef = useRef(''); // "VFib#0" etc, avoids re-triggering same step
@@ -88,7 +93,7 @@ export default function useLiveAEDClient() {
   };
 
   const playStepAudio = index => {
-    stopAudio(); // stops current or in-flight sound immediately
+    stopAudio();
     clearAuto();
 
     const step = steps[index];
@@ -147,13 +152,10 @@ export default function useLiveAEDClient() {
           console.log('Audio play error:', e);
         }
 
-        // Register active sound
         soundRef.current = s;
         setIsPlaying(true);
       });
 
-      // If another play starts before the callback fires,
-      // stopAudio() will still see this instance via soundRef
       soundRef.current = s;
     }
   };
@@ -215,20 +217,39 @@ export default function useLiveAEDClient() {
     switch (type) {
       case 'SET_RHYTHM': {
         if (data && aedSequences[data]) {
-          setCurrentRhythm({ name: data, ...heartRhythms[data] });
+          setCurrentRhythm({
+            ...heartRhythms[data],
+            name: data, // force short key as name: "Sinus"
+          });
+
           setSteps(aedSequences[data]);
           setStepIndex(0);
           const first = aedSequences[data][0];
           setExpectedAction(first?.action ?? null);
+          const pattern = heartRhythms[data].generate();
+          const spacing = aedWidth / (pattern.length - 1);
+          const patternIndex = { current: 0 };
+
+          clearWaveform();
+          drawWaveformPoint(pattern, spacing, patternIndex);
 
           stopAudio();
           clearAuto();
           lastPlayKeyRef.current = '';
 
-          // ✅ Auto-play ONLY if START happened
-          if (shouldAutoplayRef.current && poweredOn) {
+          //Auto-play ONLY if START happened
+          if (shouldAutoplayRef.current) {
             shouldAutoplayRef.current = false;
-            playStepAudio(0);
+
+            const step = aedSequences[data][0];
+
+            if (step?.action === 'power') {
+              // Step 0 = Turn on AED → always play
+              playStepAudio(0);
+            } else if (poweredOn) {
+              // Steps after 0 should only play when AED is ON
+              playStepAudio(0);
+            }
           }
         }
         break;
@@ -242,7 +263,11 @@ export default function useLiveAEDClient() {
         if (poweredOn && data?.rhythm && aedSequences[data.rhythm]) {
           const idx = data.index ?? 0;
           setDisplayMessage(`Instructor played step ${idx + 1}`);
-          setCurrentRhythm({ name: data.rhythm, ...heartRhythms[data.rhythm] });
+          setCurrentRhythm({
+            ...heartRhythms[data.rhythm],
+            name: data.rhythm, // force short key as name
+          });
+
           setSteps(aedSequences[data.rhythm]);
           setStepIndex(idx);
           playStepAudio(idx);
@@ -254,13 +279,13 @@ export default function useLiveAEDClient() {
         if (data === 'START') {
           lastStartAtRef.current = Date.now();
           setInstructorStarted(true);
-          setDisplayMessage(' Instructor started the simulation'); // clear instruction
+          setDisplayMessage(' Instructor started the simulation');
 
-          // ✅ Start timer without turning on AED
+          // Start timer without turning on AED
           setStarted(true); // allow timer to run
           setPaused(false); // allow timer to tick
 
-          // ✅ Keep AED powered OFF until student presses ON
+          // Keep AED powered OFF until student presses ON
           // powerOnAED() --> NOT CALLED
           // startAED()   --> NOT CALLED
 
@@ -279,6 +304,7 @@ export default function useLiveAEDClient() {
           setDisplayMessage('Simulation paused by instructor');
           pauseAED();
         }
+
         break;
       }
 
@@ -322,6 +348,8 @@ export default function useLiveAEDClient() {
     poweredOn,
     paused,
     instructorStarted,
+    waveform,
+    strokeColors,
     startAED,
     pauseAED,
     powerOnAED,
@@ -336,6 +364,7 @@ export default function useLiveAEDClient() {
     placedPads,
     setPlacedPads,
     displayMessage,
+    setDisplayMessage,
     isSwitchOpen,
     setIsSwitchOpen,
   };

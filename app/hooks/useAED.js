@@ -4,16 +4,10 @@ import heartRhythms from '../data/heartRhythms';
 import useAEDTimer from './useAEDTimer';
 import useWaveform from './useWaveform';
 import useAEDSequence from './useAEDSequence';
+import strokeColors from '../data/strokeColors';
 
 const screenWidth = Dimensions.get('window').width;
 const aedWidth = screenWidth * 0.7;
-
-const strokeColors = {
-  Sinus: '#ffffff',
-  VFib: '#ffffff',
-  VTach: '#ffffff',
-  Asystole: '#ffffff',
-};
 
 export default function useAED() {
   const { timer, startTimer, stopTimer, resetTimer } = useAEDTimer();
