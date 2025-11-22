@@ -71,7 +71,7 @@ const StudentHomeScreen = ({
                   <Play color="white" size={23} />
                 </View>
 
-                <Text style={styles.modeTitle}>Start AED Auto Mode</Text>
+                <Text style={styles.modeTitle}>Auto Mode</Text>
                 <Text style={styles.modeDescription}>
                   Begin simulation without instructor supervision
                 </Text>
@@ -88,7 +88,7 @@ const StudentHomeScreen = ({
                   <LucideWifi color="white" size={23} />
                 </View>
 
-                <Text style={styles.modeTitle}>Connect to Instructor</Text>
+                <Text style={styles.modeTitle}>Connect Device</Text>
                 <Text style={styles.modeDescription}>
                   Join your instructor's session via Wifi
                 </Text>

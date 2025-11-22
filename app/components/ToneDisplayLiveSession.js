@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import Colors from '../constants/colors';
 import { AudioLines } from 'lucide-react-native';
 
-const ToneDisplay = ({ displayTop, text }) => {
+const ToneDisplayLiveSession = ({ displayTop, text }) => {
   return (
     <View style={[style.tone, displayTop ? style.top : style.bottom]}>
       <View style={style.toneIcon}>
@@ -21,7 +21,7 @@ const style = StyleSheet.create({
     top: 80,
   },
   bottom: {
-    bottom: 115,
+    bottom: 75,
   },
   tone: {
     position: 'absolute',
@@ -52,4 +52,4 @@ const style = StyleSheet.create({
   },
 });
 
-export default ToneDisplay;
+export default ToneDisplayLiveSession;

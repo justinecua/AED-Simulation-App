@@ -3,6 +3,7 @@ import { useState, useRef } from 'react';
 export default function useWaveform(aedWidth) {
   const [waveform, setWaveform] = useState([]);
   const intervalRef = useRef(null);
+  const pausedRef = useRef(false);
 
   const clearWaveform = () => {
     setWaveform([]);
@@ -15,7 +16,25 @@ export default function useWaveform(aedWidth) {
     intervalRef.current = null;
   };
 
+  const pauseWaveform = () => {
+    pausedRef.current = true;
+  };
+
+  const resumeWaveform = () => {
+    pausedRef.current = false;
+  };
+
   const drawWaveformPoint = (pattern, spacing, patternIndex) => {
+    if (pausedRef.current) {
+      // ❗ If paused, do NOT draw
+      intervalRef.current = setTimeout(
+        () => drawWaveformPoint(pattern, spacing, patternIndex),
+        80,
+      );
+      return;
+    }
+
+    // Normal running waveform
     setWaveform(prev => {
       const nextPoint = { value: pattern[patternIndex.current], spacing };
       patternIndex.current = (patternIndex.current + 1) % pattern.length;
@@ -27,12 +46,18 @@ export default function useWaveform(aedWidth) {
       return updated;
     });
 
-    const variation = 1 + (Math.random() * 0.06 - 0.03);
     intervalRef.current = setTimeout(
       () => drawWaveformPoint(pattern, spacing, patternIndex),
-      50 * variation,
+      80,
     );
   };
 
-  return { waveform, drawWaveformPoint, clearWaveform, stopWaveform };
+  return {
+    waveform,
+    drawWaveformPoint,
+    clearWaveform,
+    stopWaveform,
+    pauseWaveform,
+    resumeWaveform,
+  };
 }

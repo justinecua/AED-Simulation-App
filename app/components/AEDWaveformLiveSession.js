@@ -5,7 +5,7 @@ import aedStyle from '../styles/aedBoxStyle';
 
 const HEIGHT = 150;
 
-const AEDWaveform = ({
+const AEDWaveformLiveSession = ({
   stepIndex,
   started,
   poweredOn, // 👈 FIXED
@@ -97,4 +97,4 @@ const AEDWaveform = ({
   );
 };
 
-export default AEDWaveform;
+export default AEDWaveformLiveSession;
