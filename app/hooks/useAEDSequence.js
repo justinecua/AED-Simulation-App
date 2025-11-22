@@ -79,8 +79,10 @@ export default function useAEDSequence() {
     };
   }, [stepIndex, steps]);
 
-  const loadSequence = rhythmKey => {
-    const seq = aedSequences[rhythmKey];
+  const loadSequence = (rhythmKey, overrideSteps = null) => {
+    const seq = Array.isArray(overrideSteps)
+      ? overrideSteps
+      : aedSequences[rhythmKey] || [];
     setSteps(seq);
     setStepIndex(0);
   };
