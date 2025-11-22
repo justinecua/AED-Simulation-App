@@ -7,7 +7,7 @@ import style2 from '../../styles/StudentAutoModeStyle';
 import styles from '../../styles/PadPlacementStyle';
 
 import Header from '../../components/Header';
-import ToneDisplay from '../../components/ToneDisplay';
+import ToneDisplayLiveSession from '../../components/ToneDisplayLiveSession';
 import Wire from '../../components/PadPlacement/wire';
 import DraggablePad from '../../components/PadPlacement/draggablePad';
 import { targets, padSizes } from '../../components/PadPlacement/padConfig';
@@ -231,7 +231,7 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
       {/* Tone */}
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
         {started && steps.length > 0 && (
-          <ToneDisplay text={steps[stepIndex]?.text} />
+          <ToneDisplayLiveSession text={steps[stepIndex]?.text} />
         )}
       </View>
     </View>

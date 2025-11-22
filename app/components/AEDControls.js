@@ -4,7 +4,13 @@ import { Power, ChevronUp, ChevronDown, Zap } from 'lucide-react-native';
 import aedStyle from '../styles/aedBoxStyle';
 import Colors from '../constants/colors';
 
-const AEDControls = ({ started, onPowerPress, onShockPress, flashing }) => {
+const AEDControls = ({
+  started,
+  onPowerPress,
+  onShockPress,
+  flashing,
+  disabledPower = false,
+}) => {
   const flashAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -36,7 +42,11 @@ const AEDControls = ({ started, onPowerPress, onShockPress, flashing }) => {
   return (
     <View style={aedStyle.aedControls}>
       <View style={aedStyle.controlBox}>
-        <TouchableOpacity style={aedStyle.powerBtn} onPress={onPowerPress}>
+        <TouchableOpacity
+          onPress={onPowerPress}
+          disabled={disabledPower}
+          style={[aedStyle.powerBtn, disabledPower && { opacity: 0.5 }]}
+        >
           <Power color="#fff" size={17} />
         </TouchableOpacity>
 

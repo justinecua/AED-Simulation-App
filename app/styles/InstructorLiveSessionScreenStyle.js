@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 
   controlLabel: {
     fontFamily: 'Poppins-Regular',
-    fontSize: scale(13),
+    fontSize: scale(11),
     flexShrink: 1,
     marginTop: 3,
     flexWrap: 'wrap',
@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
   rhythmBox: {
     padding: scale(12),
     borderRadius: 10,
-    flexBasis: width < 500 ? '45%' : '30%', // ✅ adaptive for tablets
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,

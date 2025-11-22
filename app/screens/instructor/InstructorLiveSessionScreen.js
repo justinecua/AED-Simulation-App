@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { Play, Square, Pause, Hand, Zap } from 'lucide-react-native';
+import { Play, Square, Pause, Hand, Zap, Activity } from 'lucide-react-native';
 
 import styles from '../../styles/InstructorLiveSessionScreenStyle';
 import Header from '../../components/Header';
 import { useLiveInstructor } from '../../context/LiveInstructorContext';
 import aedSequences from '../../data/aedSequences';
 import SessionFlowControl from '../../components/SessionFlowControl';
+import RhythmButton from '../../components/RhythmButton';
 
 const InstructorLiveSessionScreen = ({ goBack }) => {
   const {
@@ -22,17 +23,48 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
     sendSimulationControl,
     currentStepIndex,
     studentPoweredOn,
+    studentPaused,
   } = useLiveInstructor();
 
-  const rhythms = ['Sinus', 'VFib', 'VTach', 'Asystole'];
+  const rhythmLabels = {
+    Sinus: 'Normal Sinus',
+    VFib: 'Ventricular Fibrillation',
+    VTach: 'Ventricular Tachycardia',
+    Asystole: 'Asystole',
+  };
+
+  const rhythms = Object.keys(rhythmLabels);
+  const hasShockStep = aedSequences[selectedRhythm].some(
+    step => step.action === 'shock',
+  );
 
   const flowControlData = [
     { label: 'Start Simulation', icon: Play, send: 'START' },
     { label: 'Stop Simulation', icon: Square, send: 'STOP' },
-    { label: 'Pause Simulation', icon: Pause, send: 'PAUSE' },
-    { label: 'Pads Advised', icon: Hand, send: 'PADS_ADVISED' },
-    { label: 'Shock Advised', icon: Zap, send: 'SHOCK_ADVISED' },
-    { label: 'No Shock Advised', icon: Zap, send: 'NO_SHOCK' },
+    {
+      label: studentPaused ? 'Resume Simulation' : 'Pause Simulation',
+      icon: Pause,
+      send: studentPaused ? 'RESUME' : 'PAUSE',
+    },
+
+    {
+      label: 'Finish Simulation',
+      icon: Zap,
+      send: 'FINISH',
+    },
+    {
+      label: 'Pads Advised',
+      icon: Hand,
+      send: 'PADS_ADVISED',
+      disabled: !studentPoweredOn || studentPaused,
+    },
+
+    {
+      label: 'Shock Advised',
+      icon: Zap,
+      send: 'SHOCK_ADVISED',
+      disabled: !hasShockStep || !studentPoweredOn || studentPaused,
+    },
   ];
 
   const readableMessage = message;
@@ -74,7 +106,10 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
               key={i}
               label={item.label}
               Icon={item.icon}
-              onPress={() => sendSimulationControl(item.send)}
+              disabled={item.disabled}
+              onPress={() => {
+                if (!item.disabled) sendSimulationControl(item.send);
+              }}
             />
           ))}
         </View>
@@ -83,25 +118,30 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
       {/* Rhythm Selection */}
       <View style={styles.section}>
         <Text style={styles.mainTitle}>Rhythms:</Text>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            gap: 10,
+          }}
+        >
           {rhythms.map(r => (
-            <TouchableOpacity
+            <RhythmButton
               key={r}
+              label={rhythmLabels[r]}
+              Icon={Activity}
+              fontSize={14}
               onPress={() => sendSetRhythm(r)}
-              style={{
-                backgroundColor: selectedRhythm === r ? '#10B981' : '#475569',
-                padding: 10,
-                borderRadius: 8,
-              }}
-            >
-              <Text style={{ color: '#fff' }}>{r}</Text>
-            </TouchableOpacity>
+              isSelected={selectedRhythm === r}
+            />
           ))}
         </View>
       </View>
 
-      {/* Manual Step Controls */}
-      <View style={styles.section}>
+      {/* Manual Step Controls - Next, Previous, Reset - Optional*/}
+      {/* <View style={styles.section}>
         <Text style={styles.mainTitle}>Step Control:</Text>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           <TouchableOpacity
@@ -123,20 +163,20 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
             <Text style={{ color: '#fff' }}>Next</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={sendStopAudio}
             style={{ backgroundColor: '#ef4444', padding: 10, borderRadius: 8 }}
           >
             <Text style={{ color: '#fff' }}>Stop Audio</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </TouchableOpacity> */}
+      {/* <TouchableOpacity
             onPress={sendReset}
             style={{ backgroundColor: '#64748b', padding: 10, borderRadius: 8 }}
           >
             <Text style={{ color: '#fff' }}>Reset</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </View> */}
 
       {/* AED Step Prompts */}
       <View style={styles.section}>
@@ -150,9 +190,9 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
           return (
             <TouchableOpacity
               key={i}
-              disabled={isPowerStep || !studentPoweredOn}
+              disabled={isPowerStep || !studentPoweredOn || studentPaused}
               onPress={() => {
-                if (!isPowerStep && studentPoweredOn) {
+                if (!isPowerStep && studentPoweredOn && !studentPaused) {
                   sendPlayStep(selectedRhythm, i);
                 }
               }}
@@ -166,8 +206,8 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
                   ? '#bbf7d0'
                   : '#f8fafc',
 
-                // Make it visually disabled if AED is OFF
-                opacity: isPowerStep || !studentPoweredOn ? 0.4 : 1,
+                opacity:
+                  isPowerStep || !studentPoweredOn || studentPaused ? 0.4 : 1,
               }}
             >
               <Text style={{ color: '#334155', fontWeight: '500' }}>

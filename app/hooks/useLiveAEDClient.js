@@ -10,9 +10,16 @@ import strokeColors from '../data/strokeColors';
 const aedWidth = Dimensions.get('window').width * 0.7;
 
 export default function useLiveAEDClient() {
-  const { message } = useTcpServerContext();
-  const { waveform, drawWaveformPoint, clearWaveform, stopWaveform } =
-    useWaveform(aedWidth);
+  const { message, sendMessage } = useTcpServerContext();
+  const {
+    waveform,
+    drawWaveformPoint,
+    clearWaveform,
+    stopWaveform,
+    pauseWaveform,
+    resumeWaveform,
+  } = useWaveform(aedWidth);
+  const hasSkippedPowerStepRef = useRef(false);
 
   const [currentRhythm, setCurrentRhythm] = useState(null);
   const [steps, setSteps] = useState([]);
@@ -217,6 +224,7 @@ export default function useLiveAEDClient() {
     switch (type) {
       case 'SET_RHYTHM': {
         if (data && aedSequences[data]) {
+          setDisplayMessage(`Instructor changed rhythm to ${data}`);
           setCurrentRhythm({
             ...heartRhythms[data],
             name: data, // force short key as name: "Sinus"
@@ -225,6 +233,16 @@ export default function useLiveAEDClient() {
           setSteps(aedSequences[data]);
           setStepIndex(0);
           const first = aedSequences[data][0];
+
+          // If AED is already ON, skip the power step automatically
+          if (poweredOn && first?.action === 'power') {
+            setStepIndex(1);
+            setExpectedAction(aedSequences[data][1]?.action ?? null);
+          } else {
+            // AED is OFF → still require step 0
+            setStepIndex(0);
+            setExpectedAction(first?.action ?? null);
+          }
           setExpectedAction(first?.action ?? null);
           const pattern = heartRhythms[data].generate();
           const spacing = aedWidth / (pattern.length - 1);
@@ -292,6 +310,7 @@ export default function useLiveAEDClient() {
           setStepIndex(0);
           lastPlayKeyRef.current = '';
           shouldAutoplayRef.current = true;
+          hasSkippedPowerStepRef.current = false;
         } else if (data === 'STOP') {
           setDisplayMessage('Instructor stopped the simulation');
           stopAudio();
@@ -300,9 +319,27 @@ export default function useLiveAEDClient() {
           setTimer(0);
           setInstructorStarted(false);
           powerOffAED();
+          hasSkippedPowerStepRef.current = false;
         } else if (data === 'PAUSE') {
           setDisplayMessage('Simulation paused by instructor');
           pauseAED();
+          pauseWaveform();
+          sendMessage(
+            JSON.stringify({
+              type: 'STUDENT_PAUSE_STATE',
+              paused: true,
+            }),
+          );
+        } else if (data === 'RESUME') {
+          setDisplayMessage('Instructor resumed the simulation');
+          pauseAED(false);
+          resumeWaveform();
+          sendMessage(
+            JSON.stringify({
+              type: 'STUDENT_PAUSE_STATE',
+              paused: false,
+            }),
+          );
         }
 
         break;
@@ -331,6 +368,33 @@ export default function useLiveAEDClient() {
       case 'CONTROL_MODE':
         setDisplayMessage(`Instructor changed control mode: ${data}`);
         break;
+      case 'PADS_ADVISED': {
+        const openPadStepIndex = steps.findIndex(s => s.action === 'open');
+        if (openPadStepIndex >= 0) {
+          setStepIndex(openPadStepIndex);
+          setExpectedAction('open');
+        }
+
+        setIsSwitchOpen(true);
+        sendMessage('Instructor advised pads');
+
+        return;
+      }
+      case 'SHOCK_ADVISED': {
+        const shockStepIndex = steps.findIndex(s => s.action === 'shock');
+
+        if (shockStepIndex >= 0) {
+          setStepIndex(shockStepIndex);
+          setExpectedAction('shock');
+        }
+
+        setDisplayMessage('Shock advised by instructor');
+
+        return;
+      }
+      case 'FINISH':
+        setDisplayMessage('Instructor finished the simulation');
+        return;
 
       default:
         setDisplayMessage('Received instruction from instructor');
@@ -359,6 +423,8 @@ export default function useLiveAEDClient() {
     handleAction,
     playStepAudio,
     stopAudio,
+    clearWaveform,
+    lastPlayKeyRef,
     positions,
     setPositions,
     placedPads,
@@ -367,5 +433,7 @@ export default function useLiveAEDClient() {
     setDisplayMessage,
     isSwitchOpen,
     setIsSwitchOpen,
+    hasSkippedPowerStepRef,
+    resetSequence,
   };
 }

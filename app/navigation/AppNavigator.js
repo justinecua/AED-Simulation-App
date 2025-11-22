@@ -135,7 +135,7 @@ export default function AppNavigator() {
             <LiveInstructorProvider>
               <InstructorLiveSessionScreen
                 goHome={() => handleNavigation('role')}
-                goBack={() => handleNavigation('connectStudent')}
+                goBack={() => handleNavigation('instructor')}
               />
             </LiveInstructorProvider>
           )}

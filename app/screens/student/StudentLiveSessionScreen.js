@@ -5,13 +5,14 @@ import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
 
 import Header from '../../components/Header';
-import AEDWaveform from '../../components/AEDWaveform';
+import AEDWaveformLiveSession from '../../components/AEDWaveformLiveSession';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
-import ToneDisplay from '../../components/ToneDisplay';
+import ToneDisplayLiveSession from '../../components/ToneDisplayLiveSession';
 import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 import { useTcpServerContext } from '../../context/TcpServerContext';
 import { useLiveAEDClientContext } from '../../context/LiveAEDClientContext';
+import FinishDialog from '../../components/FinishDialog';
 
 const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
   const {
@@ -38,15 +39,32 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     setPlacedPads,
     displayMessage,
     setDisplayMessage,
+    hasSkippedPowerStepRef,
+    stopAudio,
+    clearWaveform,
+    lastPlayKeyRef,
+    resetSequence,
   } = useLiveAEDClientContext();
 
   const { sendMessage, connectionStatus, message } = useTcpServerContext();
   const [input, setInput] = useState('');
+  const [showFinishDialog, setShowFinishDialog] = useState(false);
 
   // Unified display text: show first step while OFF, current step after ON
+  // const uiStepText = (() => {
+  //   if (!instructorStarted || steps.length === 0) return '';
+  //   if (!poweredOn) return steps[0]?.text || '';
+  //   return steps[stepIndex]?.text || '';
+  // })();
+
   const uiStepText = (() => {
     if (!instructorStarted || steps.length === 0) return '';
-    if (!poweredOn) return steps[0]?.text || '';
+
+    // While AED is OFF, don't show any step prompt
+    if (!poweredOn) {
+      return stepIndex === 0 ? steps[0]?.text : '';
+    }
+
     return steps[stepIndex]?.text || '';
   })();
 
@@ -56,6 +74,50 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     sendMessage(input.trim());
     setInput('');
   };
+
+  const resetSimulation = () => {
+    //resetSequence();
+    powerOffAED();
+    pauseAED();
+
+    stopAudio();
+
+    setIsSwitchOpen(false);
+    setPositions({
+      'Pad 1': { x: 15, y: 10 },
+      'Pad 2': { x: 10, y: 75 },
+    });
+    setPlacedPads({ 'Pad 1': false, 'Pad 2': false });
+
+    setDisplayMessage('Waiting for instructor...');
+  };
+
+  const handleRetry = () => {
+    setShowFinishDialog(false);
+
+    sendMessage(JSON.stringify({ type: 'STUDENT_TRY_AGAIN' }));
+
+    resetSimulation();
+  };
+
+  const handleBackHome = () => {
+    setShowFinishDialog(false);
+    resetSimulation();
+    goHomeStudent();
+  };
+
+  useEffect(() => {
+    if (!message) return;
+
+    try {
+      const parsed = JSON.parse(message);
+      if (parsed.type === 'FINISH') {
+        setShowFinishDialog(true);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [message]);
 
   useEffect(() => {
     if (!currentRhythm) return;
@@ -162,8 +224,9 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
           {/* AED Display */}
           <View style={style.contentCenter}>
             <View style={aedStyle.aedBox}>
-              <AEDWaveform
+              <AEDWaveformLiveSession
                 started={started}
+                poweredOn={poweredOn}
                 currentRhythm={currentRhythm}
                 waveform={waveform}
                 strokeColors={strokeColors}
@@ -182,9 +245,10 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                       startAED();
                       sendMessage('Student powered on the AED');
 
-                      // Always skip step 0 after powering ON
-                      if (steps.length > 1) {
+                      // ⭐ Only skip power step ONCE
+                      if (!hasSkippedPowerStepRef.current && stepIndex === 0) {
                         nextStep();
+                        hasSkippedPowerStepRef.current = true;
                       }
                     } else {
                       sendMessage(
@@ -193,13 +257,12 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                           data: null,
                         }),
                       );
-
-                      //  Student sees their own warning
                       setDisplayMessage(
                         'Instructor has not started the simulation yet',
                       );
                     }
                   } else {
+                    // OFF logic
                     powerOffAED();
                     pauseAED();
                     sendMessage('Student turned off the AED');
@@ -211,10 +274,17 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                     setPlacedPads({ 'Pad 1': false, 'Pad 2': false });
                   }
                 }}
-                onShockPress={() => handleAction('shock')}
-                flashing={
-                  steps[stepIndex]?.text === 'Press flashing shock button'
-                }
+                onShockPress={() => {
+                  handleAction('shock');
+
+                  sendMessage(
+                    JSON.stringify({
+                      type: 'STUDENT_ACTION',
+                      data: 'SHOCK_PRESSED',
+                    }),
+                  );
+                }}
+                flashing={expectedAction === 'shock'}
               />
             </View>
           </View>
@@ -275,8 +345,15 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
 
       {/* Tone + Chat */}
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        {started && steps.length > 0 && <ToneDisplay text={uiStepText} />}
+        {started && steps.length > 0 && (
+          <ToneDisplayLiveSession text={uiStepText} />
+        )}
       </View>
+      <FinishDialog
+        visible={showFinishDialog}
+        onRetry={handleRetry}
+        onHome={handleBackHome}
+      />
     </View>
   );
 };
