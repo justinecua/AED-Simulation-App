@@ -41,9 +41,7 @@ const ConnectionDialog = ({
     <Modal transparent animationType="fade" visible={visible}>
       <View style={styles.overlay}>
         <View className="dialog" style={styles.dialog}>
-          <Text style={styles.title}>Connected</Text>
-
-          {!!status && <Text style={styles.message}>{status}</Text>}
+          {!!status && <Text style={styles.title}>{status}</Text>}
 
           <Text style={styles.message}>
             Your ID: <Text style={styles.id}>{id || '...'}</Text>
@@ -74,8 +72,12 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
   },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 8 },
-  message: { fontSize: 15, textAlign: 'center', marginBottom: 10 },
+  title: { fontSize: 19, fontWeight: 'bold', marginBottom: 8 },
+  message: {
+    fontSize: 17,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
   id: { fontWeight: 'bold', color: '#2563eb' },
   button: {
     backgroundColor: '#2563eb',

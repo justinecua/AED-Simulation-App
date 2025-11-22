@@ -6,11 +6,8 @@ const scale = size => Math.round((size * width) / 375);
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    alignItems: 'center',
     padding: 15,
-    gap: 20,
-    paddingBottom: 80,
+    gap: 10,
     backgroundColor: '#ffffff',
   },
 
@@ -28,7 +25,7 @@ const styles = StyleSheet.create({
 
   mainTitle: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: scale(16),
+    fontSize: scale(14.5),
     color: Colors.text,
   },
 
@@ -36,6 +33,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: scale(12),
     color: Colors.text,
+    fontWeight: 900,
   },
 
   responseBox: {
@@ -65,7 +63,7 @@ const styles = StyleSheet.create({
   },
 
   controlBox: {
-    width: '48%',
+    width: '46%',
     marginVertical: 6,
     marginHorizontal: '1%',
     padding: scale(12),
@@ -90,7 +88,7 @@ const styles = StyleSheet.create({
 
   controlLabel: {
     fontFamily: 'Poppins-Regular',
-    fontSize: scale(13),
+    fontSize: scale(11),
     flexShrink: 1,
     marginTop: 3,
     flexWrap: 'wrap',
@@ -108,7 +106,6 @@ const styles = StyleSheet.create({
   rhythmBox: {
     padding: scale(12),
     borderRadius: 10,
-    flexBasis: width < 500 ? '45%' : '30%', // ✅ adaptive for tablets
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
