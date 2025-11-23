@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: Colors.background,
     position: 'relative',
-    rowGap: 40,
+    rowGap: 35,
     alignItems: 'center',
     marginBottom: '10%',
   },
@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
 
   screenTitle: {
@@ -87,7 +86,7 @@ const styles = StyleSheet.create({
   },
 
   centerContent: {
-    marginTop: '10%',
+    marginTop: '20%',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

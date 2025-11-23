@@ -201,6 +201,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  emptySession: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: vnormalize(15),
+    marginBottom: vnormalize(10),
+  },
+  emptyText: {
+    fontStyle: 'italic',
+    color: Colors.text,
+    fontFamily: 'Poppins-Regular',
+    fontSize: normalize(14),
+  },
 });
 
 export default styles;

@@ -2,22 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Info, Timer } from 'lucide-react-native';
 
-import { useAEDContext } from '../context/AEDContext';
-import Colors from '../constants/colors';
-import style from '../styles/InstructorTestScenarioStyle';
-import styles from '../styles/PadPlacementStyle';
-import style2 from '../styles/StudentAutoModeStyle';
+import { useAEDContext } from '../../context/AEDContext';
+import Colors from '../../constants/colors';
+import style from '../../styles/InstructorTestScenarioStyle';
+import styles from '../../styles/PadPlacementStyle';
+import style2 from '../../styles/StudentAutoModeStyle';
 
-import { targets, padSizes } from '../components/PadPlacement/padConfig';
+import { targets, padSizes } from '../../components/PadPlacement/padConfig';
 
-import Header from '../components/Header';
-import ModeControls from '../components/ModeControl';
-import ToneDisplay from '../components/ToneDisplay';
+import Header from '../../components/Header';
+import ModeControls from '../../components/ModeControl';
+import ToneDisplay from '../../components/ToneDisplay';
 
-import Wire from '../components/PadPlacement/wire';
-import DraggablePad from '../components/PadPlacement/draggablePad';
-const PadPlacementScreen = ({ role = 'student', onBack }) => {
-  const isInstructor = role === 'instructor';
+import Wire from '../../components/PadPlacement/wire';
+import DraggablePad from '../../components/PadPlacement/draggablePad';
+
+const PadPlacementScreen = ({ goStudentAutoMode }) => {
   const {
     started,
     paused,
@@ -73,8 +73,6 @@ const PadPlacementScreen = ({ role = 'student', onBack }) => {
     setPositions(p => ({ ...p, [label]: { x, y } }));
   };
 
-  const [isDragging, setIsDragging] = useState(false);
-
   useEffect(() => {
     if (steps[stepIndex]?.action !== 'attach') {
       attachHandledRef.current = false;
@@ -94,8 +92,8 @@ const PadPlacementScreen = ({ role = 'student', onBack }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container} scrollEnabled={!isDragging} bounces={false}>
-        <Header goBack={onBack} role={role} />
+      <ScrollView contentContainerStyle={styles.container}>
+        <Header goBack={goStudentAutoMode} role="student" />
 
         {/* Info Header */}
         <View style={styles.contentContainer}>
@@ -130,7 +128,7 @@ const PadPlacementScreen = ({ role = 'student', onBack }) => {
           <View style={styles.placementContainer}>
             <View style={styles.bodyContainer}>
               <Image
-                source={require('../assets/images/padplacementModel.png')}
+                source={require('../../assets/images/padplacementModel.png')}
                 style={styles.bodyImage}
               />
 
@@ -180,12 +178,7 @@ const PadPlacementScreen = ({ role = 'student', onBack }) => {
                   targetX={targets[label].x}
                   targetY={targets[label].y}
                   onMove={handleMove}
-                  onRelease={(x,y,l,s) => {
-                    setIsDragging(false);
-                    handleRelease(x,y,l,s);
-                  }}
-                  onDragStart={() => setIsDragging(true)}
-                  onDragEnd={() => setIsDragging(false)}
+                  onRelease={handleRelease}
                   padStyle={[
                     styles.aedPad,
                     label === 'Pad 1'

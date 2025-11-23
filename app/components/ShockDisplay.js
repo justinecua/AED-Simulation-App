@@ -18,7 +18,7 @@ const ShockDisplay = ({ displayTop, shockText }) => {
 
 const style = StyleSheet.create({
   top: {
-    top: 80,
+    top: 150,
   },
   bottom: {
     bottom: 30,
