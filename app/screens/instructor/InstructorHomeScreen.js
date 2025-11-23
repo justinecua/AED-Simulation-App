@@ -14,6 +14,7 @@ const InstructorHomeScreen = ({
   onSelectAutoMode,
   goConnectToStudent,
   goScenarioBuilder,
+  goManageScenarios,
 }) => {
   useEffect(() => {
     (async () => {
@@ -98,6 +99,21 @@ const InstructorHomeScreen = ({
                   onPress={goScenarioBuilder}
                 >
                   <Text style={styles.buttonText}>Create Scenario</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.mode}>
+                <View style={styles.modeIcon}>
+                  <History color="white" size={23} />
+                </View>
+                <Text style={styles.modeTitle}>Manage Scenarios</Text>
+                <Text style={styles.modeDescription}>
+                  View, edit, or delete your saved scenarios
+                </Text>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => goManageScenarios()}
+                >
+                  <Text style={styles.buttonText}>Open</Text>
                 </TouchableOpacity>
               </View>
             </View>

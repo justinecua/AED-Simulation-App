@@ -21,7 +21,7 @@ const style = StyleSheet.create({
     top: 80,
   },
   bottom: {
-    bottom: 115,
+    bottom: 95,
   },
   tone: {
     position: 'absolute',

@@ -32,36 +32,6 @@ export default function useAED() {
 
   const [paused, setPaused] = useState(false);
   const [currentRhythm, setCurrentRhythm] = useState(null);
-  const [scenarioOverride, setScenarioOverride] = useState(null);
-
-  const sanitizeScenario = scenario => {
-    if (!scenario) return null;
-
-    const sanitizedSteps = Array.isArray(scenario.steps)
-      ? scenario.steps.map(step => ({
-          text: step?.text ?? '',
-          action: step?.action ?? 'auto',
-          flashing:
-            typeof step?.flashing === 'boolean' ? step.flashing : undefined,
-          audio: step?.audio ?? '',
-        }))
-      : [];
-
-    return {
-      ...scenario,
-      rhythm: scenario.rhythm || 'VFib',
-      steps: sanitizedSteps,
-    };
-  };
-
-  const applyScenarioOverride = scenario => {
-    const sanitized = sanitizeScenario(scenario);
-    setScenarioOverride(sanitized);
-  };
-
-  const clearScenarioOverride = () => {
-    setScenarioOverride(null);
-  };
 
   const powerOnAED = () => {
     setPoweredOn(true);
@@ -86,27 +56,15 @@ export default function useAED() {
     }
 
     const rhythmKeys = Object.keys(heartRhythms);
-
-    let selectedRhythmKey = scenarioOverride?.rhythm;
-    let overrideSteps = scenarioOverride?.steps;
-
-    if (!selectedRhythmKey || !heartRhythms[selectedRhythmKey]) {
-      selectedRhythmKey =
-        rhythmKeys[Math.floor(Math.random() * rhythmKeys.length)];
-    }
-
-    if (!Array.isArray(overrideSteps)) {
-      overrideSteps = null;
-    }
-
-    const selectedRhythm =
-      heartRhythms[selectedRhythmKey] || heartRhythms[rhythmKeys[0]];
+    const selectedRhythmKey =
+      rhythmKeys[Math.floor(Math.random() * rhythmKeys.length)];
+    const selectedRhythm = heartRhythms[selectedRhythmKey];
     const pattern = selectedRhythm.generate();
     const spacing = aedWidth / (pattern.length - 1);
 
     setCurrentRhythm({ name: selectedRhythmKey, bpm: selectedRhythm.bpm });
     clearWaveform();
-    loadSequence(selectedRhythmKey, overrideSteps);
+    loadSequence(selectedRhythmKey);
 
     setStarted(true);
     setPaused(false);
@@ -171,8 +129,5 @@ export default function useAED() {
     prevStep,
     timer,
     handleAction,
-    scenarioOverride,
-    setScenarioOverride: applyScenarioOverride,
-    clearScenarioOverride,
   };
 }
