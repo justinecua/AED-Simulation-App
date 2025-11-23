@@ -1,22 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 
 import Header from '../../components/Header';
 import styles from '../../styles/StudentSimulationTipsStyle';
+import style from '../../styles/InstructorTestScenarioStyle';
+import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
 
 import AEDWaveform from '../../components/AEDWaveform';
 import aedStyle from '../../styles/aedBoxStyle';
 import AEDControls from '../../components/AEDControls';
-import useAED from '../../hooks/useAED';
+import { useAEDContext } from '../../context/AEDContext';
 import ShockDisplay from '../../components/ShockDisplay';
 import RhythmButton from '../../components/RhythmButton';
 import ToneDisplay from '../../components/ToneDisplay';
 
-import { Activity, Info } from 'lucide-react-native';
+import {
+  Activity,
+  Info,
+  Timer,
+  Wifi,
+  Hand,
+  ArrowRightLeft,
+} from 'lucide-react-native';
 
-const SimulationTipsScreen = ({ goHomeStudent }) => {
+const SimulationTipsScreen = ({
+  goHomeStudent,
+  goApplyPads,
+  sessionType = 'Simulation',
+}) => {
   const {
+    poweredOn,
     started,
     paused,
     currentRhythm,
@@ -25,7 +46,8 @@ const SimulationTipsScreen = ({ goHomeStudent }) => {
     steps,
     stepIndex,
     expectedAction,
-    changeRhythm,
+    powerOnAED,
+    powerOffAED,
     startAED,
     pauseAED,
     resumeAED,
@@ -33,7 +55,14 @@ const SimulationTipsScreen = ({ goHomeStudent }) => {
     nextStep,
     timer,
     handleAction,
-  } = useAED();
+    isSwitchOpen,
+    setIsSwitchOpen,
+    positions,
+    setPositions,
+    placedPads,
+    setPlacedPads,
+    changeRhythm,
+  } = useAEDContext();
 
   const displayTop = true;
   const [activeTab, setActiveTab] = useState('Rhythms');
@@ -43,48 +72,58 @@ const SimulationTipsScreen = ({ goHomeStudent }) => {
     currentSequenceStep?.text.startsWith('Shock advised') ||
     currentSequenceStep?.text.startsWith('No shock advised');
 
-  const [currentStep, setCurrentStep] = useState(1);
-  const stepInterval = 5000;
-
   const options = ['Rhythms', 'AED Steps', 'Pad Placement'];
   const rhythmChoices = ['VFib', 'VTach', 'Asystole', 'Sinus'];
+
   const aedSteps = ['Power', 'Pads', 'Analyze', 'Shock / No Shock'];
-  const stepTips = [
-    'Turn on the AED to start',
-    "Expose the patient's chest & attach pads",
-    'Stand clear, AED will analyze',
-    'Shock if advised, follow prompts',
-  ];
+  const aedStepActions = {
+    Power: ['power'],
+    Pads: ['remove', 'open', 'attach'],
+    Analyze: ['analyze'],
+  };
+
+  const stepTipsMap = {
+    power: 'Turn on the AED to start',
+    remove: "Expose the patient's chest & attach pads",
+    open: "Expose the patient's chest & attach pads",
+    attach: "Expose the patient's chest & attach pads",
+    analyze: 'Stand clear, AED will analyze',
+    shock: 'Shock if advised, follow prompts',
+    auto: 'Follow AED prompts',
+  };
+
+  const [activeTip, setActiveTip] = useState('Turn on the AED to start');
 
   useEffect(() => {
     let timeoutId;
-    let intervalId;
 
     if (activeTab === 'AED Steps') {
-      // Force reset: stop then restart AED fresh
+      // Stop before starting fresh (only when switching to AED Steps tab)
       stopAED();
 
       timeoutId = setTimeout(() => {
-        startAED(); // start fresh
-        setCurrentStep(1);
-
-        intervalId = setInterval(() => {
-          setCurrentStep(prev =>
-            prev < aedSteps.length ? prev + 1 : aedSteps.length,
-          );
-        }, stepInterval);
-      }, 300); // small delay so stopAED finishes first
+        startAED(); // Start fresh once
+      }, 300);
     } else {
-      // Cleanup when leaving tab
-      setCurrentStep(0);
+      // When leaving AED Steps tab
+      setActiveTip('');
       stopAED();
     }
 
-    return () => {
-      clearTimeout(timeoutId);
-      clearInterval(intervalId);
-    };
+    return () => clearTimeout(timeoutId);
   }, [activeTab]);
+
+  useEffect(() => {
+    if (
+      activeTab === 'AED Steps' &&
+      steps.length > 0 &&
+      stepIndex < steps.length
+    ) {
+      const currentAction = steps[stepIndex]?.action;
+      const newTip = stepTipsMap[currentAction] || 'Follow AED prompts';
+      setActiveTip(newTip);
+    }
+  }, [stepIndex, activeTab, steps]);
 
   return (
     <ScrollView style={styles.container}>
@@ -92,26 +131,136 @@ const SimulationTipsScreen = ({ goHomeStudent }) => {
 
       <View style={styles.main}>
         <View style={styles.mainHead}>
-          <View style={{ minWidth: 1 }}>
-            {!started && activeTab !== 'AED Steps' && (
+          <View>
+            {activeTab !== 'AED Steps' && (
               <TouchableOpacity style={styles.screenTitle}>
-                <Text style={styles.titleText}>Simulation Tips</Text>
+                <Text style={styles.titleText}>{sessionType} Tips</Text>
               </TouchableOpacity>
             )}
           </View>
-          <View style={styles.tipContainer}>
-            {activeTab === 'AED Steps' && (
-              <View style={styles.tip}>
-                <View style={styles.tipArrow} />
-                <Text style={styles.tipText}>
-                  {' '}
-                  {stepTips[currentStep - 1] || 'Follow AED prompts'}
-                </Text>
+          {activeTab === 'AED Steps' && <View style={{ flex: 1 }} />}
+          <View style={{ flexShrink: 1 }}>
+            <View style={styles.tipContainer}>
+              {activeTab === 'AED Steps' && (
+                <>
+                  <View style={styles.tip}>
+                    <View style={styles.tipArrow} />
+                    {!steps || steps.length === 0 || !steps[stepIndex] ? (
+                      <View
+                        style={{
+                          flex: 1,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          paddingVertical: 5,
+                        }}
+                      >
+                        <ActivityIndicator size="small" color={Colors.button} />
+                      </View>
+                    ) : (
+                      <Text style={styles.tipText}>{activeTip}</Text>
+                    )}
+                  </View>
+                  <TouchableOpacity style={styles.info}>
+                    <Info color={Colors.text} size={22} />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+            <View>
+              <View
+                style={[
+                  style2.studentSubWrapper,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    alignItems: 'center',
+                  },
+                ]}
+              >
+                {activeTab === 'Rhythms' && (
+                  <>
+                    <View style={style.timerIcon}>
+                      <Timer color={Colors.text} size={25} />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            marginLeft: 2,
+                            color: '#ed1313ff',
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {Math.floor(timer / 60)}:
+                          {(timer % 60).toString().padStart(2, '0')}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <TouchableOpacity style={style2.wifiButton}>
+                      <Info color={Colors.text} size={22} />
+                    </TouchableOpacity>
+                  </>
+                )}
               </View>
-            )}
-            <TouchableOpacity style={styles.info}>
-              <Info color={Colors.text} size={22} />
-            </TouchableOpacity>
+              <View
+                style={[style2.studentWrapper2, { justifyContent: 'flex-end' }]}
+              >
+                {activeTab !== 'Pad Placement' && (
+                  <View style={style2.studentWrapper2SubRight}>
+                    {/* Hand only shows if package is NOT open */}
+                    {/* {steps[stepIndex]?.text !== 'Open pad package' &&
+                !isSwitchOpen && (
+                  <TouchableOpacity
+                    style={style2.handButton}
+                    onPress={() => {
+                      handleAction('remove');
+                      setIsSwitchOpen(true);
+                    }}
+                  >
+                    <Hand color={Colors.text} size={22} />
+                  </TouchableOpacity>
+                )} */}
+
+                    <TouchableOpacity
+                      style={[
+                        style2.handButton,
+                        steps[stepIndex]?.action !== 'remove' && {
+                          opacity: 0.5,
+                        },
+                      ]}
+                      disabled={steps[stepIndex]?.action !== 'remove'}
+                      onPress={() => {
+                        handleAction('remove');
+                        setIsSwitchOpen(true);
+                      }}
+                    >
+                      <Hand color={Colors.text} size={22} />
+                    </TouchableOpacity>
+
+                    {/* Pad package button shows if step says open OR already open */}
+                    {steps[stepIndex]?.text === 'Open pad package' && (
+                      <TouchableOpacity
+                        style={[style2.padPackageButton]}
+                        onPress={() => {
+                          handleAction('open');
+                          if (expectedAction === 'open') {
+                            setIsSwitchOpen(true);
+                            goApplyPads();
+                          }
+                        }}
+                      >
+                        <ArrowRightLeft color="#fff" size={22} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </View>
+            </View>
           </View>
         </View>
 
@@ -119,7 +268,10 @@ const SimulationTipsScreen = ({ goHomeStudent }) => {
           (isShockStep ? (
             <ShockDisplay
               displayTop={displayTop}
-              shockText={currentSequenceStep.text.replace(/\s*\(.*?\)\s*/g, '')} // removes parentheses
+              shockText={currentSequenceStep?.text.replace(
+                /\s*\(.*?\)\s*/g,
+                '',
+              )} // removes parentheses
             />
           ) : (
             started &&
@@ -147,11 +299,32 @@ const SimulationTipsScreen = ({ goHomeStudent }) => {
                 steps={steps}
                 stepIndex={stepIndex}
                 expectedAction={expectedAction}
+                displayText={
+                  steps.some((s, i) => i <= stepIndex && s.action === 'analyze')
+                    ? ''
+                    : steps[stepIndex]?.text ?? ''
+                }
               />
               <AEDControls
-                started={started}
-                onPowerPress={() => handleAction('power')}
-                onShockPress={() => handleAction('remove')}
+                started={poweredOn}
+                onPowerPress={() => {
+                  if (!poweredOn) {
+                    powerOnAED();
+                    if (expectedAction === 'power') nextStep();
+                  } else {
+                    powerOffAED();
+                    setIsSwitchOpen(false);
+                    setPositions({
+                      'Pad 1': { x: 15, y: 10 },
+                      'Pad 2': { x: 10, y: 75 },
+                    });
+                    setPlacedPads({ 'Pad 1': false, 'Pad 2': false });
+                  }
+                }}
+                onShockPress={() => handleAction('shock')}
+                flashing={
+                  steps[stepIndex]?.text === 'Press flashing shock button'
+                }
               />
             </View>
           )}
@@ -182,34 +355,83 @@ const SimulationTipsScreen = ({ goHomeStudent }) => {
                   key={opt}
                   label={opt}
                   Icon={Activity}
-                  fontSize={10}
+                  fontSize={9}
                   onPress={() => changeRhythm(opt)}
                 />
               ))}
 
-            {activeTab === 'AED Steps' &&
-              aedSteps.map((label, index) => {
-                const stepNumber = index + 1;
-                const isActive = stepNumber === currentStep;
-                return (
+            {activeTab === 'AED Steps' && (
+              <>
+                {!steps || steps.length === 0 || !steps[stepIndex] ? (
                   <View
-                    key={label}
-                    style={[styles.stepGroup, isActive && styles.activeStep]}
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingVertical: 5,
+                    }}
                   >
-                    <View style={[styles.step, isActive && styles.currentStep]}>
-                      <Text
+                    <ActivityIndicator size="large" color={Colors.button} />
+                  </View>
+                ) : (
+                  aedSteps.map((label, index) => {
+                    const stepNumber = index + 1;
+                    const currentStepObj = steps[stepIndex];
+                    const { action, text } = currentStepObj;
+
+                    let isActive = false;
+                    switch (label) {
+                      case 'Pads':
+                        isActive = ['remove', 'open', 'attach'].includes(
+                          action?.toLowerCase(),
+                        );
+                        break;
+                      case 'Shock / No Shock':
+                        isActive =
+                          action === 'shock' ||
+                          text?.toLowerCase().includes('shock advised') ||
+                          text?.toLowerCase().includes('no shock advised');
+                        break;
+                      default:
+                        isActive =
+                          action &&
+                          aedStepActions[label]?.includes(action.toLowerCase());
+                    }
+
+                    return (
+                      <View
+                        key={label}
                         style={[
-                          styles.stepText,
-                          isActive && styles.currentStep,
+                          styles.stepGroup,
+                          isActive && styles.activeStep,
                         ]}
                       >
-                        {stepNumber}
-                      </Text>
-                    </View>
-                    <Text style={styles.stepText}>{label}</Text>
-                  </View>
-                );
-              })}
+                        <View
+                          style={[styles.step, isActive && styles.currentStep]}
+                        >
+                          <Text
+                            style={[
+                              styles.stepText,
+                              isActive && styles.currentStep,
+                            ]}
+                          >
+                            {stepNumber}
+                          </Text>
+                        </View>
+                        <Text
+                          style={[
+                            styles.stepText,
+                            isActive && styles.currentLabelText,
+                          ]}
+                        >
+                          {label}
+                        </Text>
+                      </View>
+                    );
+                  })
+                )}
+              </>
+            )}
 
             {activeTab === 'Pad Placement' && (
               <Text style={styles.placementText}>
