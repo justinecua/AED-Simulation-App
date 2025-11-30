@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Play, Square, Pause, Hand, Zap, Activity } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from '../../styles/InstructorLiveSessionScreenStyle';
 import Header from '../../components/Header';
@@ -68,6 +69,30 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
   ];
 
   const readableMessage = message;
+  const saveInstructorLiveSession = async () => {
+    try {
+      const newSession = {
+        type: 'Live Session',
+        rhythm: selectedRhythm,
+        startTime: new Date().toISOString(),
+        totalTime: 0,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_instructor');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_instructor',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Instructor live session saved!');
+    } catch (e) {
+      console.log('Error saving live session:', e);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -108,7 +133,13 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
               Icon={item.icon}
               disabled={item.disabled}
               onPress={() => {
-                if (!item.disabled) sendSimulationControl(item.send);
+                if (item.disabled) return;
+
+                if (item.send === 'FINISH') {
+                  saveInstructorLiveSession();
+                }
+
+                sendSimulationControl(item.send);
               }}
             />
           ))}

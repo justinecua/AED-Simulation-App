@@ -19,6 +19,13 @@ const style2 = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  studentWrapper3: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 50,
+  },
   studentWrapper2Sub: {
     height: '100%',
   },

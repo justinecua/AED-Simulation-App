@@ -1,20 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+
 import Colors from '../../constants/colors';
 import FloatingHome from '../../components/FloatingHome';
 import { Play, Wifi, Hand, History } from 'lucide-react-native';
+
 import LinearGradient from 'react-native-linear-gradient';
 import styles from '../../styles/instructorHomeStyles';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getOrCreateInstructorId } from '../../data/roleIds';
-import { useEffect } from 'react';
 
 const InstructorHomeScreen = ({
   goHome,
   onSelectAutoMode,
   goConnectToStudent,
   goScenarioBuilder,
+  goManageScenarios,
 }) => {
+  const [sessions, setSessions] = useState([]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -23,8 +28,38 @@ const InstructorHomeScreen = ({
       } catch (e) {
         console.warn('Error loading Instructor ID:', e);
       }
+
+      // Load Instructor-only sessions
+      const data = await AsyncStorage.getItem('aed_sessions_instructor');
+      if (data) setSessions(JSON.parse(data));
     })();
   }, []);
+
+  const formatDate = iso => {
+    if (!iso) return '';
+    const date = new Date(iso);
+
+    return date
+      .toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      })
+      .replace(', ', ' - ');
+  };
+
+  const formatTime = totalSeconds => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return minutes === 0
+      ? `${seconds} sec`
+      : `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
@@ -47,7 +82,6 @@ const InstructorHomeScreen = ({
                 <Text style={styles.hsubTitle}>
                   Start a session and guide your student
                 </Text>
-                {/* <Text style={styles.hsubTitle}>student!</Text> */}
               </View>
             </View>
 
@@ -100,36 +134,73 @@ const InstructorHomeScreen = ({
                   <Text style={styles.buttonText}>Create Scenario</Text>
                 </TouchableOpacity>
               </View>
+
+              <View style={styles.mode}>
+                <View style={styles.modeIcon}>
+                  <History color="white" size={23} />
+                </View>
+                <Text style={styles.modeTitle}>Manage Scenarios</Text>
+                <Text style={styles.modeDescription}>
+                  View, edit, or delete your saved scenarios
+                </Text>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={goManageScenarios}
+                >
+                  <Text style={styles.buttonText}>Open</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-            {/* Recent Sessions */}
+            {/* ================== RECENT SESSIONS ================== */}
             <View style={styles.recentSessionsContainer}>
               <View style={styles.rscTitle}>
                 <Text style={styles.rscTitleText}>Recent Sessions</Text>
               </View>
 
-              {[1, 2, 3, 4].map((item, index) => (
-                <View key={index} style={styles.rsCard}>
-                  <View style={styles.rsCardSub}>
-                    <View style={styles.rscIcon}>
-                      <History color="white" size={23} />
+              <View>
+                {sessions.length === 0 ? (
+                  <View style={styles.emptySession}>
+                    <View style={styles.emptyIconContainer}>
+                      <History color="#999" size={32} />
                     </View>
-                    <View style={styles.rsDetails}>
-                      <Text style={styles.rsDetailsTitle}>Practice Mode</Text>
-                      <Text style={styles.rsDetailsDate}>
-                        July 10, 2025 - 2:15 PM
+                    <Text style={styles.emptyTitle}>No sessions yet</Text>
+                    <Text style={styles.emptySubtitle}>
+                      Start a session to see history here
+                    </Text>
+                  </View>
+                ) : (
+                  sessions.slice(0, 4).map((session, index) => (
+                    <View style={styles.rsCard} key={index}>
+                      <View style={styles.rsCardSub}>
+                        <View style={styles.rscIcon}>
+                          <History color="white" size={23} />
+                        </View>
+
+                        <View style={styles.rsDetails}>
+                          <Text style={styles.rsDetailsTitle}>
+                            {session.type}
+                          </Text>
+                          <Text style={styles.rsDetailsDate}>
+                            {formatDate(session.startTime)}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <Text>
+                        {typeof session.totalTime === 'number'
+                          ? formatTime(session.totalTime)
+                          : '0 sec'}
                       </Text>
                     </View>
-                  </View>
-                  <View>
-                    <Text>3 min 42 sec</Text>
-                  </View>
-                </View>
-              ))}
+                  ))
+                )}
+              </View>
             </View>
           </LinearGradient>
         </View>
       </ScrollView>
+
       <FloatingHome onPress={goHome} />
     </View>
   );

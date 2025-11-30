@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import style from '../../styles/InstructorTestScenarioStyle';
 import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '../../components/Header';
 import AEDWaveformLiveSession from '../../components/AEDWaveformLiveSession';
@@ -100,8 +101,9 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     resetSimulation();
   };
 
-  const handleBackHome = () => {
+  const handleBackHome = async () => {
     setShowFinishDialog(false);
+    await saveLiveSession();
     resetSimulation();
     goHomeStudent();
   };
@@ -118,6 +120,8 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
       // ignore
     }
   }, [message]);
+  const sessionStartRef = useRef(new Date().toISOString());
+  const [hiddenTimer, setHiddenTimer] = useState(0);
 
   useEffect(() => {
     if (!currentRhythm) return;
@@ -127,9 +131,51 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
     console.log('StrokeColors keys:', Object.keys(strokeColors));
   }, [currentRhythm, strokeColors]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHiddenTimer(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval); // cleanup
+  }, []);
+
+  const saveLiveSession = async () => {
+    try {
+      const endTime = new Date().toISOString();
+
+      const newSession = {
+        type: 'Live Session',
+        startTime: sessionStartRef.current,
+        endTime,
+        totalTime: hiddenTimer,
+        step: steps[stepIndex]?.text || '',
+        rhythm: currentRhythm?.name || currentRhythm?.label || '',
+      };
+
+      const existing = await AsyncStorage.getItem('aed_sessions_student');
+      let sessions = existing ? JSON.parse(existing) : [];
+
+      sessions.unshift(newSession);
+      await AsyncStorage.setItem(
+        'aed_sessions_student',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Live Session saved');
+    } catch (e) {
+      console.log('Error saving live session', e);
+    }
+  };
+
   return (
     <View style={style.container}>
-      <Header goBack={goHomeStudent} role="student" />
+      <Header
+        goBack={async () => {
+          await saveLiveSession();
+          goHomeStudent();
+        }}
+        role="student"
+      />
 
       <View style={style.subContainer}>
         <View style={style.content}>
@@ -164,9 +210,9 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                 </Text>
               </View>
 
-              <TouchableOpacity style={style2.wifiButton}>
+              {/* <TouchableOpacity style={style2.wifiButton}>
                 <Info color={Colors.text} size={22} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
 
@@ -245,7 +291,7 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
                       startAED();
                       sendMessage('Student powered on the AED');
 
-                      // ⭐ Only skip power step ONCE
+                      // Only skip power step ONCE
                       if (!hasSkippedPowerStepRef.current && stepIndex === 0) {
                         nextStep();
                         hasSkippedPowerStepRef.current = true;
@@ -305,6 +351,7 @@ const StudentLiveSessionScreen = ({ goHomeStudent, goApplyPads }) => {
             shadowOpacity: 0.1,
             shadowRadius: 3,
             elevation: 2,
+            marginTop: 27,
           }}
         >
           <View

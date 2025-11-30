@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Roboto-Regular',
     color: Colors.text,
+    fontSize: 13,
   },
   additionalText: {
     marginTop: 40,
@@ -17,13 +18,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     flexWrap: 'wrap',
     color: Colors.text,
+    fontSize: 12,
   },
   roleTitle: {
     fontFamily: 'Roboto-Regular',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.text,
-    marginBottom: 3,
+    marginBottom: 2,
   },
   ucDetails: {
     maxWidth: '100%',

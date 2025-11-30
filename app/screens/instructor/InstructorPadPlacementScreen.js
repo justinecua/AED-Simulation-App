@@ -16,8 +16,7 @@ import ToneDisplay from '../../components/ToneDisplay';
 
 import Wire from '../../components/PadPlacement/wire';
 import DraggablePad from '../../components/PadPlacement/draggablePad';
-
-const PadPlacementScreen = ({ goStudentAutoMode }) => {
+const InstructorPadPlacementScreen = ({ goStudentAutoMode }) => {
   const {
     started,
     paused,
@@ -73,6 +72,8 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
     setPositions(p => ({ ...p, [label]: { x, y } }));
   };
 
+  const [isDragging, setIsDragging] = useState(false);
+
   useEffect(() => {
     if (steps[stepIndex]?.action !== 'attach') {
       attachHandledRef.current = false;
@@ -92,7 +93,7 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} scrollEnabled={!isDragging} bounces={false}>
         <Header goBack={goStudentAutoMode} role="student" />
 
         {/* Info Header */}
@@ -178,7 +179,12 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
                   targetX={targets[label].x}
                   targetY={targets[label].y}
                   onMove={handleMove}
-                  onRelease={handleRelease}
+                  onRelease={(x,y,l,s) => {
+                    setIsDragging(false);
+                    handleRelease(x,y,l,s);
+                  }}
+                  onDragStart={() => setIsDragging(true)}
+                  onDragEnd={() => setIsDragging(false)}
                   padStyle={[
                     styles.aedPad,
                     label === 'Pad 1'
@@ -238,4 +244,4 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
   );
 };
 
-export default PadPlacementScreen;
+export default InstructorPadPlacementScreen;

@@ -2,13 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import Sound from 'react-native-sound';
 import aedSequences from '../data/aedSequences';
 
-export default function useAEDSequence() {
+export default function useAEDSequencePractice() {
   const [steps, setSteps] = useState([]);
   const [stepIndex, setStepIndex] = useState(0);
   const [expectedAction, setExpectedAction] = useState(null);
   const autoTimerRef = useRef(null);
   const soundRef = useRef(null);
   const genRef = useRef(0);
+  const [manualMode, setManualMode] = useState(false);
 
   useEffect(() => {
     const currentStep = steps[stepIndex];
@@ -43,8 +44,9 @@ export default function useAEDSequence() {
               return;
             }
             if (
-              currentStep.action === 'auto' ||
-              currentStep.action === 'analyze'
+              (currentStep.action === 'auto' ||
+                currentStep.action === 'analyze') &&
+              !manualMode
             ) {
               s.release?.();
               soundRef.current = null;
@@ -53,14 +55,15 @@ export default function useAEDSequence() {
           });
         } else {
           if (
-            currentStep.action === 'auto' ||
-            currentStep.action === 'analyze'
+            !manualMode &&
+            (currentStep?.action === 'auto' ||
+              currentStep?.action === 'analyze')
           ) {
             nextStep();
           }
         }
       });
-    } else if (currentStep?.action === 'auto') {
+    } else if (!manualMode && currentStep?.action === 'auto') {
       autoTimerRef.current = setTimeout(() => {
         if (myGen === genRef.current) nextStep();
       }, 1000);
@@ -79,10 +82,9 @@ export default function useAEDSequence() {
     };
   }, [stepIndex, steps]);
 
-  const loadSequence = (rhythmKey, overrideSteps = null) => {
-    const seq = Array.isArray(overrideSteps)
-      ? overrideSteps
-      : aedSequences[rhythmKey] || [];
+  const loadSequence = (rhythmKey, isManual = false) => {
+    setManualMode(isManual);
+    const seq = aedSequences[rhythmKey];
     setSteps(seq);
     setStepIndex(0);
   };

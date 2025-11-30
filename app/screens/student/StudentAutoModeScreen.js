@@ -15,7 +15,11 @@ import ToneDisplay from '../../components/ToneDisplay';
 import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
 import FinishDialog from '../../components/FinishDialog';
 
-const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
+const StudentAutoModeScreen = ({
+  goHomeStudent,
+  goApplyPads,
+  sessionType = 'Auto Mode',
+}) => {
   const {
     poweredOn,
     started,
@@ -72,22 +76,57 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
   };
 
   const handleBackHome = () => {
+    stopAED(sessionType);
+    saveStudentSession();
     setShowFinishDialog(false);
     resetSimulation();
     goHomeStudent();
   };
 
   const powerDisabled = !started;
+
+  const saveStudentSession = async () => {
+    try {
+      const newSession = {
+        type: sessionType,
+        startTime: new Date().toISOString(),
+        totalTime: timer,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_student');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_student',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Student session saved!');
+    } catch (e) {
+      console.log('Error saving student session:', e);
+    }
+  };
+
   return (
     <View style={style.container}>
-      <Header goBack={goHomeStudent} role="student" />
+      <Header
+        goBack={() => {
+          stopAED(sessionType);
+          saveStudentSession();
+          resetSimulation();
+          goHomeStudent();
+        }}
+        role="student"
+      />
 
       <View style={style.subContainer}>
         <View style={style.content}>
           <View style={style2.studentWrapper}>
             <View style={style2.studentSubWrapper}>
               <TouchableOpacity style={style.contentText}>
-                <Text>Auto Mode</Text>
+                <Text>{sessionType}</Text>
               </TouchableOpacity>
             </View>
             <View style={style2.studentSubWrapper}>
@@ -113,12 +152,12 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
                 </View>
               </View>
 
-              <TouchableOpacity style={style2.wifiButton}>
+              {/* <TouchableOpacity style={style2.wifiButton}>
                 <Wifi color={Colors.text} size={22} />
               </TouchableOpacity>
               <TouchableOpacity style={style2.wifiButton}>
                 <Info color={Colors.text} size={22} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
 
@@ -238,7 +277,7 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
             onPausePress={pauseAED}
             onStopPress={() => {
               powerOffAED();
-              stopAED();
+              stopAED(sessionType);
               setIsSwitchOpen(false);
               setPositions({
                 'Pad 1': { x: 15, y: 10 },

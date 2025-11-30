@@ -3,156 +3,237 @@ import Colors from '../constants/colors';
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: 15,
-    gap: 20,
-    flex: '1',
-    height: '100%',
-    backgroundColor: Colors.background,
+    flex: 1,
+    backgroundColor: '#F8FAFC',
   },
 
   scenarioBuilder: {
-    width: '100%',
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 40,
   },
 
   sectionTitle: {
     textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
-    fontSize: 16,
-    color: Colors.rhythmBackground,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0F172A',
+    marginBottom: 20,
   },
 
+  /* -------------------------
+        INPUTS
+  -------------------------- */
   inputContainer: {
     flexDirection: 'column',
-    gap: 15,
-    padding: 10,
-  },
-
-  inputBox: {
-    flexDirection: 'column',
-    gap: 10,
+    gap: 18,
+    marginBottom: 25,
   },
 
   label: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 12,
-    color: Colors.rhythmBackground,
+    fontSize: 13,
+    color: '#334155',
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+
+  label2: {
+    fontSize: 13,
+    color: '#334155',
+    fontWeight: '600',
+    marginBottom: 13,
   },
 
   input: {
-    borderWidth: 0,
-    borderRadius: 5,
-    padding: 15,
-    backgroundColor: '#fff',
-
-    // iOS Shadow
-    shadowColor: Colors.text,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-
-    // Android Shadow
-    elevation: 8,
-  },
-
-  timelineContainer: {
-    gap: 15,
-    padding: 10,
-  },
-
-  timelineScroll: {
-    maxHeight: 400, // or any fixed height you prefer
-    borderWidth: 0,
+    backgroundColor: '#FFFFFF',
+    padding: 14,
     borderRadius: 10,
-    backgroundColor: '#fff',
-
-    // iOS Shadow
-    shadowColor: Colors.text,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-
-    // Android Shadow
-    elevation: 6,
-  },
-
-  timelineCard: {
-    borderWidth: 0,
-    borderRadius: 8,
-    padding: 15,
-    backgroundColor: '#fff',
-    flexDirection: 'column',
-    gap: 15,
-
-    // iOS Shadow
-    shadowColor: Colors.text,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-
-    // Android Shadow
-    elevation: 6,
-  },
-
-  timelineBox: {
-    borderWidth: 0,
-    borderRadius: 5,
-    padding: 12,
-    backgroundColor: '#fff',
-    gap: 20,
-
-    // iOS Shadow
-    shadowColor: Colors.text,
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-
-    // Android Shadow
-    elevation: 5,
-  },
-
-  timelineText: {
-    textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
-    fontSize: 12,
-    color: Colors.rhythmBackground,
-  },
-
-  buttonContainer: {
-    flexDirection: 'column',
-    gap: 15,
-    padding: 10,
-  },
-
-  addButton: {
-    backgroundColor: '#fff',
-    padding: 12,
     borderWidth: 1,
-    borderColor: Colors.button,
-    borderRadius: 10,
+    borderColor: '#E2E8F0',
+
+    fontSize: 14,
+    color: '#0F172A',
   },
 
-  addButtonText: {
-    color: Colors.button,
-    textAlign: 'center',
-    fontFamily: 'Poppins-Medium',
+  descriptionInput: {
+    minHeight: 90,
+    textAlignVertical: 'top',
+  },
+
+  /* -------------------------
+       STEP ITEMS
+  -------------------------- */
+  stepItem: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 10,
+
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+
+  stepText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0F172A',
+    marginBottom: 4,
+  },
+
+  stepAction: {
     fontSize: 12,
+    color: '#64748B',
+  },
+
+  /* -------------------------
+       TIMELINE
+  -------------------------- */
+  timelineContainer: {
+    marginBottom: 20,
+  },
+
+  /* -------------------------
+       BUTTONS
+  -------------------------- */
+  buttonContainer: {
+    marginTop: 25,
   },
 
   saveButton: {
     backgroundColor: Colors.button,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: Colors.button,
-    borderRadius: 10,
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
   },
 
   saveButtonText: {
-    color: Colors.background,
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+
+  /* -------------------------
+       MODAL
+  -------------------------- */
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.25)',
+  },
+
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 20,
     textAlign: 'center',
-    fontFamily: 'Poppins-Medium',
+  },
+
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginVertical: 10,
+  },
+
+  actionButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    backgroundColor: '#FFFFFF',
+  },
+
+  actionButtonSelected: {
+    backgroundColor: Colors.button,
+    borderColor: Colors.button,
+  },
+
+  actionButtonText: {
     fontSize: 12,
+    color: '#334155',
+  },
+
+  actionButtonTextSelected: {
+    color: '#FFFFFF',
+  },
+
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+
+  checkboxSelected: {
+    backgroundColor: Colors.button,
+    borderColor: Colors.button,
+  },
+
+  checkboxText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+
+  modalButtonsContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  modalActionButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+
+  deleteButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FEE2E2',
+    borderRadius: 10,
+  },
+
+  deleteButtonText: {
+    color: '#B91C1C',
+    fontWeight: '600',
+  },
+
+  cancelButton: {
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 10,
+  },
+
+  cancelButtonText: {
+    color: '#475569',
+    fontWeight: '600',
+  },
+
+  saveModalButton: {
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    backgroundColor: Colors.button,
+    borderRadius: 10,
+  },
+
+  saveModalButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });
 

@@ -1,67 +1,349 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Modal, ScrollView } from 'react-native';
 
 import style from '../../styles/InstructorTestScenarioStyle';
-import aedStyle from '../../styles/aedBoxStyle';
+import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
 
 import Header from '../../components/Header';
 import AEDWaveform from '../../components/AEDWaveform';
 import AEDControls from '../../components/AEDControls';
-import PlayButton from '../../components/PlayButton';
-import StopButton from '../../components/StopButton';
-import useAED from '../../hooks/useAED';
+import aedStyle from '../../styles/aedBoxStyle';
+
+import { useTestScenario } from '../../context/TestScenarioContext';
+import { useScenarioContext } from '../../context/ScenarioContext';
+
+import ModeControls from '../../components/ModeControl';
 import ToneDisplay from '../../components/ToneDisplay';
-import ShockDisplay from '../../components/ShockDisplay';
 
-import { Timer } from 'lucide-react-native';
+import { Timer, Hand, ArrowRightLeft } from 'lucide-react-native';
+import Sound from 'react-native-sound';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const InstructorTestScenarioScreen = ({ goHomeInsctructor, goHome }) => {
-  const { started, currentRhythm, waveform, strokeColors, startAED, stopAED } =
-    useAED();
+const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
+  const {
+    steps,
+    stepIndex,
+    expectedAction,
+    poweredOn,
+    started,
+    paused,
+    timer,
+    waveform,
+    strokeColors,
+
+    powerOnAED,
+    powerOffAED,
+    startAED,
+    handleAction,
+    nextStep,
+
+    isSwitchOpen,
+    setIsSwitchOpen,
+    positions,
+    setPositions,
+    placedPads,
+    setPlacedPads,
+
+    loadTestScenario,
+    currentScenario,
+    setCurrentScenario,
+  } = useTestScenario();
+
+  const { scenarios } = useScenarioContext();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // ================== AUDIO PLAYER ======================
+  const playAudio = (file, onFinish) => {
+    if (!file) {
+      if (onFinish) onFinish();
+      return;
+    }
+
+    const sound = new Sound(file, Sound.MAIN_BUNDLE, error => {
+      if (error) {
+        console.log('Sound load error:', error);
+        if (onFinish) onFinish();
+        return;
+      }
+
+      sound.play(success => {
+        sound.release();
+        if (onFinish) onFinish();
+      });
+    });
+  };
+
+  const saveInstructorSession = async () => {
+    try {
+      const newSession = {
+        type: 'Test Scenario',
+        startTime: new Date().toISOString(),
+        totalTime: timer,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_instructor');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_instructor',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Instructor session saved!');
+    } catch (e) {
+      console.log('Error saving instructor session:', e);
+    }
+  };
+
+  // ======================================================
+
+  const handleSelectScenario = scenario => {
+    setCurrentScenario(scenario);
+
+    // Load steps
+    loadTestScenario(scenario);
+
+    // Reset AED state
+    powerOffAED();
+
+    // Play first step audio (if exists)
+    if (scenario.steps?.[0]?.audio) {
+      playAudio(scenario.steps[0].audio);
+    }
+
+    setModalVisible(false);
+  };
+
+  // AUTO PLAY STEPS + AUDIO
+  useEffect(() => {
+    const step = steps[stepIndex];
+    if (!step) return;
+
+    // Play audio and wait before auto next
+    playAudio(step.audio, () => {
+      if (!step.action || step.action === 'auto') {
+        nextStep();
+      }
+    });
+  }, [stepIndex, steps]);
+
+  // When instructor presses a required action button
+  const handleActionWithAudio = action => {
+    handleAction(action);
+
+    const step = steps[stepIndex];
+    if (step?.audio) playAudio(step.audio);
+  };
 
   return (
     <View style={style.container}>
-      <Header goBack={goHomeInsctructor} role="instructor" />
+      <Header
+        goBack={() => {
+          saveInstructorSession();
+          goHomeInsctructor();
+        }}
+        role="instructor"
+      />
+
+      {/* ===================== MODAL ===================== */}
+      <Modal transparent animationType="fade" visible={modalVisible}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: 'white',
+              padding: 20,
+              borderRadius: 15,
+              maxHeight: '70%',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                marginBottom: 10,
+                fontWeight: '600',
+                textAlign: 'center',
+              }}
+            >
+              Select a Scenario
+            </Text>
+
+            <ScrollView>
+              {scenarios.map(s => (
+                <TouchableOpacity
+                  key={s.id}
+                  style={{
+                    padding: 12,
+                    borderRadius: 10,
+                    backgroundColor: '#f2f2f2',
+                    marginBottom: 10,
+                  }}
+                  onPress={() => handleSelectScenario(s)}
+                >
+                  <Text style={{ fontSize: 18, fontWeight: '500' }}>
+                    {s.name || 'Untitled Scenario'}
+                  </Text>
+                  <Text style={{ opacity: 0.7 }}>{s.steps?.length} steps</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={{
+                marginTop: 15,
+                padding: 12,
+                backgroundColor: Colors.primary,
+                borderRadius: 10,
+              }}
+            >
+              <Text
+                style={{ textAlign: 'center', fontSize: 16, color: '#fff' }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* ================================================= */}
 
       <View style={style.subContainer}>
         <View style={style.content}>
-          <View style={style.contentWrapper}>
-            <Text style={style.contentText}>Test Scenario Mode</Text>
-            <Text style={style.contentText}>Change Scenario</Text>
+          {/* HEADER BUTTONS */}
+          <View style={style2.studentWrapper}>
+            <View style={style2.studentSubWrapper}>
+              <TouchableOpacity style={style.contentText}>
+                <Text>
+                  Scenario: {currentScenario?.name || 'Test Scenario'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ zIndex: 9999, elevation: 9999 }}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                style={[style.contentText, { zIndex: 9999 }]}
+              >
+                <Text>Change Scenario</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <View style={style.wrapperButton}>
-            <View style={style.timerIcon}>
-              <Timer color={Colors.text} size={25} />
-              <Text style={style.timerText}>1:58</Text>
+          {/* TIMER + ACTIONS */}
+          <View style={style2.studentWrapper2}>
+            <View style={style.wrapper2Sub}>
+              <TouchableOpacity style={style.timerBox}>
+                <Timer color={Colors.text} size={20} />
+                <Text style={style.timerText}>
+                  {Math.floor(timer / 60)}:
+                  {(timer % 60).toString().padStart(2, '0')}
+                </Text>
+              </TouchableOpacity>
             </View>
-            <View style={style.button}>
-              <PlayButton onPress={startAED} />
-              <StopButton onPress={stopAED} />
+
+            {/* REMOVE + OPEN */}
+            <View style={style2.studentWrapper2SubRight}>
+              <TouchableOpacity
+                style={[
+                  style2.handButton,
+                  expectedAction !== 'remove' && { opacity: 0.5 },
+                ]}
+                disabled={expectedAction !== 'remove'}
+                onPress={() => {
+                  handleActionWithAudio('remove');
+                  setIsSwitchOpen(true);
+                }}
+              >
+                <Hand color={Colors.text} size={22} />
+              </TouchableOpacity>
+
+              {steps[stepIndex]?.action === 'open' && (
+                <TouchableOpacity
+                  style={style2.padPackageButton}
+                  onPress={() => {
+                    handleActionWithAudio('open');
+                    setIsSwitchOpen(true);
+                    goApplyPads();
+                  }}
+                >
+                  <ArrowRightLeft color="#fff" size={22} />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
-          {/* <ToneDisplay /> */}
-
+          {/* AED DISPLAY */}
           <View style={style.contentCenter}>
             <View style={aedStyle.aedBox}>
               <AEDWaveform
                 started={started}
-                currentRhythm={currentRhythm}
                 waveform={waveform}
                 strokeColors={strokeColors}
+                steps={steps}
+                stepIndex={stepIndex}
+                expectedAction={expectedAction}
+                displayText={
+                  steps.some((s, i) => i <= stepIndex && s.action === 'analyze')
+                    ? ''
+                    : steps[stepIndex]?.text ?? ''
+                }
               />
 
               <AEDControls
-                started={started}
-                onPowerPress={() => (started ? stopAED() : startAED())}
+                started={poweredOn}
+                flashing={expectedAction === 'shock'}
+                onPowerPress={() => {
+                  if (!poweredOn) {
+                    powerOnAED();
+
+                    if (expectedAction === 'power') {
+                      handleActionWithAudio('power');
+                      nextStep();
+                    }
+                  } else {
+                    saveInstructorSession();
+                    powerOffAED();
+                  }
+                }}
+                onShockPress={() => handleActionWithAudio('shock')}
               />
             </View>
           </View>
-          {/* 
-          <ShockDisplay /> */}
         </View>
+
+        {/* MODE CONTROLS */}
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <ModeControls
+            started={started}
+            paused={paused}
+            onPowerPress={startAED}
+            onPausePress={() => {}}
+            onStopPress={() => {
+              saveInstructorSession();
+              powerOffAED();
+            }}
+          />
+        </View>
+      </View>
+
+      {/* TONE DISPLAY */}
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        {started && steps.length > 0 && (
+          <ToneDisplay text={steps[stepIndex]?.text} />
+        )}
       </View>
     </View>
   );
