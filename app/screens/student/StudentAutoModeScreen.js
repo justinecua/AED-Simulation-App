@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import style from '../../styles/InstructorTestScenarioStyle';
 import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
 
 import Header from '../../components/Header';
-import AEDWaveform from '../../components/AEDWaveform';
+import AEDWaveformAutoMode from '../../components/AEDWaveformAutoMode';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
 import { useAEDContext } from '../../context/AEDContext';
@@ -13,8 +13,13 @@ import ShockDisplay from '../../components/ShockDisplay';
 import ModeControls from '../../components/ModeControl';
 import ToneDisplay from '../../components/ToneDisplay';
 import { Timer, Wifi, Info, Hand, ArrowRightLeft } from 'lucide-react-native';
+import FinishDialog from '../../components/FinishDialog';
 
-const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
+const StudentAutoModeScreen = ({
+  goHomeStudent,
+  goApplyPads,
+  sessionType = 'Auto Mode',
+}) => {
   const {
     poweredOn,
     started,
@@ -41,17 +46,87 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
     placedPads,
     setPlacedPads,
   } = useAEDContext();
+  const [showFinishDialog, setShowFinishDialog] = useState(false);
+  useEffect(() => {
+    if (started && steps.length > 0 && stepIndex === steps.length - 1) {
+      setShowFinishDialog(true);
+    }
+  }, [stepIndex, steps, started]);
+
+  const resetSimulation = () => {
+    powerOffAED();
+    stopAED();
+    setIsSwitchOpen(false);
+
+    setPositions({
+      'Pad 1': { x: 15, y: 10 },
+      'Pad 2': { x: 10, y: 75 },
+    });
+
+    setPlacedPads({
+      'Pad 1': false,
+      'Pad 2': false,
+    });
+  };
+
+  const handleRetry = () => {
+    setShowFinishDialog(false);
+    resetSimulation();
+    startAED();
+  };
+
+  const handleBackHome = () => {
+    stopAED(sessionType);
+    saveStudentSession();
+    setShowFinishDialog(false);
+    resetSimulation();
+    goHomeStudent();
+  };
+
+  const powerDisabled = !started;
+
+  const saveStudentSession = async () => {
+    try {
+      const newSession = {
+        type: sessionType,
+        startTime: new Date().toISOString(),
+        totalTime: timer,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_student');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_student',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Student session saved!');
+    } catch (e) {
+      console.log('Error saving student session:', e);
+    }
+  };
 
   return (
     <View style={style.container}>
-      <Header goBack={goHomeStudent} role="student" />
+      <Header
+        goBack={() => {
+          stopAED(sessionType);
+          saveStudentSession();
+          resetSimulation();
+          goHomeStudent();
+        }}
+        role="student"
+      />
 
       <View style={style.subContainer}>
         <View style={style.content}>
           <View style={style2.studentWrapper}>
             <View style={style2.studentSubWrapper}>
               <TouchableOpacity style={style.contentText}>
-                <Text>Auto Mode</Text>
+                <Text>{sessionType}</Text>
               </TouchableOpacity>
             </View>
             <View style={style2.studentSubWrapper}>
@@ -77,12 +152,12 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
                 </View>
               </View>
 
-              <TouchableOpacity style={style2.wifiButton}>
+              {/* <TouchableOpacity style={style2.wifiButton}>
                 <Wifi color={Colors.text} size={22} />
               </TouchableOpacity>
               <TouchableOpacity style={style2.wifiButton}>
                 <Info color={Colors.text} size={22} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
 
@@ -144,7 +219,7 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
 
           <View style={style.contentCenter}>
             <View style={aedStyle.aedBox}>
-              <AEDWaveform
+              <AEDWaveformAutoMode
                 started={started}
                 currentRhythm={currentRhythm}
                 waveform={waveform}
@@ -160,7 +235,10 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
               />
               <AEDControls
                 started={poweredOn}
+                disabledPower={powerDisabled}
                 onPowerPress={() => {
+                  if (powerDisabled) return;
+
                   if (!poweredOn) {
                     powerOnAED();
                     if (expectedAction === 'power') nextStep();
@@ -199,7 +277,7 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
             onPausePress={pauseAED}
             onStopPress={() => {
               powerOffAED();
-              stopAED();
+              stopAED(sessionType);
               setIsSwitchOpen(false);
               setPositions({
                 'Pad 1': { x: 15, y: 10 },
@@ -224,6 +302,11 @@ const StudentAutoModeScreen = ({ goHomeStudent, goApplyPads }) => {
         )}
       </View>
       {/* <ShockDisplay /> */}
+      <FinishDialog
+        visible={showFinishDialog}
+        onRetry={handleRetry}
+        onHome={handleBackHome}
+      />
     </View>
   );
 };

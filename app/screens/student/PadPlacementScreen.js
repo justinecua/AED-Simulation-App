@@ -16,6 +16,7 @@ import ToneDisplay from '../../components/ToneDisplay';
 
 import Wire from '../../components/PadPlacement/wire';
 import DraggablePad from '../../components/PadPlacement/draggablePad';
+
 const PadPlacementScreen = ({ goStudentAutoMode }) => {
   const {
     started,

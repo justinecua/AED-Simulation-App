@@ -6,14 +6,15 @@ import aedStyle from '../styles/aedBoxStyle';
 const HEIGHT = 150;
 
 const AEDWaveform = ({
-  stepIndex,
+  stepIndex = 0,
   started,
+  poweredOn, // 👈 FIXED
   paused,
   currentRhythm,
   waveform,
   strokeColors,
   expectedAction,
-  steps,
+  steps = [],
   displayText,
 }) => {
   function getSmoothPath(points) {
@@ -55,36 +56,26 @@ const AEDWaveform = ({
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          {/* AED OFF */}
-          {!started && (
-            <Text
-              style={{
-                color: 'rgba(211, 214, 241, 1)',
-                fontSize: 13,
-              }}
-            >
-              AED OFF
-            </Text>
+          {/* --- AED OFF (initial) --- */}
+          {!poweredOn && !started && (
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ color: '#d3d6f1', fontSize: 13 }}>AED OFF</Text>
+            </View>
           )}
 
-          {/* {started && steps[stepIndex]?.action === 'power' && (
-            <Text style={{ color: 'rgba(211, 214, 241, 1)', fontSize: 13 }}>
-    
-            </Text>
-          )} */}
-
-          {/* Analyzing phase */}
-          {/* {started && steps[stepIndex]?.action === 'analyze' && (
+          {/* --- Instructor started, but AED still OFF --- */}
+          {!poweredOn && started && (
             <View style={{ alignItems: 'center' }}>
-              <Text style={{ color: '#fff', fontSize: 16 }}>
-                Analyzing rhythm...
-              </Text>
-              <Text style={{ color: '#0f0', fontSize: 20 }}>•••</Text>
+              <Text style={{ color: '#fff', fontSize: 13 }}>Turn on AED</Text>
             </View>
-          )} */}
+          )}
 
-          {/* Waveform only AFTER analysis */}
+          {/* --- AED ON, show step text until waveform displays --- */}
+          {poweredOn && started && !isShowingWaveform && displayText && (
+            <Text style={{ color: '#fff', fontSize: 13 }}>{displayText}</Text>
+          )}
 
+          {/* --- Waveform --- */}
           {isShowingWaveform && (
             <Svg height={HEIGHT} width="100%">
               <Path
@@ -100,18 +91,6 @@ const AEDWaveform = ({
               />
             </Svg>
           )}
-
-          {displayText && (
-            <Text style={{ color: '#fff', fontSize: 13, fontWeight: '400' }}>
-              {displayText}
-            </Text>
-          )}
-          {/* Debug: Show current action */}
-          {/* {__DEV__ && started && (
-            <Text style={{ color: '#f4f9f4ff', fontSize: 12 }}>
-              Action: {currentStep?.action}
-            </Text>
-          )} */}
         </View>
       </View>
     </View>

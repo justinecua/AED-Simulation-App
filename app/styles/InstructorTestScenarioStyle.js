@@ -40,6 +40,27 @@ const style = StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
   },
+
+  timerBox: {
+    flexDirection: 'row',      // ✅ make them inline
+    alignItems: 'center',      // ✅ vertically centered
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: '#fff',   // optional styling
+    alignSelf: 'flex-start',
+    gap: 4,                    // if RN ≥ 0.71, else remove
+  },
+  timerText: {
+    color: '#ed1313',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  wrapper2Sub: {
+    alignSelf: 'flex-start',
+  },
+
   headerText: {
     color: Colors.rhythmBackground,
     backgroundColor: '#F4F6FA',

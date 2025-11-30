@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  ScrollView,
 } from 'react-native';
-// COMPONENTS
+
 import Colors from '../../constants/colors';
 import Header from '../../components/Header';
-import AEDWaveform from '../../components/AEDWaveform';
+import AEDWaveformPractice from '../../components/AEDWaveformPractice';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
-import useAED from '../../hooks/useAED';
-// IMPORTS
 import { Picker } from '@react-native-picker/picker';
+import ToneDisplayPractice from '../../components/ToneDisplayPractice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,13 +24,48 @@ import {
   Square,
   Pause,
   Timer,
+  Hand,
+  ArrowRightLeft,
 } from 'lucide-react-native';
 
-const PracticeModeScreen = ({ goHomeStudent }) => {
-  const [rhythm, setRhythm] = useState('Sinus');
-  const [localStepIndex, setLocalStepIndex] = useState(0);
+import style2 from '../../styles/StudentAutoModeStyle';
+import style from '../../styles/InstructorTestScenarioStyle';
+import { AEDPracticeContext } from '../../context/AEDPracticeContext';
 
+const PracticeModeScreen = ({ goHomeStudent, goPracticeApplyPads }) => {
+  const [rhythm, setRhythm] = useState('Sinus');
+  const sessionStartRef = useRef(null);
+
+  const savePracticeSession = async () => {
+    try {
+      const endTime = new Date().toISOString();
+      const totalTime = timer; // seconds
+
+      const newSession = {
+        type: 'Practice Mode',
+        startTime: sessionStartRef.current,
+        endTime,
+        totalTime,
+        rhythm,
+      };
+
+      const existing = await AsyncStorage.getItem('aed_sessions_student');
+      let sessions = existing ? JSON.parse(existing) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_student',
+        JSON.stringify(sessions),
+      );
+    } catch (e) {
+      console.log('Error saving session', e);
+    }
+  };
+
+  const aed = useContext(AEDPracticeContext);
   const {
+    poweredOn,
     started,
     paused,
     currentRhythm,
@@ -41,147 +78,362 @@ const PracticeModeScreen = ({ goHomeStudent }) => {
     stopAED,
     pauseAED,
     resumeAED,
-    shockAED,
+    nextStep,
+    prevStep,
+    timer,
+    setStepIndex,
     changeRhythm,
-    timer, // <-- added timer
-  } = useAED();
+    powerOnAED,
+    powerOffAED,
+    handleAction,
+  } = aed;
 
   const handlePowerPress = () => {
-    if (!started) {
-      startAED(rhythm);
-      setLocalStepIndex(0);
-    } else {
-      stopAED();
-      setLocalStepIndex(0);
-    }
+    if (!poweredOn) powerOnAED();
+    else powerOffAED();
   };
+
+  const controlsDisabled = !started;
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f9f9f9" />
+
       <View style={{ marginTop: 12 }}>
-        <Header />
+        <Header goBack={goHomeStudent} />
       </View>
 
       <View style={styles.subContainer}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Practice Mode</Text>
+        <ScrollView>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={style2.studentWrapper2Sub}>
+              <TouchableOpacity style={style.contentText}>
+                <Text>Practice Mode</Text>
+              </TouchableOpacity>
+            </View>
 
-          {/* TIMER */}
-          <View style={styles.timerIcon}>
-            <Timer color={Colors.text} size={20} />
-            <Text style={styles.timerText}>
-              {Math.floor(timer / 60)}:
-              {(timer % 60).toString().padStart(2, '0')}
-            </Text>
+            <View style={styles.timerIcon}>
+              <Timer color={Colors.text} size={20} />
+              <Text style={styles.timerText}>
+                {Math.floor(timer / 60)}:
+                {(timer % 60).toString().padStart(2, '0')}
+              </Text>
+            </View>
           </View>
-        </View>
 
-        {/* PICKER */}
-        <View style={{ marginTop: 10 }}>
-          <Text style={styles.pickerTitle}>Patient Rhythm:</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={rhythm}
-              onValueChange={val => {
-                setRhythm(val);
-                changeRhythm(val);
-                setLocalStepIndex(0);
-              }}
-              style={{ height: 55, color: !started ? 'gray' : '#000' }}
-              enabled={started}
-            >
-              <Picker.Item label="Sinus" value="Sinus" />
-              <Picker.Item label="V-Fib" value="VFib" />
-              <Picker.Item label="V-Tach" value="VTach" />
-              <Picker.Item label="Asystole" value="Asystole" />
-            </Picker>
+          {/* STATUS + ACTION BUTTONS */}
+          <View style={style2.studentWrapper3}>
+            {/* STATUS */}
+            <View style={style2.studentWrapper2Sub}>
+              <TouchableOpacity style={style.contentText}>
+                <Text>
+                  Status: {!poweredOn ? 'OFF' : paused ? 'PAUSED' : 'ON'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* ACTION BUTTONS */}
+            <View style={style2.studentWrapper2SubRight}>
+              {/* REMOVE PADS */}
+              <TouchableOpacity
+                style={[
+                  style2.handButton,
+                  expectedAction !== 'remove' && { opacity: 0.5 },
+                ]}
+                disabled={expectedAction !== 'remove'}
+                onPress={() => handleAction('remove')}
+              >
+                <Hand color={Colors.text} size={22} />
+              </TouchableOpacity>
+
+              {/* OPEN PACKAGE */}
+              {expectedAction === 'open' && (
+                <TouchableOpacity
+                  style={style2.padPackageButton}
+                  onPress={() => {
+                    handleAction('open');
+                    goPracticeApplyPads();
+                  }}
+                >
+                  <ArrowRightLeft color="#fff" size={22} />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
 
-        {/* AED */}
-        <View style={styles.contentCenter}>
-          <View style={aedStyle.aedBox}>
-            <AEDWaveform
-              started={started}
-              paused={paused}
-              currentRhythm={currentRhythm}
-              waveform={waveform}
-              strokeColors={strokeColors}
-              steps={steps}
-              stepIndex={localStepIndex}
-              expectedAction={expectedAction}
-            />
-            <AEDControls
-              started={started}
-              onShockPress={shockAED}
-              onPowerPress={handlePowerPress}
-            />
+          {/* AED + WAVEFORM */}
+          <View style={styles.contentCenter}>
+            <View style={aedStyle.aedBox}>
+              <AEDWaveformPractice
+                poweredOn={poweredOn}
+                started={started}
+                paused={paused}
+                currentRhythm={currentRhythm}
+                waveform={waveform}
+                strokeColors={strokeColors}
+                steps={steps}
+                stepIndex={stepIndex}
+                expectedAction={expectedAction}
+              />
+
+              <AEDControls
+                started={started}
+                disabledPower={!started}
+                onShockPress={() => handleAction('shock')}
+                onPowerPress={handlePowerPress}
+              />
+            </View>
           </View>
-        </View>
-
-        {/* BUTTONS */}
-        <View style={styles.wrapperButton}>
-          <TouchableOpacity style={styles.controlBtn}>
-            <View style={styles.iconBox}>
-              <Pause color="white" size={16} />
-            </View>
-            <Text
-              style={styles.controlText}
-              onPress={() => (paused ? resumeAED() : pauseAED())}
-            >
-              Pause
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.controlBtn, { flex: 1 }]}
-            onPress={stopAED}
-          >
-            <View style={styles.iconBox}>
-              <Square color="white" size={16} />
-            </View>
-            <Text style={styles.controlText}>Stop</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Back / Next */}
-        <View style={styles.wrapperButton}>
-          <TouchableOpacity
-            style={styles.controlBtn}
-            onPress={() => setLocalStepIndex(prev => Math.max(prev - 1, 0))}
-          >
-            <View style={styles.iconBox}>
-              <ArrowLeft color="white" size={16} />
-            </View>
-            <Text style={styles.controlText}>Back</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.controlBtn, { flex: 1 }]}
-            onPress={() => setLocalStepIndex(prev => prev + 1)}
-          >
-            <View style={styles.iconBox}>
-              <ArrowRight color="white" size={16} />
-            </View>
-            <Text style={styles.controlText}>Next</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Close */}
-        <View style={{ marginTop: 6, flexDirection: 'row' }}>
-          <TouchableOpacity
-            style={styles.controlBtn}
-            onPress={() => {
-              if (goHomeStudent) goHomeStudent();
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            <View style={styles.iconBox}>
-              <X color="white" size={16} />
+            {started && steps.length > 0 && (
+              <ToneDisplayPractice text={steps[stepIndex]?.text} />
+            )}
+          </View>
+          <View style={styles.controlsContainer}>
+            {/* Start Button */}
+            <TouchableOpacity
+              style={styles.controlBtn}
+              onPress={() => {
+                sessionStartRef.current = new Date().toISOString();
+                startAED(rhythm, true);
+                setStepIndex(0);
+              }}
+            >
+              <View style={styles.iconBox}>
+                <Timer color="black" size={16} />
+              </View>
+              <Text style={[styles.controlText, { color: 'black' }]}>
+                Start Practice
+              </Text>
+            </TouchableOpacity>
+
+            {/* Rhythm Picker */}
+            <View style={{ marginBottom: 10, width: '100%' }}>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={rhythm}
+                  onValueChange={val => {
+                    setRhythm(val);
+                    changeRhythm(val);
+                    setStepIndex(0);
+                  }}
+                  style={{
+                    height: 55,
+                    color: !started ? 'gray' : '#000',
+                  }}
+                  enabled={started}
+                >
+                  <Picker.Item
+                    style={{
+                      fontSize: 14,
+                    }}
+                    label="Sinus"
+                    value="Sinus"
+                  />
+                  <Picker.Item
+                    style={{
+                      fontSize: 14,
+                    }}
+                    label="V-Fib"
+                    value="VFib"
+                  />
+                  <Picker.Item
+                    style={{
+                      fontSize: 14,
+                    }}
+                    label="V-Tach"
+                    value="VTach"
+                  />
+                  <Picker.Item
+                    style={{
+                      fontSize: 14,
+                    }}
+                    label="Asystole"
+                    value="Asystole"
+                  />
+                </Picker>
+              </View>
             </View>
-            <Text style={styles.controlText}>Close</Text>
-          </TouchableOpacity>
-        </View>
+
+            {/* Row 1: Back / Pause / Next */}
+            <View style={styles.row}>
+              <TouchableOpacity
+                disabled={controlsDisabled}
+                onPress={prevStep}
+                style={[
+                  styles.controlBtn,
+                  controlsDisabled && { backgroundColor: '#E5E7EB' },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.iconBox,
+                    controlsDisabled && {
+                      borderColor: '#d1d5db',
+                      backgroundColor: '#E5E7EB',
+                    }, // lighter border
+                  ]}
+                >
+                  <ArrowLeft
+                    color={controlsDisabled ? '#9CA3AF' : 'black'}
+                    size={16}
+                  />
+                </View>
+
+                <Text
+                  style={[
+                    styles.controlText,
+                    controlsDisabled && { color: '#9CA3AF' },
+                  ]}
+                >
+                  Back
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={controlsDisabled}
+                onPress={() => (paused ? resumeAED() : pauseAED())}
+                style={[
+                  styles.controlBtn,
+                  controlsDisabled && { backgroundColor: '#E5E7EB' },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.iconBox,
+                    controlsDisabled && {
+                      borderColor: '#d1d5db',
+                      backgroundColor: '#E5E7EB',
+                    },
+                  ]}
+                >
+                  <Pause
+                    color={controlsDisabled ? '#9CA3AF' : 'black'}
+                    size={16}
+                  />
+                </View>
+
+                <Text
+                  style={[
+                    styles.controlText,
+                    controlsDisabled && { color: '#9CA3AF' },
+                  ]}
+                >
+                  {paused ? 'Resume' : 'Pause'}
+                </Text>
+              </TouchableOpacity>
+
+              {/* NEXT */}
+              <TouchableOpacity
+                disabled={controlsDisabled}
+                onPress={nextStep}
+                style={[
+                  styles.controlBtn,
+                  controlsDisabled && { backgroundColor: '#E5E7EB' },
+                ]}
+              >
+                <View
+                  style={[
+                    styles.iconBox,
+                    controlsDisabled && {
+                      borderColor: '#D1D5DB',
+                      backgroundColor: '#E5E7EB',
+                    },
+                  ]}
+                >
+                  <ArrowRight
+                    color={controlsDisabled ? '#9CA3AF' : 'black'}
+                    size={16}
+                  />
+                </View>
+                <Text
+                  style={[
+                    styles.controlText,
+                    controlsDisabled && { color: '#9CA3AF' },
+                  ]}
+                >
+                  Next
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Row 2: Stop / Close */}
+            {/* STOP */}
+            <TouchableOpacity
+              disabled={controlsDisabled}
+              onPress={async () => {
+                await savePracticeSession();
+                stopAED();
+              }}
+              style={[
+                styles.controlBtn,
+                controlsDisabled && { backgroundColor: '#E5E7EB' },
+              ]}
+            >
+              <View
+                style={[
+                  styles.iconBox,
+                  controlsDisabled && {
+                    borderColor: '#D1D5DB',
+                    backgroundColor: '#E5E7EB',
+                  },
+                ]}
+              >
+                <Square
+                  color={controlsDisabled ? '#9CA3AF' : 'black'}
+                  size={16}
+                />
+              </View>
+              <Text
+                style={[
+                  styles.controlText,
+                  controlsDisabled && { color: '#9CA3AF' },
+                ]}
+              >
+                Stop
+              </Text>
+            </TouchableOpacity>
+
+            {/* CLOSE */}
+            <TouchableOpacity
+              disabled={controlsDisabled}
+              onPress={async () => {
+                await savePracticeSession();
+                goHomeStudent();
+              }}
+              style={[
+                styles.controlBtn,
+                controlsDisabled && { backgroundColor: '#E5E7EB' },
+              ]}
+            >
+              <View
+                style={[
+                  styles.iconBox,
+                  controlsDisabled && {
+                    borderColor: '#D1D5DB',
+                    backgroundColor: '#E5E7EB',
+                  },
+                ]}
+              >
+                <X color={controlsDisabled ? '#9CA3AF' : 'black'} size={16} />
+              </View>
+              <Text
+                style={[
+                  styles.controlText,
+                  controlsDisabled && { color: '#9CA3AF' },
+                ]}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     </View>
   );
@@ -237,16 +489,16 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ccc',
     backgroundColor: '#fff',
-    borderRadius: 8,
+    color: 'black',
+
     overflow: 'hidden',
   },
   contentCenter: {
     marginTop: 16,
     alignItems: 'center',
   },
+
   controlBtn: {
     flex: 1,
     flexDirection: 'row',
@@ -254,25 +506,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    marginHorizontal: 4,
-  },
-  wrapperButton: {
-    marginTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    borderRadius: 12,
+    backgroundColor: '#ffffffff',
+    marginBottom: 10,
   },
   controlText: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 13,
     marginLeft: 10,
-    color: '#333',
+    color: '#111827',
   },
   iconBox: {
-    backgroundColor: '#333',
+    backgroundColor: '#FFFFFF',
     padding: 6,
-    borderRadius: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+
+  controlsContainer: {
+    marginTop: 40,
+    width: '100%',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'space-between',
   },
 });
