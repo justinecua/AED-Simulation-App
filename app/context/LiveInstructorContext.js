@@ -255,8 +255,8 @@ export const LiveInstructorProvider = ({ children }) => {
       setStudentPaused(parsed.paused);
       setInstructorMessage(
         parsed.paused
-          ? 'Student paused the simulation'
-          : 'Student resumed the simulation',
+          ? 'You paused the simulation'
+          : 'You resumed the simulation',
       );
       return;
     }

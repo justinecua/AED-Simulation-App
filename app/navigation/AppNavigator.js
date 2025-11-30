@@ -10,6 +10,8 @@ import StudentAutoModeScreen from '../screens/student/StudentAutoModeScreen';
 import StudentConnectScreen from '../screens/student/StudentConnectScreen';
 import StudentLiveSessionScreen from '../screens/student/StudentLiveSessionScreen';
 import LivePadPlacementScreen from '../screens/student/LivePadPlacementScreen';
+import PracticeModeScreen from '../screens/student/PracticeModeScreen';
+import SimulationTipsScreen from '../screens/student/SimulationTipsScreen';
 
 // Instructor Screens
 import InstructorHomeScreen from '../screens/instructor/InstructorHomeScreen';
@@ -29,7 +31,9 @@ import { TcpServerProvider } from '../context/TcpServerContext';
 import { LiveAEDClientProvider } from '../context/LiveAEDClientContext';
 import { ScenarioProvider } from '../context/ScenarioContext';
 import { TestScenarioProvider } from '../context/TestScenarioContext';
-
+import PracticePadPlacementScreen from '../screens/student/PracticePadPlacementScreen';
+import { AEDPracticeProvider } from '../context/AEDPracticeContext';
+import { SimulationAEDProvider } from '../context/SimulationAEDContext';
 // UI
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -74,6 +78,9 @@ export default function AppNavigator() {
                   goConnectToInstructor={() =>
                     handleNavigation('connectInstructor')
                   }
+                  // 🔹 new props
+                  goSimulationTips={() => handleNavigation('simulationTips')}
+                  goPracticeMode={() => handleNavigation('practiceMode')}
                 />
               </AnimatedScreenTransition>
             )}
@@ -104,6 +111,51 @@ export default function AppNavigator() {
                 />
               </AnimatedScreenTransition>
             )}
+
+            {/* 🔹 NEW: SIMULATION TIPS */}
+            {screen === 'simulationTips' && (
+              <SimulationAEDProvider>
+                <AnimatedScreenTransition
+                  direction={direction}
+                  keyValue="simulationTips"
+                >
+                  <SimulationTipsScreen
+                    goHomeStudent={() => handleNavigation('student')}
+                    goApplyPads={() => handleNavigation('applyPadsStudent')}
+                  />
+                </AnimatedScreenTransition>
+              </SimulationAEDProvider>
+            )}
+
+            {/* 🔹 NEW: PRACTICE MODE */}
+            {screen === 'practiceMode' || screen === 'practiceApplyPads' ? (
+              <AEDPracticeProvider>
+                {screen === 'practiceMode' && (
+                  <AnimatedScreenTransition
+                    keyValue="practiceMode"
+                    direction={direction}
+                  >
+                    <PracticeModeScreen
+                      goHomeStudent={() => handleNavigation('student')}
+                      goPracticeApplyPads={() =>
+                        handleNavigation('practiceApplyPads')
+                      }
+                    />
+                  </AnimatedScreenTransition>
+                )}
+
+                {screen === 'practiceApplyPads' && (
+                  <AnimatedScreenTransition
+                    keyValue="practiceApplyPads"
+                    direction={direction}
+                  >
+                    <PracticePadPlacementScreen
+                      goBackToPractice={() => handleNavigation('practiceMode')}
+                    />
+                  </AnimatedScreenTransition>
+                )}
+              </AEDPracticeProvider>
+            ) : null}
 
             {/* STUDENT CONNECT */}
             {screen === 'connectInstructor' && (
@@ -215,7 +267,7 @@ export default function AppNavigator() {
               <LiveInstructorProvider>
                 <InstructorLiveSessionScreen
                   goHome={() => handleNavigation('role')}
-                  goBack={() => handleNavigation('connectStudent')}
+                  goBack={() => handleNavigation('instructor')}
                 />
               </LiveInstructorProvider>
             )}

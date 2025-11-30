@@ -18,6 +18,7 @@ import ToneDisplay from '../../components/ToneDisplay';
 
 import { Timer, Hand, ArrowRightLeft } from 'lucide-react-native';
 import Sound from 'react-native-sound';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
   const {
@@ -68,9 +69,33 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
 
       sound.play(success => {
         sound.release();
-        if (onFinish) onFinish(); // <-- NEXT STEP WILL HAPPEN HERE
+        if (onFinish) onFinish();
       });
     });
+  };
+
+  const saveInstructorSession = async () => {
+    try {
+      const newSession = {
+        type: 'Test Scenario',
+        startTime: new Date().toISOString(),
+        totalTime: timer,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_instructor');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_instructor',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Instructor session saved!');
+    } catch (e) {
+      console.log('Error saving instructor session:', e);
+    }
   };
 
   // ======================================================
@@ -115,7 +140,13 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
 
   return (
     <View style={style.container}>
-      <Header goBack={goHomeInsctructor} role="instructor" />
+      <Header
+        goBack={() => {
+          saveInstructorSession();
+          goHomeInsctructor();
+        }}
+        role="instructor"
+      />
 
       {/* ===================== MODAL ===================== */}
       <Modal transparent animationType="fade" visible={modalVisible}>
@@ -199,10 +230,10 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
               </TouchableOpacity>
             </View>
 
-            <View style={style2.studentSubWrapper}>
+            <View style={{ zIndex: 9999, elevation: 9999 }}>
               <TouchableOpacity
                 onPress={() => setModalVisible(true)}
-                style={style.contentText}
+                style={[style.contentText, { zIndex: 9999 }]}
               >
                 <Text>Change Scenario</Text>
               </TouchableOpacity>
@@ -281,6 +312,7 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
                       nextStep();
                     }
                   } else {
+                    saveInstructorSession();
                     powerOffAED();
                   }
                 }}
@@ -299,7 +331,10 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
             paused={paused}
             onPowerPress={startAED}
             onPausePress={() => {}}
-            onStopPress={powerOffAED}
+            onStopPress={() => {
+              saveInstructorSession();
+              powerOffAED();
+            }}
           />
         </View>
       </View>

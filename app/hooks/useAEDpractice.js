@@ -4,14 +4,34 @@ import heartRhythms from '../data/heartRhythms';
 import useAEDTimer from './useAEDTimer';
 import useWaveform from './useWaveform';
 import useAEDSequence from './useAEDSequence';
-import strokeColors from '../data/strokeColors';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import useAEDSequencePractice from './useAEDSequencePractice';
 
 const screenWidth = Dimensions.get('window').width;
 const aedWidth = screenWidth * 0.7;
 
-export default function useAED() {
+const strokeColors = {
+  Sinus: '#ffffff',
+  VFib: '#ffffff',
+  VTach: '#ffffff',
+  Asystole: '#ffffff',
+};
+
+export default function useAEDPractice() {
+  const [poweredOn, setPoweredOn] = useState(false); // ✅ MOVE THIS UP
+  const [started, setStarted] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [currentRhythm, setCurrentRhythm] = useState(null);
+  const [manualMode, setManualMode] = useState(false);
+  const [positions, setPositions] = useState({
+    'Pad 1': { x: 15, y: 10 },
+    'Pad 2': { x: 10, y: 75 },
+  });
+
+  const [placedPads, setPlacedPads] = useState({
+    'Pad 1': false,
+    'Pad 2': false,
+  });
+
   const { timer, startTimer, stopTimer, resetTimer } = useAEDTimer();
   const { waveform, drawWaveformPoint, clearWaveform, stopWaveform } =
     useWaveform(aedWidth);
@@ -27,50 +47,13 @@ export default function useAED() {
     nextStep,
     prevStep,
     handleAction,
-  } = useAEDSequence();
-
-  const [poweredOn, setPoweredOn] = useState(false);
-  const [started, setStarted] = useState(false);
-
-  const [paused, setPaused] = useState(false);
-  const [currentRhythm, setCurrentRhythm] = useState(null);
-
-  const [startTime, setStartTime] = useState(null);
-  const [sessionType, setSessionType] = useState('Simulation');
-
-  const saveSession = async (sessionType, totalTime, startTime) => {
-    try {
-      const newSession = {
-        type: sessionType,
-        startTime,
-        totalTime,
-      };
-
-      const existing = await AsyncStorage.getItem('aed_sessions_student');
-      const sessions = existing ? JSON.parse(existing) : [];
-
-      // newest session at top
-      sessions.unshift(newSession);
-      await AsyncStorage.setItem(
-        'aed_sessions_student',
-        JSON.stringify(sessions),
-      );
-    } catch (error) {
-      console.log('Error saving session:', error);
-    }
-  };
-
-  const changeRhythm = rhythmKey => {
-    stopAED(`${rhythmKey} Simulation`);
-
-    setSessionType(`${rhythmKey} Simulation`);
-
-    // Restart AED with the new rhythm
-    startAED(rhythmKey);
-  };
+  } = useAEDSequencePractice(poweredOn);
 
   const powerOnAED = () => {
     setPoweredOn(true);
+    startAED('Sinus');
+    setStepIndex(0);
+    nextStep();
   };
 
   const powerOffAED = () => {
@@ -84,35 +67,25 @@ export default function useAED() {
     resetSequence();
   };
 
-  const startAED = rhythmKey => {
-    if (started && !paused) return;
-    if (started && paused) {
-      resumeAED();
-      return;
-    }
+  const startAED = (rhythmKey, isManual = manualMode) => {
+    setManualMode(isManual);
 
-    const rhythmKeys = rhythmKey || Object.keys(heartRhythms);
+    const rhythmKeys = Object.keys(heartRhythms);
     const selectedRhythmKey =
       rhythmKeys[Math.floor(Math.random() * rhythmKeys.length)];
-    const selectedRhythm = heartRhythms[rhythmKey || selectedRhythmKey];
+    const selectedRhythm = heartRhythms[selectedRhythmKey];
     const pattern = selectedRhythm.generate();
     const spacing = aedWidth / (pattern.length - 1);
 
-    setCurrentRhythm({
-      name: rhythmKey || selectedRhythmKey,
-      bpm: selectedRhythm.bpm,
-    });
-
+    setCurrentRhythm({ name: selectedRhythmKey, bpm: selectedRhythm.bpm });
     clearWaveform();
-    loadSequence(rhythmKey || selectedRhythmKey);
+    loadSequence(rhythmKey, isManual);
 
     setStarted(true);
     setPaused(false);
 
     resetTimer();
     startTimer();
-
-    setStartTime(new Date().toISOString());
 
     const patternIndex = { current: 0 };
     drawWaveformPoint(pattern, spacing, patternIndex);
@@ -139,11 +112,7 @@ export default function useAED() {
     resumeSequence();
   };
 
-  const stopAED = async (type = sessionType) => {
-    if (started && startTime) {
-      await saveSession(type, Number(timer) || 0, startTime);
-    }
-
+  const stopAED = () => {
     setPoweredOn(false);
     setStarted(false);
     setPaused(false);
@@ -152,7 +121,24 @@ export default function useAED() {
     setCurrentRhythm(null);
     clearWaveform();
     resetSequence();
-    setStartTime(null);
+  };
+
+  const changeRhythm = newRhythmName => {
+    if (!started) return;
+
+    setCurrentRhythm({
+      name: newRhythmName,
+      bpm: heartRhythms[newRhythmName].bpm,
+    });
+
+    clearWaveform();
+    loadSequence(newRhythmName, manualMode);
+
+    const pattern = heartRhythms[newRhythmName].generate();
+    const spacing = aedWidth / (pattern.length - 1);
+    const patternIndex = { current: 0 };
+
+    drawWaveformPoint(pattern, spacing, patternIndex);
   };
 
   return {
@@ -177,6 +163,9 @@ export default function useAED() {
     timer,
     handleAction,
     changeRhythm,
-    sessionType,
+    positions,
+    setPositions,
+    placedPads,
+    setPlacedPads,
   };
 }

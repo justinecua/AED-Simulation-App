@@ -76,15 +76,50 @@ const StudentAutoModeScreen = ({
   };
 
   const handleBackHome = () => {
+    stopAED(sessionType);
+    saveStudentSession();
     setShowFinishDialog(false);
     resetSimulation();
     goHomeStudent();
   };
 
   const powerDisabled = !started;
+
+  const saveStudentSession = async () => {
+    try {
+      const newSession = {
+        type: sessionType,
+        startTime: new Date().toISOString(),
+        totalTime: timer,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_student');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_student',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Student session saved!');
+    } catch (e) {
+      console.log('Error saving student session:', e);
+    }
+  };
+
   return (
     <View style={style.container}>
-      <Header goBack={goHomeStudent} role="student" />
+      <Header
+        goBack={() => {
+          stopAED(sessionType);
+          saveStudentSession();
+          resetSimulation();
+          goHomeStudent();
+        }}
+        role="student"
+      />
 
       <View style={style.subContainer}>
         <View style={style.content}>
@@ -117,12 +152,12 @@ const StudentAutoModeScreen = ({
                 </View>
               </View>
 
-              <TouchableOpacity style={style2.wifiButton}>
+              {/* <TouchableOpacity style={style2.wifiButton}>
                 <Wifi color={Colors.text} size={22} />
               </TouchableOpacity>
               <TouchableOpacity style={style2.wifiButton}>
                 <Info color={Colors.text} size={22} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
 

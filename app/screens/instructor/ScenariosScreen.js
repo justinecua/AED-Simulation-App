@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useScenarioContext } from '../../context/ScenarioContext';
 import Header from '../../components/Header';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ScenariosScreen({
   goBack,
@@ -10,97 +11,165 @@ export default function ScenariosScreen({
 }) {
   const { scenarios, deleteScenario } = useScenarioContext();
 
+  // Log scenario delete into instructor sessions
+  const saveInstructorScenarioDelete = async scenario => {
+    try {
+      const newSession = {
+        type: 'Scenario Deleted',
+        scenarioName: scenario?.name || '(Untitled Scenario)',
+        startTime: new Date().toISOString(),
+        totalTime: 0,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_instructor');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_instructor',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Instructor scenario delete saved!');
+    } catch (e) {
+      console.log('Error saving scenario delete session:', e);
+    }
+  };
+
   const handleEditScenario = scenario => {
-    goEditScenario(scenario); // This will pass the scenario data to handleNavigation
+    goEditScenario(scenario);
+  };
+
+  const handleDeleteScenario = async scenario => {
+    await saveInstructorScenarioDelete(scenario);
+    deleteScenario(scenario.id);
   };
 
   return (
     <ScrollView
       contentContainerStyle={{
-        padding: 16,
-        gap: 16,
-        backgroundColor: '#f5f7fb',
+        padding: 20,
+        backgroundColor: '#F8FAFC',
         flexGrow: 1,
       }}
     >
       <Header role="instructor" goBack={goBack} />
+
+      {/* TOP BAR */}
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
+          marginBottom: 20,
         }}
       >
-        <Text style={{ fontSize: 20, fontWeight: '700', color: '#2b2f3a' }}>
+        <Text style={{ fontSize: 22, fontWeight: '700', color: '#0F172A' }}>
           Saved Scenarios
         </Text>
+
         <TouchableOpacity
           onPress={goNewScenario}
           style={{
-            backgroundColor: '#1976D2',
+            backgroundColor: '#2563EB',
             paddingHorizontal: 14,
             paddingVertical: 8,
-            borderRadius: 8,
+            borderRadius: 10,
           }}
         >
-          <Text style={{ color: '#fff', fontWeight: '600' }}>New</Text>
+          <Text
+            style={{
+              color: '#FFFFFF',
+              fontWeight: '600',
+              fontSize: 14,
+            }}
+          >
+            New
+          </Text>
         </TouchableOpacity>
       </View>
 
+      {/* EMPTY STATE */}
       {scenarios.length === 0 ? (
-        <Text style={{ color: '#6b7280' }}>No scenarios yet. Tap "New".</Text>
+        <Text style={{ color: '#64748B', fontSize: 14 }}>
+          No scenarios yet. Tap “New” to get started.
+        </Text>
       ) : (
         scenarios.map(s => (
           <TouchableOpacity
             key={s.id}
             onPress={() => handleEditScenario(s)}
             style={{
-              backgroundColor: '#fff',
-              borderRadius: 12,
-              padding: 14,
-              shadowColor: '#000',
-              shadowOpacity: 0.08,
-              shadowRadius: 8,
-              elevation: 3,
-              marginBottom: 12,
+              backgroundColor: '#FFFFFF',
+              borderRadius: 16,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: '#E2E8F0',
+              marginBottom: 14,
             }}
           >
             <View
-              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                gap: 12,
+              }}
             >
+              {/* LEFT DETAILS */}
               <View style={{ flex: 1 }}>
                 <Text
-                  style={{ fontSize: 16, fontWeight: '700', marginBottom: 4 }}
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '700',
+                    color: '#0F172A',
+                    marginBottom: 4,
+                  }}
                 >
                   {s.name || '(Untitled Scenario)'}
                 </Text>
-                <Text style={{ color: '#6b7280', marginBottom: 6 }}>
+
+                <Text
+                  style={{
+                    color: '#64748B',
+                    marginBottom: 8,
+                    fontSize: 13,
+                    lineHeight: 18,
+                  }}
+                >
                   {s.description || '—'}
                 </Text>
 
-                <Text style={{ color: '#374151' }}>
+                <Text style={{ color: '#475569', fontSize: 13 }}>
                   Rhythm: <Text style={{ fontWeight: '600' }}>{s.rhythm}</Text>
                 </Text>
-                <Text style={{ color: '#374151' }}>
-                  Steps: {s.steps.length}
+
+                <Text style={{ color: '#475569', fontSize: 13 }}>
+                  Steps:{' '}
+                  <Text style={{ fontWeight: '600' }}>{s.steps.length}</Text>
                 </Text>
               </View>
 
               {/* DELETE BUTTON */}
               <TouchableOpacity
-                onPress={() => {
-                  deleteScenario(s.id);
-                }}
+                onPress={() => handleDeleteScenario(s)}
                 style={{
-                  backgroundColor: '#EF4444',
+                  backgroundColor: '#FEE2E2',
                   paddingHorizontal: 12,
                   paddingVertical: 6,
-                  borderRadius: 6,
-                  height: 32,
+                  borderRadius: 8,
                   alignSelf: 'flex-start',
                 }}
               >
-                <Text style={{ color: '#fff', fontWeight: '700' }}>Delete</Text>
+                <Text
+                  style={{
+                    color: '#B91C1C',
+                    fontWeight: '700',
+                    fontSize: 12,
+                  }}
+                >
+                  Delete
+                </Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

@@ -4,179 +4,118 @@ import Colors from '../constants/colors';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f7fb',
+    backgroundColor: '#F8FAFC',
   },
 
   scenarioBuilder: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 20,
+    paddingTop: 10,
+    paddingBottom: 40,
   },
 
   sectionTitle: {
     textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
-    fontSize: 16,
-    color: Colors.rhythmBackground,
-    marginBottom: 25,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0F172A',
+    marginBottom: 20,
   },
 
+  /* -------------------------
+        INPUTS
+  -------------------------- */
   inputContainer: {
     flexDirection: 'column',
     gap: 18,
     marginBottom: 25,
   },
 
-  inputBox: {
-    flexDirection: 'column',
-    gap: 8,
+  label: {
+    fontSize: 13,
+    color: '#334155',
+    fontWeight: '600',
+    marginBottom: 10,
   },
 
-  label: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 14,
-    color: Colors.rhythmBackground,
-    marginLeft: 4,
+  label2: {
+    fontSize: 13,
+    color: '#334155',
+    fontWeight: '600',
+    marginBottom: 13,
   },
 
   input: {
-    borderWidth: 0,
-    borderRadius: 12,
-    padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+
     fontSize: 14,
-    color: '#333',
-
-    // iOS Shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-
-    // Android Shadow
-    elevation: 4,
+    color: '#0F172A',
   },
 
   descriptionInput: {
-    minHeight: 80,
-    paddingTop: 16,
+    minHeight: 90,
+    textAlignVertical: 'top',
   },
 
-  timelineContainer: {
-    flex: 1,
-    gap: 12,
-    marginBottom: 20,
-  },
-
-  timelineScroll: {
-    flex: 1,
-    borderWidth: 0,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-
-    // iOS Shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-
-    // Android Shadow
-    elevation: 4,
-  },
-
-  draggableList: {
-    flex: 1,
-  },
-
-  draggableListContent: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    paddingBottom: 20,
-  },
-
-  contentText: {
-    fontSize: 13,
-    backgroundColor: '#fff',
-    color: Colors.text,
-    fontWeight: '600',
-    padding: 12,
-    borderRadius: 7,
-  },
-
-  studentSubWrapper: {
-    flexDirection: 'column',
-  },
-
+  /* -------------------------
+       STEP ITEMS
+  -------------------------- */
   stepItem: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 14,
     marginBottom: 10,
+
     borderWidth: 1,
-    borderColor: '#f0f0f0',
-
-    // iOS Shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-
-    // Android Shadow
-    elevation: 2,
+    borderColor: '#E2E8F0',
   },
 
   stepText: {
-    fontWeight: '600',
     fontSize: 14,
-    color: '#111827',
+    fontWeight: '600',
+    color: '#0F172A',
     marginBottom: 4,
   },
 
   stepAction: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#64748B',
   },
 
+  /* -------------------------
+       TIMELINE
+  -------------------------- */
+  timelineContainer: {
+    marginBottom: 20,
+  },
+
+  /* -------------------------
+       BUTTONS
+  -------------------------- */
   buttonContainer: {
-    flexDirection: 'column',
-    gap: 15,
-    marginTop: 'auto',
-    paddingTop: 20,
-  },
-
-  addButton: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderWidth: 1.5,
-    borderColor: Colors.button,
-    borderRadius: 12,
-  },
-
-  addButtonText: {
-    color: Colors.button,
-    textAlign: 'center',
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 15,
+    marginTop: 25,
   },
 
   saveButton: {
     backgroundColor: Colors.button,
-    padding: 16,
-    borderWidth: 1.5,
-    borderColor: Colors.button,
+    padding: 15,
     borderRadius: 12,
+    alignItems: 'center',
   },
 
   saveButtonText: {
     color: '#fff',
-    textAlign: 'center',
-    fontFamily: 'Poppins-SemiBold',
+    fontWeight: '600',
     fontSize: 15,
   },
 
-  // Modal Styles
+  /* -------------------------
+       MODAL
+  -------------------------- */
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -184,16 +123,16 @@ const styles = StyleSheet.create({
   },
 
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 24,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 
   modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.rhythmBackground,
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0F172A',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -201,18 +140,17 @@ const styles = StyleSheet.create({
   actionButtonsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 8,
-    marginBottom: 12,
     gap: 8,
+    marginVertical: 10,
   },
 
   actionButton: {
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    backgroundColor: '#fff',
+    borderColor: '#CBD5E1',
+    backgroundColor: '#FFFFFF',
   },
 
   actionButtonSelected: {
@@ -222,24 +160,22 @@ const styles = StyleSheet.create({
 
   actionButtonText: {
     fontSize: 12,
-    color: '#111',
-    fontWeight: '500',
+    color: '#334155',
   },
 
   actionButtonTextSelected: {
-    color: '#fff',
+    color: '#FFFFFF',
   },
 
   checkbox: {
-    marginRight: 10,
     width: 22,
     height: 22,
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#999',
+    borderColor: '#CBD5E1',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fff',
+    marginRight: 10,
   },
 
   checkboxSelected: {
@@ -249,14 +185,14 @@ const styles = StyleSheet.create({
 
   checkboxText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 14,
   },
 
   modalButtonsContainer: {
     flexDirection: 'row',
+    marginTop: 20,
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
   },
 
   modalActionButtons: {
@@ -265,44 +201,38 @@ const styles = StyleSheet.create({
   },
 
   deleteButton: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#fef2f2',
-    borderWidth: 1,
-    borderColor: '#fecaca',
+    backgroundColor: '#FEE2E2',
+    borderRadius: 10,
   },
 
   deleteButtonText: {
-    color: '#dc2626',
+    color: '#B91C1C',
     fontWeight: '600',
   },
 
   cancelButton: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#f3f4f6',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 10,
   },
 
   cancelButtonText: {
-    color: '#374151',
+    color: '#475569',
     fontWeight: '600',
   },
 
   saveModalButton: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingVertical: 12,
-    borderRadius: 8,
     backgroundColor: Colors.button,
-    borderWidth: 1,
-    borderColor: Colors.button,
+    borderRadius: 10,
   },
 
   saveModalButtonText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontWeight: '600',
   },
 });

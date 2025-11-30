@@ -13,10 +13,12 @@ import {
 import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
+
 import Header from '../../components/Header';
 import styles from '../../styles/InstructorScenarioBuilderStyle';
 import aedSequences from '../../data/aedSequences';
 import { useScenarioContext } from '../../context/ScenarioContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ACTIONS = [
   'power',
@@ -35,11 +37,12 @@ export default function InstructorScenarioBuilder({
   editScenario,
 }) {
   const { addScenario, updateScenario } = useScenarioContext();
+  const [builderTimer, setBuilderTimer] = useState(0);
 
   const [rhythmPreview, setRhythmPreview] = useState('VFib');
   const defaultPreviewSteps = aedSequences[rhythmPreview] || [];
   const [showDefaultSteps, setShowDefaultSteps] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState('');
   const isEditing = !!editScenario;
 
   // Scenario details
@@ -57,7 +60,7 @@ export default function InstructorScenarioBuilder({
         ...step,
       }));
     }
-    return []; // EMPTY timeline
+    return [];
   });
 
   const stepsRef = useRef(steps);
@@ -76,6 +79,7 @@ export default function InstructorScenarioBuilder({
   const openEditorByKey = key => {
     const step = stepsRef.current.find(s => s.key === key);
     if (!step) return;
+
     setEditingStepKey(key);
     setEditText(step.text || '');
     setEditAction(step.action || 'auto');
@@ -84,12 +88,9 @@ export default function InstructorScenarioBuilder({
     setIsStepEditing(true);
   };
 
-  const openEditor = (index, item) => openEditorByKey(item.key);
-
-  const onDragEnd = ({ data }) => setSteps(data);
-
   const saveEdit = () => {
     if (!editingStepKey) return;
+
     setSteps(prev =>
       prev.map(step =>
         step.key === editingStepKey
@@ -103,30 +104,34 @@ export default function InstructorScenarioBuilder({
           : step,
       ),
     );
+
     setIsStepEditing(false);
     setEditingStepKey(null);
   };
 
   const deleteStep = () => {
     if (!editingStepKey) return;
+
     setSteps(prev => prev.filter(s => s.key !== editingStepKey));
     setIsStepEditing(false);
     setEditingStepKey(null);
   };
 
   const saveScenario = () => {
+    setErrorMessage('');
+
     if (!name.trim()) {
-      alert('Please enter a scenario name.');
+      setErrorMessage('Please enter a scenario name.');
       return;
     }
 
     if (!description.trim()) {
-      alert('Please enter a scenario description.');
+      setErrorMessage('Please enter a scenario description.');
       return;
     }
 
     if (steps.length === 0) {
-      alert('Please add at least one step to the timeline.');
+      setErrorMessage('Please add at least one step to the timeline.');
       return;
     }
 
@@ -139,33 +144,53 @@ export default function InstructorScenarioBuilder({
 
     if (isEditing && editScenario?.id) {
       updateScenario(editScenario.id, scenarioData);
+
+      saveInstructorScenarioSession(true);
     } else {
       addScenario(scenarioData);
+
+      saveInstructorScenarioSession(false);
     }
 
     goScenarios();
   };
 
-  const renderStepItem = ({ item, drag, isActive }) => (
-    <ScaleDecorator>
-      <TouchableOpacity
-        onLongPress={drag}
-        onPress={() => openEditor(null, item)}
-        disabled={isActive}
-        style={[styles.stepItem, { opacity: isActive ? 0.7 : 1 }]}
-      >
-        <Text style={styles.stepText}>{item.text}</Text>
-        <Text style={styles.stepAction}>
-          action: {item.action}
-          {item.flashing ? ' • flashing' : ''}
-        </Text>
-      </TouchableOpacity>
-    </ScaleDecorator>
-  );
+  const saveInstructorScenarioSession = async isUpdate => {
+    try {
+      const newSession = {
+        type: isUpdate ? 'Scenario Updated' : 'Scenario Created',
+        scenarioName: name,
+        startTime: new Date().toISOString(),
+        totalTime: builderTimer,
+      };
+
+      const data = await AsyncStorage.getItem('aed_sessions_instructor');
+      const sessions = data ? JSON.parse(data) : [];
+
+      sessions.unshift(newSession);
+
+      await AsyncStorage.setItem(
+        'aed_sessions_instructor',
+        JSON.stringify(sessions),
+      );
+
+      console.log('Instructor scenario session saved!');
+    } catch (e) {
+      console.log('Error saving scenario session:', e);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBuilderTimer(t => t + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#f5f7fb' }}
+      style={{ flex: 1, backgroundColor: '#F8FAFC', padding: 10 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <Header role="instructor" goBack={goBack} />
@@ -180,50 +205,45 @@ export default function InstructorScenarioBuilder({
             <Text style={styles.sectionTitle}>
               {isEditing ? 'Edit Scenario' : 'Scenario Builder'}
             </Text>
-            {/* ===========================================================
-    INSTRUCTIONS FOR INSTRUCTOR
-============================================================ */}
+
+            {/* INSTRUCTIONS CARD */}
             <View
               style={{
-                backgroundColor: '#E8F1FF',
-                padding: 12,
-                borderRadius: 10,
+                backgroundColor: '#EFF6FF',
+                padding: 16,
+                borderRadius: 14,
                 borderWidth: 1,
-                borderColor: '#BFD6FF',
-                marginBottom: 25,
+                borderColor: '#DBEAFE',
+                marginBottom: 28,
               }}
             >
               <Text
-                style={{ fontSize: 16, fontWeight: '700', color: '#2A5AA3' }}
+                style={{
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: '#1E3A8A',
+                  marginBottom: 8,
+                }}
               >
                 How to Build Your Scenario
               </Text>
 
-              <View style={{ marginTop: 8 }}>
-                <Text
-                  style={{ fontSize: 14, color: '#2A5AA3', marginBottom: 4 }}
-                >
+              <View style={{ gap: 6 }}>
+                <Text style={{ fontSize: 14, color: '#1E3A8A' }}>
                   • Tap a default step to add it to the timeline.
                 </Text>
-                <Text
-                  style={{ fontSize: 14, color: '#2A5AA3', marginBottom: 4 }}
-                >
-                  • Drag steps inside the Timeline to reorder them.
-                </Text>
-                <Text
-                  style={{ fontSize: 14, color: '#2A5AA3', marginBottom: 4 }}
-                >
+
+                <Text style={{ fontSize: 14, color: '#1E3A8A' }}>
                   • Tap a step in the Timeline to remove it.
                 </Text>
-                <Text style={{ fontSize: 14, color: '#2A5AA3' }}>
-                  • Edit steps by tapping them while building your scenario.
+
+                <Text style={{ fontSize: 14, color: '#1E3A8A' }}>
+                  • Edit steps by tapping them in the Timeline.
                 </Text>
               </View>
             </View>
 
-            {/* ===========================================================
-                SCENARIO INPUTS
-            ============================================================ */}
+            {/* INPUTS */}
             <View style={styles.inputContainer}>
               <View style={styles.inputBox}>
                 <Text style={styles.label}>Scenario Name</Text>
@@ -246,22 +266,28 @@ export default function InstructorScenarioBuilder({
                 />
               </View>
             </View>
-            {/* ===========================================================
-                DEFAULT STEPS (PRESS TO ADD)
-            ============================================================ */}
+
+            {/* DEFAULT STEPS */}
             <View style={{ marginBottom: 30 }}>
               <TouchableOpacity
                 onPress={() => setShowDefaultSteps(prev => !prev)}
                 style={{
                   alignSelf: 'flex-start',
-                  paddingVertical: 6,
-                  paddingHorizontal: 12,
-                  backgroundColor: '#4A90E2',
-                  borderRadius: 8,
-                  marginBottom: 10,
+                  paddingVertical: 17,
+                  paddingHorizontal: 16,
+                  backgroundColor: '#fff',
+                  borderRadius: 10,
+                  marginBottom: 14,
+                  width: '100%',
                 }}
               >
-                <Text style={{ color: '#fff', fontWeight: '600' }}>
+                <Text
+                  style={{
+                    color: '#000000ff',
+                    fontSize: 13,
+                    textAlign: 'center',
+                  }}
+                >
                   {showDefaultSteps
                     ? 'Hide Default Steps'
                     : 'Show Default Steps'}
@@ -276,8 +302,7 @@ export default function InstructorScenarioBuilder({
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    style={{ marginVertical: 12 }}
-                    nestedScrollEnabled
+                    style={{ marginVertical: 14 }}
                   >
                     {Object.keys(aedSequences).map(r => (
                       <TouchableOpacity
@@ -287,15 +312,16 @@ export default function InstructorScenarioBuilder({
                           paddingVertical: 8,
                           paddingHorizontal: 16,
                           backgroundColor:
-                            rhythmPreview === r ? '#4A90E2' : '#ddd',
-                          borderRadius: 10,
-                          marginRight: 8,
+                            rhythmPreview === r ? '#2563EB' : '#E2E8F0',
+                          borderRadius: 20,
+                          marginRight: 10,
                         }}
                       >
                         <Text
                           style={{
-                            color: rhythmPreview === r ? '#fff' : '#333',
+                            color: rhythmPreview === r ? '#fff' : '#1E293B',
                             fontWeight: '600',
+                            fontSize: 13,
                           }}
                         >
                           {r}
@@ -304,14 +330,14 @@ export default function InstructorScenarioBuilder({
                     ))}
                   </ScrollView>
 
-                  {/* Default steps with scroll + max height */}
+                  {/* Default step list */}
                   <View
                     style={{
-                      backgroundColor: '#fff',
-                      padding: 12,
-                      borderRadius: 12,
+                      backgroundColor: '#FFFFFF',
+                      padding: 14,
+                      borderRadius: 14,
                       borderWidth: 1,
-                      borderColor: '#e0e0e0',
+                      borderColor: '#E2E8F0',
                       maxHeight: 250,
                       overflow: 'hidden',
                     }}
@@ -331,30 +357,44 @@ export default function InstructorScenarioBuilder({
                             key={idx}
                             onPress={() => setSteps(prev => [...prev, clone])}
                             style={{
-                              paddingVertical: 10,
-                              paddingHorizontal: 12,
-                              borderRadius: 8,
+                              paddingVertical: 12,
+                              paddingHorizontal: 14,
+                              borderRadius: 10,
                               borderWidth: 1,
-                              borderColor: '#ddd',
-                              marginBottom: 8,
-                              backgroundColor: '#fafafa',
+                              borderColor: '#E2E8F0',
+                              marginBottom: 10,
+                              backgroundColor: '#F8FAFC',
                             }}
                           >
-                            <Text style={{ fontWeight: '600', fontSize: 14 }}>
+                            <Text
+                              style={{
+                                fontWeight: '600',
+                                fontSize: 14,
+                                color: '#0F172A',
+                              }}
+                            >
                               {idx + 1}. {step.text}
                             </Text>
-                            <Text style={{ color: '#666', marginTop: 2 }}>
+
+                            <Text
+                              style={{
+                                color: '#64748B',
+                                marginTop: 2,
+                                fontSize: 12,
+                              }}
+                            >
                               action: {step.action}
                               {step.flashing ? ' • flashing' : ''}
                             </Text>
+
                             <Text
                               style={{
-                                color: '#999',
+                                color: '#94A3B8',
                                 fontSize: 12,
                                 marginTop: 4,
                               }}
                             >
-                              Tap to add → Timeline
+                              Tap to add
                             </Text>
                           </TouchableOpacity>
                         );
@@ -364,20 +404,19 @@ export default function InstructorScenarioBuilder({
                 </>
               )}
             </View>
-            {/* ===========================================================
-    TIMELINE (DRAGGABLE + REMOVABLE + SCROLLABLE)
-============================================================ */}
+
+            {/* TIMELINE */}
             <View style={styles.timelineContainer}>
-              <Text style={styles.label}>Timeline of Steps</Text>
+              <Text style={styles.label2}>Timeline of Steps</Text>
 
               <View
                 style={{
-                  height: 250, // FIXED HEIGHT → scrolls properly
+                  height: 260,
                   borderWidth: 1,
-                  borderColor: '#ddd',
-                  borderRadius: 10,
-                  padding: 5,
-                  backgroundColor: '#fff',
+                  borderColor: '#E2E8F0',
+                  borderRadius: 14,
+                  padding: 6,
+                  backgroundColor: '#FFFFFF',
                   overflow: 'hidden',
                 }}
               >
@@ -388,16 +427,15 @@ export default function InstructorScenarioBuilder({
                     <ScaleDecorator>
                       <TouchableOpacity
                         onLongPress={drag}
-                        onPress={() => {
-                          // REMOVE ON TAP
-                          setSteps(prev =>
-                            prev.filter(s => s.key !== item.key),
-                          );
-                        }}
+                        onPress={() =>
+                          setSteps(prev => prev.filter(s => s.key !== item.key))
+                        }
                         disabled={isActive}
                         style={[
                           styles.stepItem,
-                          { opacity: isActive ? 0.7 : 1 },
+                          {
+                            opacity: isActive ? 0.7 : 1,
+                          },
                         ]}
                       >
                         <Text style={styles.stepText}>{item.text}</Text>
@@ -415,29 +453,61 @@ export default function InstructorScenarioBuilder({
               </View>
             </View>
 
-            {/* Save Button */}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={saveScenario}
+            {/* ERROR MESSAGE */}
+            {errorMessage !== '' && (
+              <View
+                style={{
+                  backgroundColor: '#FEE2E2',
+                  padding: 12,
+                  borderRadius: 10,
+                  marginBottom: 16,
+                  borderLeftWidth: 4,
+                  borderLeftColor: '#DC2626',
+                }}
               >
-                <Text style={styles.saveButtonText}>
-                  {isEditing ? 'Update Scenario' : 'Save Scenario'}
+                <Text
+                  style={{
+                    color: '#991B1B',
+                    fontWeight: '600',
+                  }}
+                >
+                  {errorMessage}
                 </Text>
-              </TouchableOpacity>
-            </View>
+              </View>
+            )}
+
+            {/* SAVE BUTTON */}
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#2563EB',
+                paddingVertical: 14,
+                borderRadius: 12,
+                alignItems: 'center',
+                marginTop: 10,
+              }}
+              onPress={saveScenario}
+            >
+              <Text
+                style={{
+                  color: '#fff',
+                  fontWeight: '700',
+                  fontSize: 15,
+                }}
+              >
+                {isEditing ? 'Update Scenario' : 'Save Scenario'}
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       />
 
-      {/* ===========================================================
-          EDIT STEP MODAL
-      ============================================================ */}
+      {/* EDIT STEP MODAL */}
       <Modal visible={isStepEditing} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Edit Step</Text>
 
+            {/* Text */}
             <Text style={styles.label}>Text</Text>
             <TextInput
               style={[styles.input, { marginBottom: 12 }]}
@@ -445,6 +515,7 @@ export default function InstructorScenarioBuilder({
               onChangeText={setEditText}
             />
 
+            {/* Action */}
             <Text style={styles.label}>Action</Text>
             <View style={styles.actionButtonsContainer}>
               {ACTIONS.map(a => (
@@ -468,6 +539,7 @@ export default function InstructorScenarioBuilder({
               ))}
             </View>
 
+            {/* Flashing */}
             <View
               style={{
                 flexDirection: 'row',
@@ -487,6 +559,7 @@ export default function InstructorScenarioBuilder({
               <Text style={styles.label}>Flashing</Text>
             </View>
 
+            {/* Audio */}
             <Text style={styles.label}>Audio</Text>
             <TextInput
               style={[styles.input, { marginBottom: 16 }]}
@@ -494,27 +567,73 @@ export default function InstructorScenarioBuilder({
               onChangeText={setEditAudio}
             />
 
-            <View style={styles.modalButtonsContainer}>
+            {/* Modal Buttons */}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: 15,
+              }}
+            >
+              {/* DELETE */}
               <TouchableOpacity
-                style={styles.deleteButton}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderRadius: 12,
+                  backgroundColor: '#FEE2E2',
+                }}
                 onPress={deleteStep}
               >
-                <Text style={styles.deleteButtonText}>Delete</Text>
+                <Text
+                  style={{
+                    color: '#B91C1C',
+                    fontWeight: '700',
+                  }}
+                >
+                  Delete
+                </Text>
               </TouchableOpacity>
 
-              <View style={styles.modalActionButtons}>
+              {/* RIGHT BUTTONS */}
+              <View style={{ flexDirection: 'row', gap: 10 }}>
                 <TouchableOpacity
-                  style={styles.cancelButton}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 12,
+                    backgroundColor: '#F1F5F9',
+                  }}
                   onPress={() => setIsStepEditing(false)}
                 >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                  <Text
+                    style={{
+                      color: '#475569',
+                      fontWeight: '600',
+                    }}
+                  >
+                    Cancel
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={styles.saveModalButton}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 12,
+                    backgroundColor: '#2563EB',
+                  }}
                   onPress={saveEdit}
                 >
-                  <Text style={styles.saveModalButtonText}>Save</Text>
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontWeight: '700',
+                    }}
+                  >
+                    Save
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

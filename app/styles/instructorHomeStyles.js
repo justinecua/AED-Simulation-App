@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   modeDescription: {
     fontFamily: 'Poppins',
-    fontSize: normalize(13),
+    fontSize: normalize(11),
     marginBottom: normalize(5),
     color: Colors.text,
   },
@@ -174,6 +174,37 @@ const styles = StyleSheet.create({
   },
   rsDetailsDate: {
     fontSize: normalize(12.5),
+  },
+  emptySession: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    marginHorizontal: 1,
+    marginTop: 10,
+  },
+  emptyIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 13,
+    color: '#999',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
 

@@ -15,6 +15,7 @@ const StudentHomeScreen = ({
   goStudentAutoMode,
   goConnectToInstructor,
   goSimulationTips,
+  goPracticeMode,
 }) => {
   useEffect(() => {
     (async () => {
@@ -31,7 +32,7 @@ const StudentHomeScreen = ({
 
   useEffect(() => {
     const fetchSessions = async () => {
-      const data = await AsyncStorage.getItem('aed_sessions');
+      const data = await AsyncStorage.getItem('aed_sessions_student');
       if (data) setSessions(JSON.parse(data));
     };
     fetchSessions();
@@ -144,7 +145,10 @@ const StudentHomeScreen = ({
                   </Text>
                 </View>
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={goPracticeMode}
+                >
                   <Text style={styles.buttonText}>Try Practice</Text>
                 </TouchableOpacity>
               </View>
@@ -180,7 +184,13 @@ const StudentHomeScreen = ({
               <View>
                 {sessions.length === 0 ? (
                   <View style={styles.emptySession}>
-                    <Text style={styles.emptyText}>No sessions yet</Text>
+                    <View style={styles.emptyIconContainer}>
+                      <History color="#999" size={32} />
+                    </View>
+                    <Text style={styles.emptyTitle}>No sessions yet</Text>
+                    <Text style={styles.emptySubtitle}>
+                      Complete your first simulation to see history here
+                    </Text>
                   </View>
                 ) : (
                   sessions.slice(0, 4).map((session, index) => (
@@ -199,10 +209,11 @@ const StudentHomeScreen = ({
                           </Text>
                         </View>
                       </View>
-
-                      <View>
-                        <Text>{formatTime(session.totalTime)}</Text>
-                      </View>
+                      <Text>
+                        {typeof session.totalTime === 'number'
+                          ? formatTime(session.totalTime)
+                          : '0 sec'}
+                      </Text>
                     </View>
                   ))
                 )}

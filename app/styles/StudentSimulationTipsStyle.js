@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: Colors.background,
     position: 'relative',
-    rowGap: 35,
+    rowGap: 22,
     alignItems: 'center',
     marginBottom: '10%',
   },
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   tipText: {
     fontFamily: 'Poppins-Regular',
     color: Colors.text,
-    fontSize: 10,
+    fontSize: 12,
   },
 
   info: {
@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
   },
 
   centerContent: {
-    marginTop: '20%',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
@@ -95,6 +94,7 @@ const styles = StyleSheet.create({
   bottomContent: {
     alignItems: 'center',
     rowGap: 12,
+    width: '100%',
   },
 
   menuContainer: {
@@ -102,10 +102,10 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    gap: 10,
-    elevation: 4,
+    elevation: 1,
+    width: '100%',
   },
 
   option: {
@@ -130,15 +130,12 @@ const styles = StyleSheet.create({
 
   choicesContainer: {
     backgroundColor: '#fff',
-    width: '80%',
-    padding: 10,
+    width: '100%',
     borderRadius: 10,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 15,
-    marginBottom: '3%',
     elevation: 3,
   },
 
@@ -147,8 +144,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    padding: 5,
-    paddingLeft: 20,
+    padding: 10,
     gap: 10,
     borderRadius: 5,
   },
@@ -175,10 +171,6 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 
-  activeStep: {
-    elevation: 2,
-  },
-
   placementText: {
     fontFamily: 'Poppins-Regular',
     color: Colors.text,
@@ -188,9 +180,8 @@ const styles = StyleSheet.create({
   },
 
   bodyImage: {
-    marginTop: '-6%',
-    height: 300,
-    resizeMode: 'contain',
+    marginTop: '3%',
+    height: 350,
   },
 });
 
