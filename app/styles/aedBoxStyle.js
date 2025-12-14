@@ -18,6 +18,8 @@ const aedStyle = StyleSheet.create({
     height: hp('35%'),
     maxHeight: 260,
     minHeight: 260,
+    maxWidth: 340,
+    maxWidth: 340,
     // Shadows
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },

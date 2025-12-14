@@ -74,7 +74,8 @@ const DraggablePad = ({
         pan.getLayout(),
         {
           position: 'absolute',
-          padding: 10,
+          width: padSize.w,
+          height: padSize.h,
           borderRadius: 8,
           elevation: 3,
           shadowColor: '#000',

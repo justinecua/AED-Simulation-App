@@ -1,5 +1,5 @@
 const Colors = {
-  button: '#0071EE',
+  button: '#165be5',
   color2: '#ECF4ED',
   text: '#565656',
   subText: '#E5E5E5',
@@ -7,7 +7,7 @@ const Colors = {
   rhythmBackground: '#2E3847',
   heartRhythmColor: '#00E0D8',
   heartRateBackground: '#555E69',
-  buttonBlue: '#0071EE',
+  buttonBlue: '#165be5',
   recentSessionCard: '#EDF9FF',
 };
 

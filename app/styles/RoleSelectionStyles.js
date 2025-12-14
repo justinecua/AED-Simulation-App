@@ -1,92 +1,128 @@
 import { StyleSheet } from 'react-native';
 import Colors from '../constants/colors';
 
-const styles = StyleSheet.create({
-  atInfo: {
-    textAlign: 'center',
-    fontFamily: 'Roboto-Regular',
-    color: Colors.text,
-    fontSize: 13,
-  },
-  additionalText: {
-    marginTop: 40,
-    width: '90%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  roleDescription: {
-    fontFamily: 'Roboto-Regular',
-    flexWrap: 'wrap',
-    color: Colors.text,
-    fontSize: 12,
-  },
-  roleTitle: {
-    fontFamily: 'Roboto-Regular',
-    fontWeight: 'bold',
-    fontSize: 15,
-    color: Colors.text,
-    marginBottom: 2,
-  },
-  ucDetails: {
-    maxWidth: '100%',
-    flex: 1,
-    marginLeft: 14,
-  },
-  userCard: {
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    padding: 15,
-    width: '90%',
-    height: 95,
-    alignItems: 'center',
-    borderRadius: 10,
-    marginBottom: 10,
+const createStyles = screenWidth => {
+  const isTablet = screenWidth >= 768;
 
-    // Shadow for iOS
-    shadowColor: '#828795ff',
-    shadowOffset: {
-      width: 0,
-      height: 1,
+  return StyleSheet.create({
+    /* ---------- TEXT ---------- */
+    atInfo: {
+      textAlign: 'center',
+      fontFamily: 'Roboto-Regular',
+      color: Colors.text,
+      fontSize: 13,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    elevation: 5,
-  },
-  ucIcons: {
-    width: '19%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.button,
-    borderRadius: 7,
-  },
-  ucIcons2: {
-    width: '19%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.rhythmBackground,
-    borderRadius: 7,
-  },
-  fontSubtitle: {
-    color: Colors.text,
-    fontSize: 14,
-    marginTop: 2,
-    fontFamily: 'Poppins-Regular',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    marginBottom: 40,
-  },
-  container: {
-    height: '100%',
-    display: 'flex',
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
-export default styles;
+    roleDescription: {
+      fontFamily: 'Roboto-Regular',
+      color: Colors.text,
+      fontSize: 12,
+    },
+
+    roleTitle: {
+      fontFamily: 'Roboto-Regular',
+      fontWeight: 'bold',
+      fontSize: 15,
+      color: Colors.text,
+      marginBottom: 2,
+    },
+
+    fontSubtitle: {
+      color: Colors.text,
+      fontSize: 14,
+      marginTop: 2,
+      fontFamily: 'Poppins-Regular',
+    },
+
+    /* ---------- LAYOUT ---------- */
+    container: {
+      flex: 1,
+      backgroundColor: '#ffffff',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+
+    logoContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+      marginBottom: 40,
+    },
+
+    logo: {
+      width: 170,
+      height: 90,
+      marginBottom: -30,
+      resizeMode: 'contain',
+    },
+
+    RoleContentContainer: {
+      width: isTablet ? 540 : '90%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+
+    additionalText: {
+      marginTop: 40,
+      width: isTablet ? 540 : '90%',
+      alignItems: 'center',
+    },
+
+    /* ---------- CARD ---------- */
+    userCard: {
+      flexDirection: 'row',
+      backgroundColor: '#ffffff',
+      padding: 15,
+      width: '100%',
+      height: 95,
+      alignItems: 'center',
+      borderRadius: 10,
+      marginBottom: 10,
+
+      shadowColor: '#828795ff',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.3,
+      shadowRadius: 1,
+      elevation: 5,
+    },
+
+    ucDetails: {
+      flex: 1,
+      marginLeft: 14,
+    },
+
+    ucIcons: {
+      width: 60,
+      flexShrink: 0,
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: Colors.button,
+      borderRadius: 7,
+    },
+
+    ucIcons2: {
+      width: 60,
+      flexShrink: 0,
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: Colors.rhythmBackground,
+      borderRadius: 7,
+    },
+    versionContainer: {
+      position: 'absolute',
+      bottom: 20,
+      alignItems: 'center',
+      width: '100%',
+    },
+
+    versionText: {
+      fontSize: 11,
+      color: '#9aa0a6',
+      fontFamily: 'Roboto-Regular',
+    },
+  });
+};
+
+export default createStyles;
