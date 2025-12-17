@@ -9,6 +9,7 @@ import { useLiveInstructor } from '../../context/LiveInstructorContext';
 import aedSequences from '../../data/aedSequences';
 import SessionFlowControl from '../../components/SessionFlowControl';
 import RhythmButton from '../../components/RhythmButton';
+import { useTcpServerContext } from '../../context/TcpServerContext';
 
 const InstructorLiveSessionScreen = ({ goBack }) => {
   const {
@@ -26,6 +27,7 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
     studentPoweredOn,
     studentPaused,
   } = useLiveInstructor();
+  const { disconnect, setIsServer } = useTcpServerContext();
 
   const rhythmLabels = {
     Sinus: 'Normal Sinus',
@@ -96,7 +98,13 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Header role="instructor" goBack={goBack} />
+      <Header
+        role="instructor"
+        goBack={() => {
+          disconnect();
+          goBack();
+        }}
+      />
 
       {/* Connection */}
       <View style={styles.section}>
@@ -137,6 +145,16 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
 
                 if (item.send === 'FINISH') {
                   saveInstructorLiveSession();
+                  sendSimulationControl('FINISH');
+
+                  setTimeout(() => {
+                    disconnect();
+                    setIsServer(false);
+                    setTimeout(() => setIsServer(true), 100);
+                  }, 200);
+
+                  goBack();
+                  return;
                 }
 
                 sendSimulationControl(item.send);

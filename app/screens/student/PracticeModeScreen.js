@@ -39,18 +39,19 @@ const PracticeModeScreen = ({ goHomeStudent, goPracticeApplyPads }) => {
   const savePracticeSession = async () => {
     try {
       const endTime = new Date().toISOString();
-      const totalTime = timer; // seconds
+
+      const startTime = sessionStartRef.current ?? endTime;
 
       const newSession = {
         type: 'Practice Mode',
-        startTime: sessionStartRef.current,
+        startTime,
         endTime,
-        totalTime,
+        totalTime: timer,
         rhythm,
       };
 
       const existing = await AsyncStorage.getItem('aed_sessions_student');
-      let sessions = existing ? JSON.parse(existing) : [];
+      const sessions = existing ? JSON.parse(existing) : [];
 
       sessions.unshift(newSession);
 

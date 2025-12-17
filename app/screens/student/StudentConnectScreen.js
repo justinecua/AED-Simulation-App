@@ -22,13 +22,12 @@ const StudentConnectScreen = ({ goBack, goLiveSession }) => {
     scanForHosts,
     availableHosts,
     sendMessage,
+    connect,
   } = useTcpServerContext();
 
   const handleConnect = ip => {
-    setIpServer(ip);
-    sendMessage('HELLO_STUDENT');
+    connect(ip);
   };
-
   const noResults = availableHosts.length === 0;
 
   return (
@@ -37,12 +36,12 @@ const StudentConnectScreen = ({ goBack, goLiveSession }) => {
         <View style={styles.container}>
           <HeaderBar goBack={goBack} />
 
-          <BluetoothRadar isSearching={false} onToggleSearch={scanForHosts} />
+          <BluetoothRadar isSearching={true} onToggleSearch={scanForHosts} />
 
           <Text style={styles.Text}>
             {connectionStatus.includes('Connected')
               ? 'Connected to Instructor.'
-              : 'Press Wi-Fi to search or enter IP below.'}
+              : 'Enter the Instructor`s IP below.'}
           </Text>
 
           {availableHosts.length > 0 ? (
@@ -72,11 +71,13 @@ const StudentConnectScreen = ({ goBack, goLiveSession }) => {
               <Users color="#94A3B8" size={25} />
               <Text style={styles.noResultTitle}>No Active Sessions</Text>
               <Text style={styles.noResultText}>
-                Ensure the instructor started a session, or connect manually:
+                The instructor must start a session and enable their hotspot
+                first. Connect to the instructor’s hotspot, then enter the IP
+                address shown on their screen.
               </Text>
 
               <TextInput
-                placeholder="e.g. 10.0.2.2"
+                placeholder=""
                 value={ipServer}
                 onChangeText={setIpServer}
                 style={styles.ipConnectInput}

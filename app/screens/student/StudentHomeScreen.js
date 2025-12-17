@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native';
 
 import FloatingHome from '../../components/FloatingHome';
 import { Play, Wifi, Hand, BadgeInfo, History } from 'lucide-react-native';
-
 import LinearGradient from 'react-native-linear-gradient';
-import styles from '../../styles/studentHomeScreenStyle';
 
+import createStyles from '../../styles/studentHomeScreenStyle';
 import { getOrCreateStudentId } from '../../data/roleIds';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -17,31 +22,17 @@ const StudentHomeScreen = ({
   goSimulationTips,
   goPracticeMode,
 }) => {
-  useEffect(() => {
-    (async () => {
-      try {
-        const id = await getOrCreateStudentId();
-        console.log('Student ID:', id);
-      } catch (e) {
-        console.warn('Error loading Student ID:', e);
-      }
-    })();
-  }, []);
+  const { width } = useWindowDimensions();
+  const styles = createStyles(width);
+  const isTablet = width >= 768;
 
   const [sessions, setSessions] = useState([]);
+  const [sessionsLoaded, setSessionsLoaded] = useState(false);
 
-  useEffect(() => {
-    const fetchSessions = async () => {
-      const data = await AsyncStorage.getItem('aed_sessions_student');
-      if (data) setSessions(JSON.parse(data));
-    };
-    fetchSessions();
-  }, []);
-
+  /* ---------- HELPERS ---------- */
   const formatDate = iso => {
     if (!iso) return '';
     const date = new Date(iso);
-
     return date
       .toLocaleString('en-US', {
         year: 'numeric',
@@ -57,11 +48,34 @@ const StudentHomeScreen = ({
   const formatTime = totalSeconds => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-
     return minutes === 0
       ? `${seconds} sec`
       : `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
   };
+
+  /* ---------- INIT ---------- */
+  useEffect(() => {
+    getOrCreateStudentId().catch(e =>
+      console.warn('Error loading Student ID:', e),
+    );
+  }, []);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const data = await AsyncStorage.getItem('aed_sessions_student');
+        const parsed = data ? JSON.parse(data) : [];
+        setSessions(Array.isArray(parsed) ? parsed : []);
+      } catch (e) {
+        console.warn('Failed to load sessions', e);
+        setSessions([]);
+      } finally {
+        setSessionsLoaded(true);
+      }
+    };
+
+    fetchSessions();
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -72,9 +86,12 @@ const StudentHomeScreen = ({
         end={{ x: 0, y: 1 }}
         style={styles.linearGradient}
       >
-        <ScrollView>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.scrollContainer}
+        >
           <View style={styles.container}>
-            {/* Header */}
+            {/* ================= HEADER ================= */}
             <View style={styles.header}>
               <View style={styles.headerSubContainer}>
                 <Text style={styles.Welcome}>Welcome,</Text>
@@ -82,142 +99,98 @@ const StudentHomeScreen = ({
               </View>
 
               <View style={styles.hSubContainer}>
-                <Text style={styles.hsubTitle}>Ready to</Text>
-                <Text style={styles.hsubTitleMid}>begin</Text>
-                <Text style={styles.hsubTitle2}>your training?</Text>
+                <Text style={styles.hsubTitle}>
+                  Ready to begin your training?
+                </Text>
               </View>
             </View>
 
-            {/* ================== MODES ================== */}
+            {/* ================= MODES ================= */}
             <View style={styles.modesContainer}>
-              {/* Auto Mode */}
-              <View style={styles.mode}>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.modeIcon}>
-                    <Play color="white" size={23} />
-                  </View>
+              <ModeCard
+                icon={<Play color="white" size={22} />}
+                title="Auto Mode"
+                desc="Begin simulation without instructor supervision"
+                button="Start Simulation"
+                onPress={goStudentAutoMode}
+                styles={styles}
+              />
 
-                  <Text style={styles.modeTitle}>Auto Mode</Text>
-                  <Text style={styles.modeDescription}>
-                    Begin simulation without instructor supervision
-                  </Text>
-                </View>
+              <ModeCard
+                icon={<Wifi color="white" size={22} />}
+                title="Connect Device"
+                desc="Join your instructor's session via Wifi"
+                button="Connect via Wifi"
+                onPress={goConnectToInstructor}
+                styles={styles}
+              />
 
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={goStudentAutoMode}
-                >
-                  <Text style={styles.buttonText}>Start Simulation</Text>
-                </TouchableOpacity>
-              </View>
+              <ModeCard
+                icon={<Hand color="white" size={22} />}
+                title="Practice Mode"
+                desc="Try AED simulation in free play mode"
+                button="Try Practice"
+                onPress={goPracticeMode}
+                styles={styles}
+              />
 
-              {/* Connect Device */}
-              <View style={styles.mode}>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.modeIcon}>
-                    <Wifi color="white" size={23} />
-                  </View>
-
-                  <Text style={styles.modeTitle}>Connect Device</Text>
-                  <Text style={styles.modeDescription}>
-                    Join your instructor's session via Wifi
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={goConnectToInstructor}
-                >
-                  <Text style={styles.buttonText}>Connect via Wifi</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Practice Mode */}
-              <View style={styles.mode}>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.modeIcon}>
-                    <Hand color="white" size={23} />
-                  </View>
-
-                  <Text style={styles.modeTitle}>Practice Mode</Text>
-                  <Text style={styles.modeDescription}>
-                    Try AED simulation in free play mode
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={goPracticeMode}
-                >
-                  <Text style={styles.buttonText}>Try Practice</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Simulation Tips */}
-              <View style={styles.mode}>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.modeIcon}>
-                    <BadgeInfo color="white" size={23} />
-                  </View>
-
-                  <Text style={styles.modeTitle}>Simulation Tips</Text>
-                  <Text style={styles.modeDescription}>
-                    Learn how to apply pads and recognize rhythms
-                  </Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={goSimulationTips}
-                >
-                  <Text style={styles.buttonText}>View Tips</Text>
-                </TouchableOpacity>
-              </View>
+              <ModeCard
+                icon={<BadgeInfo color="white" size={22} />}
+                title="Simulation Tips"
+                desc="Learn how to apply pads and recognize rhythms"
+                button="View Tips"
+                onPress={goSimulationTips}
+                styles={styles}
+              />
             </View>
 
-            {/* ================== RECENT SESSIONS ================== */}
+            {/* ================= RECENT SESSIONS ================= */}
             <View style={styles.recentSessionsContainer}>
-              <View style={styles.rscTitle}>
+              <View style={styles.rscHeader}>
                 <Text style={styles.rscTitleText}>Recent Sessions</Text>
               </View>
 
-              <View>
-                {sessions.length === 0 ? (
-                  <View style={styles.emptySession}>
-                    <View style={styles.emptyIconContainer}>
-                      <History color="#999" size={32} />
-                    </View>
-                    <Text style={styles.emptyTitle}>No sessions yet</Text>
-                    <Text style={styles.emptySubtitle}>
-                      Complete your first simulation to see history here
-                    </Text>
+              {!sessionsLoaded || sessions.length === 0 ? (
+                <View style={styles.emptySession}>
+                  <View style={styles.emptyIconContainer}>
+                    <History color="#999" size={32} />
                   </View>
-                ) : (
-                  sessions.slice(0, 4).map((session, index) => (
-                    <View style={styles.rsCard} key={index}>
+                  <Text style={styles.emptyTitle}>No sessions yet</Text>
+                  <Text style={styles.emptySubtitle}>
+                    Complete your first simulation to see history here
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.rsGrid}>
+                  {sessions.slice(0, isTablet ? 6 : 4).map((session, index) => (
+                    <View
+                      key={index}
+                      style={[styles.rsCard, isTablet && styles.rsCardTablet]}
+                    >
                       <View style={styles.rsCardSub}>
                         <View style={styles.rscIcon}>
-                          <History color="white" size={23} />
+                          <History color="white" size={22} />
                         </View>
 
                         <View style={styles.rsDetails}>
                           <Text style={styles.rsDetailsTitle}>
-                            {session.type}
+                            {session.type || 'Simulation'}
                           </Text>
                           <Text style={styles.rsDetailsDate}>
                             {formatDate(session.startTime)}
                           </Text>
                         </View>
                       </View>
+
                       <Text>
                         {typeof session.totalTime === 'number'
                           ? formatTime(session.totalTime)
                           : '0 sec'}
                       </Text>
                     </View>
-                  ))
-                )}
-              </View>
+                  ))}
+                </View>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -227,5 +200,19 @@ const StudentHomeScreen = ({
     </View>
   );
 };
+
+/* ================= MODE CARD ================= */
+
+const ModeCard = ({ icon, title, desc, button, onPress, styles }) => (
+  <View style={styles.mode}>
+    <View style={styles.modeIcon}>{icon}</View>
+    <Text style={styles.modeTitle}>{title}</Text>
+    <Text style={styles.modeDescription}>{desc}</Text>
+
+    <TouchableOpacity style={styles.button} onPress={onPress}>
+      <Text style={styles.buttonText}>{button}</Text>
+    </TouchableOpacity>
+  </View>
+);
 
 export default StudentHomeScreen;

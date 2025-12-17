@@ -7,7 +7,7 @@ const Colors = {
   rhythmBackground: '#2E3847',
   heartRhythmColor: '#00E0D8',
   heartRateBackground: '#555E69',
-  buttonBlue: '#0071EE',
+  buttonBlue: '#165be5',
   recentSessionCard: '#EDF9FF',
 };
 

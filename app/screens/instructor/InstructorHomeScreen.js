@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native';
 
 import Colors from '../../constants/colors';
 import FloatingHome from '../../components/FloatingHome';
@@ -18,27 +24,29 @@ const InstructorHomeScreen = ({
   goScenarioBuilder,
   goManageScenarios,
 }) => {
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
+  const contentWidth = isTablet ? (width >= 1024 ? 900 : 720) : '100%';
+
   const [sessions, setSessions] = useState([]);
 
+  /* ---------- INIT ---------- */
   useEffect(() => {
     (async () => {
       try {
-        const id = await getOrCreateInstructorId();
-        console.log('Instructor ID:', id);
+        await getOrCreateInstructorId();
+        const data = await AsyncStorage.getItem('aed_sessions_instructor');
+        setSessions(data ? JSON.parse(data) : []);
       } catch (e) {
-        console.warn('Error loading Instructor ID:', e);
+        console.warn('Instructor init error:', e);
       }
-
-      // Load Instructor-only sessions
-      const data = await AsyncStorage.getItem('aed_sessions_instructor');
-      if (data) setSessions(JSON.parse(data));
     })();
   }, []);
 
+  /* ---------- HELPERS ---------- */
   const formatDate = iso => {
     if (!iso) return '';
     const date = new Date(iso);
-
     return date
       .toLocaleString('en-US', {
         year: 'numeric',
@@ -54,7 +62,6 @@ const InstructorHomeScreen = ({
   const formatTime = totalSeconds => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-
     return minutes === 0
       ? `${seconds} sec`
       : `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
@@ -71,94 +78,61 @@ const InstructorHomeScreen = ({
             end={{ x: 0, y: 1 }}
             style={styles.linearGradient}
           >
-            {/* Header */}
-            <View style={styles.header}>
-              <View style={styles.headerSubContainer}>
-                <Text style={styles.Welcome}>Welcome,</Text>
-                <Text style={styles.Student}>Instructor!</Text>
-              </View>
-
-              <View style={styles.hSubContainer}>
-                <Text style={styles.hsubTitle}>
-                  Start a session and guide your student
-                </Text>
-              </View>
-            </View>
-
-            {/* Modes */}
-            <View style={styles.modesContainer}>
-              <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <Play color="white" size={23} />
+            {/* CENTERED CONTENT (TABLET ONLY) */}
+            <View style={{ width: contentWidth }}>
+              {/* ================= HEADER ================= */}
+              <View style={styles.header}>
+                <View style={styles.headerSubContainer}>
+                  <Text style={styles.Welcome}>Welcome,</Text>
+                  <Text style={styles.Student}>Instructor!</Text>
                 </View>
-                <Text style={styles.modeTitle}>Test Scenario</Text>
-                <Text style={styles.modeDescription}>
-                  Run a scenario without connecting to a student
-                </Text>
-                <TouchableOpacity
-                  style={styles.button}
+
+                <View style={styles.hSubContainer}>
+                  <Text style={styles.hsubTitle}>
+                    Ready to guide your student?
+                  </Text>
+                </View>
+              </View>
+
+              {/* ================= MODES ================= */}
+              <View style={[styles.modesContainer]}>
+                <ModeCard
+                  icon={<Play color="white" size={23} />}
+                  title="Test Scenario"
+                  desc="Run a scenario without connecting to a student"
+                  button="Try Now"
                   onPress={onSelectAutoMode}
-                >
-                  <Text style={styles.buttonText}>Try Now</Text>
-                </TouchableOpacity>
-              </View>
+                />
 
-              <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <Wifi color="white" size={23} />
-                </View>
-                <Text style={styles.modeTitle}>Connect Device</Text>
-                <Text style={styles.modeDescription}>
-                  Scan and connect to a nearby student device
-                </Text>
-                <TouchableOpacity
-                  style={styles.button}
+                <ModeCard
+                  icon={<Wifi color="white" size={23} />}
+                  title="Connect Device"
+                  desc="Scan and connect to a nearby student device"
+                  button="Scan & Connect"
                   onPress={goConnectToStudent}
-                >
-                  <Text style={styles.buttonText}>Scan & Connect</Text>
-                </TouchableOpacity>
-              </View>
+                />
 
-              <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <Hand color="white" size={23} />
-                </View>
-                <Text style={styles.modeTitle}>Scenario Builder</Text>
-                <Text style={styles.modeDescription}>
-                  Create a simulation sequence for students to follow
-                </Text>
-                <TouchableOpacity
-                  style={styles.button}
+                <ModeCard
+                  icon={<Hand color="white" size={23} />}
+                  title="Scenario Builder"
+                  desc="Create a simulation sequence for students"
+                  button="Create Scenario"
                   onPress={goScenarioBuilder}
-                >
-                  <Text style={styles.buttonText}>Create Scenario</Text>
-                </TouchableOpacity>
-              </View>
+                />
 
-              <View style={styles.mode}>
-                <View style={styles.modeIcon}>
-                  <History color="white" size={23} />
-                </View>
-                <Text style={styles.modeTitle}>Manage Scenarios</Text>
-                <Text style={styles.modeDescription}>
-                  View, edit, or delete your saved scenarios
-                </Text>
-                <TouchableOpacity
-                  style={styles.button}
+                <ModeCard
+                  icon={<History color="white" size={23} />}
+                  title="Manage Scenarios"
+                  desc="View, edit, or delete your saved scenarios"
+                  button="Open"
                   onPress={goManageScenarios}
-                >
-                  <Text style={styles.buttonText}>Open</Text>
-                </TouchableOpacity>
+                />
               </View>
-            </View>
 
-            {/* ================== RECENT SESSIONS ================== */}
-            <View style={styles.recentSessionsContainer}>
-              <View style={styles.rscTitle}>
+              {/* ================= RECENT SESSIONS ================= */}
+              <View style={styles.recentSessionsContainer}>
                 <Text style={styles.rscTitleText}>Recent Sessions</Text>
-              </View>
 
-              <View>
                 {sessions.length === 0 ? (
                   <View style={styles.emptySession}>
                     <View style={styles.emptyIconContainer}>
@@ -170,30 +144,37 @@ const InstructorHomeScreen = ({
                     </Text>
                   </View>
                 ) : (
-                  sessions.slice(0, 4).map((session, index) => (
-                    <View style={styles.rsCard} key={index}>
-                      <View style={styles.rsCardSub}>
-                        <View style={styles.rscIcon}>
-                          <History color="white" size={23} />
-                        </View>
+                  <View style={styles.rsGrid}>
+                    {sessions
+                      .slice(0, isTablet ? 6 : 4)
+                      .map((session, index) => (
+                        <View
+                          key={index}
+                          style={[styles.rsCard, isTablet && { width: '48%' }]}
+                        >
+                          <View style={styles.rsCardSub}>
+                            <View style={styles.rscIcon}>
+                              <History color="white" size={23} />
+                            </View>
 
-                        <View style={styles.rsDetails}>
-                          <Text style={styles.rsDetailsTitle}>
-                            {session.type}
-                          </Text>
-                          <Text style={styles.rsDetailsDate}>
-                            {formatDate(session.startTime)}
+                            <View style={styles.rsDetails}>
+                              <Text style={styles.rsDetailsTitle}>
+                                {session.type || 'Session'}
+                              </Text>
+                              <Text style={styles.rsDetailsDate}>
+                                {formatDate(session.startTime)}
+                              </Text>
+                            </View>
+                          </View>
+
+                          <Text>
+                            {typeof session.totalTime === 'number'
+                              ? formatTime(session.totalTime)
+                              : '0 sec'}
                           </Text>
                         </View>
-                      </View>
-
-                      <Text>
-                        {typeof session.totalTime === 'number'
-                          ? formatTime(session.totalTime)
-                          : '0 sec'}
-                      </Text>
-                    </View>
-                  ))
+                      ))}
+                  </View>
                 )}
               </View>
             </View>
@@ -205,5 +186,18 @@ const InstructorHomeScreen = ({
     </View>
   );
 };
+
+/* ================= MODE CARD ================= */
+
+const ModeCard = ({ icon, title, desc, button, onPress }) => (
+  <View style={styles.mode}>
+    <View style={styles.modeIcon}>{icon}</View>
+    <Text style={styles.modeTitle}>{title}</Text>
+    <Text style={styles.modeDescription}>{desc}</Text>
+    <TouchableOpacity style={styles.button} onPress={onPress}>
+      <Text style={styles.buttonText}>{button}</Text>
+    </TouchableOpacity>
+  </View>
+);
 
 export default InstructorHomeScreen;

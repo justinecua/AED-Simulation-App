@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 20,
     backgroundColor: '#fff',
-    // flex: 1,
   },
 
   contentContainer: {
@@ -68,17 +67,25 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
 
-  bodyContainer: {
+  bodyStage: {
     width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  bodyContainer: {
+    position: 'relative',
+    width: '100%',
+    maxWidth: 430,
+    aspectRatio: 350 / 540,
     alignItems: 'center',
   },
 
   bodyImage: {
-    width: 430,
-    height: 400,
+    width: '100%',
     resizeMode: 'contain',
+    height: '100%',
   },
-
   padsContainer: {
     backgroundColor: '#fff',
     padding: 15,
@@ -111,8 +118,6 @@ const styles = StyleSheet.create({
   },
 
   aedPad: {
-    width: 60,
-    height: 65,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
@@ -121,15 +126,15 @@ const styles = StyleSheet.create({
   },
 
   padUpperRight: {
-    width: 50,
-    height: 60,
+    // width: 50,
+    // height: 62,
     backgroundColor: '#fff',
     borderColor: Colors.primary,
   },
 
   padLowerLeft: {
-    width: 65,
-    height: 45,
+    // width: 65,
+    // height: 46,
     backgroundColor: '#fff',
     borderColor: Colors.primary,
   },

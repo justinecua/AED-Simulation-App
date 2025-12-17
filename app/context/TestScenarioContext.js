@@ -6,10 +6,7 @@ const TestScenarioContext = createContext(null);
 export const TestScenarioProvider = ({ children }) => {
   const test = useAEDTestScenario();
 
-  // NEW: currently selected scenario
   const [currentScenario, setCurrentScenario] = useState(null);
-
-  // Extra UI states same as AEDProvider
   const [isSwitchOpen, setIsSwitchOpen] = useState(false);
   const [placedPads, setPlacedPads] = useState({
     'Pad 1': false,
@@ -31,7 +28,7 @@ export const TestScenarioProvider = ({ children }) => {
         setPlacedPads,
         positions,
         setPositions,
-        ...test, // MUST BE LAST — NEVER FIRST
+        ...test,
       }}
     >
       {children}
