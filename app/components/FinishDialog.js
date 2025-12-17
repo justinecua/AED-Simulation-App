@@ -41,7 +41,7 @@ export default function FinishDialog({ visible, onRetry, onHome }) {
             You've completed all the steps.
           </Text>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{
               backgroundColor: '#007bff',
               width: '100%',
@@ -54,7 +54,7 @@ export default function FinishDialog({ visible, onRetry, onHome }) {
             <Text style={{ color: '#fff', textAlign: 'center', fontSize: 16 }}>
               Try Again
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={{

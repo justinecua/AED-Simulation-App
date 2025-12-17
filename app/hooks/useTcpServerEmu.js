@@ -1,192 +1,256 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import TcpSocket from 'react-native-tcp-socket';
 import { NetworkInfo } from 'react-native-network-info';
 
 const PORT = 5000;
+const CONNECT_TIMEOUT = 4000;
 
 export default function useTcpServerEmu() {
   const [isServer, setIsServer] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState('Not connected');
   const [ipAddress, setIpAddress] = useState('');
   const [message, setMessage] = useState('');
-  const [ipServer, setIpServer] = useState('10.0.2.2'); // better default for emu
+  const [ipServer, setIpServer] = useState('');
   const [availableHosts, setAvailableHosts] = useState([]);
   const [inputMsg, setInputMsg] = useState('');
+
   const serverRef = useRef(null);
   const socketRef = useRef(null);
+  const timeoutRef = useRef(null);
 
-  // 🧠 Get device IP & manage hosting
+  /* ──────────────────────────────────────────────
+   * HARD RESET — absolutely required on mobile
+   * ────────────────────────────────────────────── */
+  const hardReset = useCallback(() => {
+    console.log('♻️ HARD TCP RESET');
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    if (socketRef.current) {
+      try {
+        socketRef.current.destroy();
+      } catch {}
+      socketRef.current = null;
+    }
+
+    if (serverRef.current) {
+      try {
+        serverRef.current.close();
+      } catch {}
+      serverRef.current = null;
+    }
+
+    setConnectionStatus('Not connected');
+    setMessage('');
+  }, []);
+
+  /* ──────────────────────────────────────────────
+   * DISCONNECT (soft)
+   * ────────────────────────────────────────────── */
+  const disconnect = useCallback(() => {
+    console.log('🔌 TCP DISCONNECT');
+    hardReset();
+    setConnectionStatus('Disconnected');
+  }, [hardReset]);
+
+  /* ──────────────────────────────────────────────
+   * GET DEVICE IP (once)
+   * ────────────────────────────────────────────── */
   useEffect(() => {
     (async () => {
       const ip = await NetworkInfo.getIPV4Address();
-      setIpAddress(ip);
+      console.log('📡 Device IPv4:', ip);
+      setIpAddress(ip || '');
     })();
+  }, []);
 
-    if (isServer) {
-      const server = TcpSocket.createServer(socket => {
-        let handshakeVerified = false;
-
-        socket.once('data', data => {
-          const msg = data.toString().trim();
-          console.log('📩 Initial data from student:', msg);
-
-          // ✅ Only accept real students that send "HELLO_STUDENT"
-          if (msg === 'HELLO_STUDENT') {
-            handshakeVerified = true;
-            setConnectionStatus('Connected'); // use simple flag value
-            socketRef.current = socket;
-
-            // After handshake, handle normal messages
-            socket.on('data', payload => {
-              const raw = payload.toString();
-              console.log('📩 RAW TCP:', raw);
-
-              // 🧠 Split combined JSON objects e.g. ...}{...
-              const parts = raw
-                .replace(/}\s*{/g, '}|{') // insert separator
-                .split('|'); // split into separate JSON strings
-
-              parts.forEach(part => {
-                const cleaned = part.trim();
-                if (!cleaned) return;
-
-                console.log('📩 Parsed packet:', cleaned);
-                setMessage(cleaned); // send one clean message at a time
-              });
-            });
-
-            socket.on('close', () => {
-              console.log('❌ Student disconnected');
-              setConnectionStatus('Disconnected');
-            });
-
-            socket.on('error', err => console.warn('Socket error:', err));
-          } else {
-            // Ignore scans or invalid packets
-            console.log('⚠️ Ignored non-handshake connection');
-            socket.destroy();
-          }
-        });
-      });
-
-      server.listen({ port: PORT, host: '0.0.0.0' }, () => {
-        console.log(`Server listening on port ${PORT}`);
-        setConnectionStatus(` Hosting on ${ipAddress}:${PORT}`);
-      });
-
-      serverRef.current = server;
-      return () => server.close();
-    } else {
+  /* ──────────────────────────────────────────────
+   * SERVER (Instructor)
+   * ────────────────────────────────────────────── */
+  useEffect(() => {
+    if (!isServer) {
+      hardReset();
       setConnectionStatus('Not hosting');
-      if (socketRef.current) socketRef.current.destroy();
+      return;
     }
-  }, [isServer]);
 
-  const sendMessage = (text = '') => {
-    const msg = text.trim();
-    if (!msg) return;
+    if (!ipAddress) {
+      setConnectionStatus('Getting IP…');
+      return;
+    }
 
-    if (isServer) {
-      // 🧠 Instructor (Server)
-      const socket = socketRef.current;
-      if (!socket) {
-        console.warn('⚠️ No connected student socket');
-        return;
-      }
+    hardReset();
 
-      // ✅ guard: only send if not destroyed
-      if (socket.destroyed) {
-        console.warn('⚠️ Tried to send on destroyed socket');
-        return;
-      }
+    const server = TcpSocket.createServer(socket => {
+      console.log('📥 Incoming connection');
 
-      try {
-        socket.write(msg);
-        setMessage(msg);
-      } catch (err) {
-        console.warn('⚠️ Failed to send message (server):', err.message);
-      }
-    } else {
-      // 🧠 Student (Client)
-      const socket = socketRef.current;
+      socket.once('data', data => {
+        const msg = data.toString().trim();
+        console.log('📩 Handshake:', msg);
 
-      // if not yet connected, create connection
-      if (!socket) {
-        const client = TcpSocket.createConnection(
-          { port: PORT, host: ipServer },
-          () => {
-            setConnectionStatus('Connected');
-            client.write(msg);
-            setMessage(`You (Student): ${msg}`);
-          },
-        );
-
-        client.on('data', data => {
-          const received = data.toString();
-          console.log('📩 Received from instructor:', received);
-          setMessage(received.trim());
-        });
-
-        client.on('error', err => {
-          console.warn('⚠️ Client error:', err.message);
-          setConnectionStatus('Connection failed');
-        });
-
-        client.on('close', () => {
-          console.log('🔌 Client socket closed');
-          setConnectionStatus('Disconnected');
-        });
-
-        socketRef.current = client;
-      } else {
-        // ✅ guard: only send if still active
-        if (socket.destroyed) {
-          console.warn('⚠️ Tried to send on destroyed socket (client)');
+        if (msg !== 'HELLO_STUDENT') {
+          console.warn('❌ Invalid handshake');
+          socket.destroy();
           return;
         }
 
-        try {
-          socket.write(msg);
-          setMessage(`You (Student): ${msg}`);
-        } catch (err) {
-          console.warn('⚠️ Failed to send message (client):', err.message);
-        }
+        console.log('✅ Student connected');
+        socketRef.current = socket;
+        setConnectionStatus('Connected');
+
+        socket.on('data', payload => {
+          setMessage(payload.toString().trim());
+        });
+
+        socket.on('close', () => {
+          console.log('❌ Student disconnected');
+          socketRef.current = null;
+          setConnectionStatus('Disconnected');
+        });
+
+        socket.on('error', err => {
+          console.warn('⚠️ Server socket error:', err?.message || err);
+        });
+      });
+    });
+
+    server.listen({ port: PORT, host: '0.0.0.0' }, () => {
+      console.log(`🟢 Hosting on ${ipAddress}:${PORT}`);
+      setConnectionStatus(`Hosting on ${ipAddress}:${PORT}`);
+    });
+
+    serverRef.current = server;
+
+    return () => hardReset();
+  }, [isServer, ipAddress, hardReset]);
+
+  /* ──────────────────────────────────────────────
+   * CLIENT (Student)
+   * ────────────────────────────────────────────── */
+  const connect = useCallback(
+    host => {
+      const target = (host || '').trim();
+      if (!target) {
+        setConnectionStatus('Enter instructor IP');
+        return;
       }
+
+      setIpServer(target);
+      setConnectionStatus(`Connecting to ${target}:${PORT}…`);
+
+      hardReset();
+
+      let connected = false;
+
+      const client = TcpSocket.createConnection(
+        { host: target, port: PORT },
+        () => {
+          connected = true;
+          console.log('✅ Connected to instructor');
+          socketRef.current = client;
+          setConnectionStatus('Connected');
+          client.write('HELLO_STUDENT');
+        },
+      );
+
+      timeoutRef.current = setTimeout(() => {
+        if (!connected) {
+          console.warn('⏱️ Connection timeout');
+          try {
+            client.destroy();
+          } catch {}
+          setConnectionStatus('Connection timed out');
+        }
+      }, CONNECT_TIMEOUT);
+
+      client.on('data', data => {
+        setMessage(data.toString().trim());
+      });
+
+      client.on('close', () => {
+        console.log('🔌 Client closed');
+        socketRef.current = null;
+        setConnectionStatus('Disconnected');
+      });
+
+      client.on('error', err => {
+        console.warn('⚠️ Client error:', err?.message || err);
+        setConnectionStatus('Connection failed');
+      });
+
+      socketRef.current = client;
+    },
+    [hardReset],
+  );
+
+  /* ──────────────────────────────────────────────
+   * SEND MESSAGE
+   * ────────────────────────────────────────────── */
+  const sendMessage = text => {
+    const msg = (text || '').trim();
+    if (!msg) return;
+
+    const socket = socketRef.current;
+    if (!socket || socket.destroyed) {
+      console.warn('⚠️ Not connected');
+      return;
+    }
+
+    try {
+      socket.write(msg);
+      setMessage(msg);
+    } catch (err) {
+      console.warn('⚠️ Send failed:', err?.message || err);
     }
   };
 
-  // 🔍 Scan for available hosts (for emulator)
+  /* ──────────────────────────────────────────────
+   * EXPERIMENTAL LAN SCAN (NOT RELIABLE ON PHONES)
+   * ────────────────────────────────────────────── */
   const scanForHosts = async () => {
-    console.log('Scanning for hosts...');
-    const potentialHosts = ['10.0.2.2'];
-    const found = [];
+    console.log('⚠️ LAN scan is experimental on mobile');
 
-    for (const host of potentialHosts) {
-      await new Promise(resolve => {
-        const tempClient = TcpSocket.createConnection(
-          { port: PORT, host },
+    if (!ipAddress) return;
+
+    setAvailableHosts([]);
+    const found = [];
+    const baseIp = ipAddress.split('.').slice(0, 3).join('.');
+
+    const tryHost = ip =>
+      new Promise(resolve => {
+        const temp = TcpSocket.createConnection(
+          { host: ip, port: PORT },
           () => {
-            console.log(` Host found at ${host}`);
-            found.push({ ip: host });
-            tempClient.destroy();
+            found.push({ ip });
+            temp.destroy();
             resolve();
           },
         );
 
-        tempClient.on('error', () => {
-          tempClient.destroy();
-          resolve();
-        });
-
         setTimeout(() => {
-          tempClient.destroy();
+          try {
+            temp.destroy();
+          } catch {}
           resolve();
-        }, 1000);
+        }, 250);
       });
+
+    for (let i = 2; i < 30; i++) {
+      await tryHost(`${baseIp}.${i}`);
     }
 
     setAvailableHosts(found);
   };
+
+  /* ──────────────────────────────────────────────
+   * CLEANUP ON UNMOUNT
+   * ────────────────────────────────────────────── */
+  useEffect(() => {
+    return () => hardReset();
+  }, [hardReset]);
 
   return {
     isServer,
@@ -196,7 +260,9 @@ export default function useTcpServerEmu() {
     message,
     ipServer,
     setIpServer,
+    connect,
     sendMessage,
+    disconnect,
     scanForHosts,
     availableHosts,
     inputMsg,

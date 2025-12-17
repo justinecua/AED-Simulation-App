@@ -21,10 +21,14 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
   } = useTcpServerContext();
 
   const [students, setStudents] = useState([]);
+  console.log(students);
+
   useEffect(() => {
     setIsServer(true);
+    return () => {
+      setIsServer(false);
+    };
   }, []);
-
   useEffect(() => {
     if (connectionStatus === 'Connected') {
       setStudents([{ id: '1', name: 'Student', address: ipAddress }]);
@@ -50,7 +54,7 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
 
           <Text style={styles.Text}>
             {isServer
-              ? `Hosting on ${ipAddress}:5000`
+              ? `Hosting on ${ipAddress}`
               : 'Press Wi-Fi to start a session.'}
           </Text>
 
@@ -66,7 +70,7 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
                 style={styles.studentCarousel}
               >
                 {students.map(s => (
-                  <InstructorCard key={s.id} name={s.name} id={s.id} />
+                  <InstructorCard key={s.id} name={s.name} id={s.address} />
                 ))}
               </ScrollView>
             </>
@@ -79,14 +83,14 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
               <Text style={styles.noResultText}>
                 {isServer
                   ? 'Share this IP with students to join.'
-                  : 'Enable hotspot or ensure same Wi-Fi before starting.'}
+                  : 'Enable your mobile hotspot first, then start the session. Student must connect to your hotspot to join.'}
               </Text>
             </View>
           )}
 
-          {message !== '' && (
+          {/* {message !== '' && (
             <Text style={{ color: '#475569', marginTop: 10 }}>{message}</Text>
-          )}
+          )} */}
         </View>
       </ScrollView>
 

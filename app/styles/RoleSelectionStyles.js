@@ -41,6 +41,17 @@ const createStyles = screenWidth => {
       alignItems: 'center',
       justifyContent: 'center',
     },
+    logoContainerTop: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    },
+    logo2: {
+      width: 70,
+      height: 60,
+      marginBottom: -30,
+      resizeMode: 'contain',
+    },
 
     logoContainer: {
       alignItems: 'center',
@@ -50,9 +61,9 @@ const createStyles = screenWidth => {
     },
 
     logo: {
-      width: 170,
-      height: 90,
-      marginBottom: -30,
+      width: 150,
+      height: 75,
+      marginBottom: -25,
       resizeMode: 'contain',
     },
 

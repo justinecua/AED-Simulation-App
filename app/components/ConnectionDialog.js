@@ -44,7 +44,7 @@ const ConnectionDialog = ({
           {!!status && <Text style={styles.title}>{status}</Text>}
 
           <Text style={styles.message}>
-            Your ID: <Text style={styles.id}>{id || '...'}</Text>
+            Device connected to <Text style={styles.id}>{id || '...'}</Text>
           </Text>
 
           <TouchableOpacity style={styles.button} onPress={onContinue}>
@@ -72,11 +72,12 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
   },
-  title: { fontSize: 19, fontWeight: 'bold', marginBottom: 8 },
+  title: { fontSize: 17, fontWeight: 'bold', marginBottom: 1 },
   message: {
-    fontSize: 17,
+    fontStyle: 'italic',
+    fontSize: 14,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   id: { fontWeight: 'bold', color: '#2563eb' },
   button: {

@@ -1,5 +1,5 @@
 const Colors = {
-  button: '#165be5',
+  button: '#0071EE',
   color2: '#ECF4ED',
   text: '#565656',
   subText: '#E5E5E5',

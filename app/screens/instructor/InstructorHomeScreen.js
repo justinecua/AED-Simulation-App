@@ -89,7 +89,7 @@ const InstructorHomeScreen = ({
 
                 <View style={styles.hSubContainer}>
                   <Text style={styles.hsubTitle}>
-                    Start a session and guide your student
+                    Ready to guide your student?
                   </Text>
                 </View>
               </View>

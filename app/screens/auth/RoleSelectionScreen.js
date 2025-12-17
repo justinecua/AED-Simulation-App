@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,8 @@ import { makeReadableId } from '../../shared/id';
 const RoleSelectionScreen = ({ onSelectStudent, onSelectInstructor }) => {
   const { width } = useWindowDimensions();
   const styles = createStyles(width);
+
+  const [isSwitching, setIsSwitching] = useState(false);
 
   const handleRoleSelect = async role => {
     try {
@@ -34,11 +36,19 @@ const RoleSelectionScreen = ({ onSelectStudent, onSelectInstructor }) => {
 
   return (
     <View style={styles.container}>
-      {/* LOGO */}
+      {/* TOP LOGO */}
+      <View style={styles.logoContainerTop}>
+        <Image
+          style={styles.logo2}
+          source={require('../../assets/images/FinalLogo1.png')}
+        />
+      </View>
+
+      {/* MAIN LOGO */}
       <View style={styles.logoContainer}>
         <Image
           style={styles.logo}
-          source={require('../../assets/images/simcritLogo1.png')}
+          source={require('../../assets/images/simcritLogo11.png')}
         />
         <Text style={styles.fontSubtitle}>Simulation for Critical Care</Text>
       </View>
@@ -49,10 +59,12 @@ const RoleSelectionScreen = ({ onSelectStudent, onSelectInstructor }) => {
           style={styles.userCard}
           onPress={() => handleRoleSelect('student')}
           activeOpacity={0.85}
+          disabled={isSwitching}
         >
           <View style={styles.ucIcons}>
             <UserRound color="white" size={35} />
           </View>
+
           <View style={styles.ucDetails}>
             <Text style={styles.roleTitle}>STUDENT</Text>
             <Text style={styles.roleDescription}>
@@ -65,10 +77,12 @@ const RoleSelectionScreen = ({ onSelectStudent, onSelectInstructor }) => {
           style={styles.userCard}
           onPress={() => handleRoleSelect('instructor')}
           activeOpacity={0.85}
+          disabled={isSwitching}
         >
           <View style={styles.ucIcons2}>
             <UserRound color="white" size={35} />
           </View>
+
           <View style={styles.ucDetails}>
             <Text style={styles.roleTitle}>INSTRUCTOR</Text>
             <Text style={styles.roleDescription}>
@@ -79,7 +93,7 @@ const RoleSelectionScreen = ({ onSelectStudent, onSelectInstructor }) => {
         </TouchableOpacity>
       </View>
 
-      {/* INFO TEXT */}
+      {/* INFO */}
       <View style={styles.additionalText}>
         <Text style={styles.atInfo}>
           Please choose how you will use the app today. If you’re participating
@@ -87,7 +101,8 @@ const RoleSelectionScreen = ({ onSelectStudent, onSelectInstructor }) => {
           choose Instructor.
         </Text>
       </View>
-      {/* VERSION FOOTER */}
+
+      {/* VERSION */}
       <View style={styles.versionContainer}>
         <Text style={styles.versionText}>Version 1.0.0</Text>
       </View>
