@@ -16,6 +16,9 @@ import ToneDisplay from '../../components/ToneDisplay';
 
 import Wire from '../../components/PadPlacement/wire';
 import DraggablePad from '../../components/PadPlacement/draggablePad';
+import { useWindowDimensions } from 'react-native';
+
+const SNAP_RATIO = 0.06;
 
 const PadPlacementScreen = ({ goStudentAutoMode }) => {
   const {
@@ -23,14 +26,12 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
     paused,
     steps,
     stepIndex,
-    setStepIndex,
     expectedAction,
     startAED,
     pauseAED,
     resumeAED,
     stopAED,
     nextStep,
-    prevStep,
     timer,
     setIsSwitchOpen,
     positions,
@@ -39,39 +40,98 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
     setPlacedPads,
     handleAction,
   } = useAEDContext();
+  const { height: screenHeight } = useWindowDimensions();
+
+  const BODY_MAX_HEIGHT = Math.min(screenHeight * 0.55, 620);
   const attachHandledRef = useRef(false);
+  const [imageLayout, setImageLayout] = useState(null);
+
+  /* -------------------------
+     Helpers (ONE coordinate system)
+  -------------------------- */
+
+  const getTargetPx = label => {
+    if (!imageLayout) return { x: 0, y: 0 };
+    return {
+      x: targets[label].xPct * imageLayout.width,
+      y: targets[label].yPct * imageLayout.height,
+    };
+  };
+
+  const getPadSizePx = label => {
+    if (!imageLayout) return { w: 0, h: 0 };
+
+    const w = padSizes[label].wPct * imageLayout.width;
+    const h = padSizes[label].hPct * imageLayout.height;
+
+    return {
+      w: Math.max(w, 44), // Apple HIG minimum
+      h: Math.max(h, 44),
+    };
+  };
+
+  const getPadCenter = label => {
+    if (!imageLayout) return { x: 0, y: 0 };
+    const { w, h } = getPadSizePx(label);
+    const { x, y } = positions[label];
+    return { x: x + w / 2, y: y + h / 2 };
+  };
+
+  /* -------------------------
+     Drag logic (FIXED SNAP)
+  -------------------------- */
+
   const handleMove = (x, y, label) => {
+    if (!imageLayout) return;
+
     setPositions(p => ({ ...p, [label]: { x, y } }));
-    const { w, h } = padSizes[label];
+
+    const { w, h } = getPadSizePx(label);
+    const { x: tx, y: ty } = getTargetPx(label);
+
     const padCenter = { x: x + w / 2, y: y + h / 2 };
-    const targetCenter = {
-      x: targets[label].x + w / 2,
-      y: targets[label].y + h / 2,
-    };
+    const targetCenter = { x: tx + w / 2, y: ty + h / 2 };
 
     const distance = Math.hypot(
       padCenter.x - targetCenter.x,
       padCenter.y - targetCenter.y,
     );
 
-    setPlacedPads(prev => ({ ...prev, [label]: distance < 40 }));
+    const snapRadius = imageLayout.width * SNAP_RATIO;
+
+    setPlacedPads(prev => ({
+      ...prev,
+      [label]: distance < snapRadius,
+    }));
   };
 
-  const handleRelease = (x, y, label, snapped) => {
-    const { w, h } = padSizes[label];
+  const handleRelease = (x, y, label) => {
+    if (!imageLayout) return;
+
+    const { w, h } = getPadSizePx(label);
+    const { x: tx, y: ty } = getTargetPx(label);
+
     const padCenter = { x: x + w / 2, y: y + h / 2 };
-    const targetCenter = {
-      x: targets[label].x + w / 2,
-      y: targets[label].y + h / 2,
-    };
+    const targetCenter = { x: tx + w / 2, y: ty + h / 2 };
+
     const distance = Math.hypot(
       padCenter.x - targetCenter.x,
       padCenter.y - targetCenter.y,
     );
 
-    setPlacedPads(prev => ({ ...prev, [label]: distance < 40 }));
+    const snapRadius = imageLayout.width * SNAP_RATIO;
+
+    setPlacedPads(prev => ({
+      ...prev,
+      [label]: distance < snapRadius,
+    }));
+
     setPositions(p => ({ ...p, [label]: { x, y } }));
   };
+
+  /* -------------------------
+     Step completion
+  -------------------------- */
 
   useEffect(() => {
     if (steps[stepIndex]?.action !== 'attach') {
@@ -85,9 +145,8 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
       attachHandledRef.current = true;
       handleAction('attach');
     }
-    if (!allPlaced) {
-      attachHandledRef.current = false;
-    }
+
+    if (!allPlaced) attachHandledRef.current = false;
   }, [placedPads, stepIndex, steps, handleAction]);
 
   return (
@@ -95,21 +154,22 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
       <ScrollView contentContainerStyle={styles.container}>
         <Header goBack={goStudentAutoMode} role="student" />
 
-        {/* Info Header */}
         <View style={styles.contentContainer}>
+          {/* Header */}
           <View style={style2.studentWrapper}>
             <View style={style2.studentSubWrapper}>
               <TouchableOpacity style={style.contentText}>
                 <Text>Auto Mode</Text>
               </TouchableOpacity>
             </View>
+
             <View style={style2.studentSubWrapper}>
               <View style={style.timerIcon}>
                 <Timer color={Colors.text} size={25} />
                 <Text
                   style={{
                     marginLeft: 2,
-                    color: '#ed1313ff',
+                    color: '#ed1313',
                     fontSize: 16,
                     fontWeight: 'bold',
                   }}
@@ -126,82 +186,91 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
 
           {/* Pad placement */}
           <View style={styles.placementContainer}>
-            <View style={styles.bodyContainer}>
-              <Image
-                source={require('../../assets/images/padplacementModel.png')}
-                style={styles.bodyImage}
-              />
-
-              {/* Wires */}
-              <Wire
-                from={{ x: 0, y: 50 }}
-                to={{
-                  x: positions['Pad 1'].x + padSizes['Pad 1'].w / 2,
-                  y: positions['Pad 1'].y + padSizes['Pad 1'].h / 2,
-                }}
-              />
-              <Wire
-                from={{ x: 0, y: 50 }}
-                to={{
-                  x: positions['Pad 2'].x + padSizes['Pad 2'].w / 2,
-                  y: positions['Pad 2'].y + padSizes['Pad 2'].h / 2,
-                }}
-              />
-
-              {/* Guides */}
-              {Object.keys(targets).map(label => (
-                <View
-                  key={label}
-                  style={[
-                    styles.padGuide,
-                    {
-                      left: targets[label].x,
-                      top: targets[label].y,
-                      width: padSizes[label].w,
-                      height: padSizes[label].h,
-                      borderColor: placedPads[label] ? '#4CAF50' : '#F44336',
-                      backgroundColor: placedPads[label]
-                        ? 'rgba(76, 175, 80, 0.1)'
-                        : 'rgba(244, 67, 54, 0.1)',
-                    },
-                  ]}
+            <View style={styles.bodyStage}>
+              <View
+                style={[styles.bodyContainer, { maxHeight: BODY_MAX_HEIGHT }]}
+              >
+                <Image
+                  source={require('../../assets/images/padplacementModel.png')}
+                  style={styles.bodyImage}
+                  onLayout={e => setImageLayout(e.nativeEvent.layout)}
                 />
-              ))}
 
-              {/* Draggable pads */}
-              {Object.keys(targets).map(label => (
-                <DraggablePad
-                  key={label}
-                  label={label}
-                  initialX={positions[label].x}
-                  initialY={positions[label].y}
-                  targetX={targets[label].x}
-                  targetY={targets[label].y}
-                  onMove={handleMove}
-                  onRelease={handleRelease}
-                  padStyle={[
-                    styles.aedPad,
-                    label === 'Pad 1'
-                      ? styles.padUpperRight
-                      : styles.padLowerLeft,
-                    placedPads[label] && styles.padCorrect,
-                  ]}
-                  padSize={padSizes[label]}
-                />
-              ))}
+                {/* WIRES */}
+                {imageLayout && (
+                  <>
+                    <Wire from={{ x: 20, y: 40 }} to={getPadCenter('Pad 1')} />
+                    <Wire from={{ x: 20, y: 40 }} to={getPadCenter('Pad 2')} />
+                  </>
+                )}
+
+                {/* TARGET GUIDES */}
+                {imageLayout &&
+                  Object.keys(targets).map(label => {
+                    const { x, y } = getTargetPx(label);
+                    const { w, h } = getPadSizePx(label);
+
+                    return (
+                      <View
+                        key={label}
+                        style={[
+                          styles.padGuide,
+                          {
+                            left: x,
+                            top: y,
+                            width: w,
+                            height: h,
+                            borderColor: placedPads[label]
+                              ? '#4CAF50'
+                              : '#F44336',
+                            backgroundColor: placedPads[label]
+                              ? 'rgba(76,175,80,0.1)'
+                              : 'rgba(244,67,54,0.1)',
+                          },
+                        ]}
+                      />
+                    );
+                  })}
+
+                {/* DRAGGABLE PADS */}
+                {imageLayout &&
+                  Object.keys(targets).map(label => {
+                    const { x, y } = getTargetPx(label);
+                    const { w, h } = getPadSizePx(label);
+
+                    return (
+                      <DraggablePad
+                        key={label}
+                        label={label}
+                        initialX={positions[label].x}
+                        initialY={positions[label].y}
+                        targetX={x}
+                        targetY={y}
+                        onMove={handleMove}
+                        onRelease={handleRelease}
+                        padSize={{ w, h }}
+                        padStyle={[
+                          styles.aedPad,
+                          label === 'Pad 1'
+                            ? styles.padUpperRight
+                            : styles.padLowerLeft,
+                          placedPads[label] && styles.padCorrect,
+                        ]}
+                      />
+                    );
+                  })}
+              </View>
             </View>
           </View>
         </View>
       </ScrollView>
 
-      {/* Tone Display */}
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        {started && steps.length > 0 && (
+      {started && steps.length > 0 && (
+        <View style={{ alignItems: 'center' }}>
           <ToneDisplay text={steps[stepIndex]?.text} />
-        )}
-      </View>
+        </View>
+      )}
 
-      {/* Floating controls */}
       <View
         style={{
           position: 'absolute',
@@ -227,10 +296,7 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
               'Pad 1': { x: 15, y: 10 },
               'Pad 2': { x: 10, y: 75 },
             });
-            setPlacedPads({
-              'Pad 1': false,
-              'Pad 2': false,
-            });
+            setPlacedPads({ 'Pad 1': false, 'Pad 2': false });
           }}
         />
       </View>

@@ -31,20 +31,17 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
     timer,
     waveform,
     strokeColors,
-
     powerOnAED,
     powerOffAED,
     startAED,
     handleAction,
     nextStep,
-
     isSwitchOpen,
     setIsSwitchOpen,
     positions,
     setPositions,
     placedPads,
     setPlacedPads,
-
     loadTestScenario,
     currentScenario,
     setCurrentScenario,
@@ -102,41 +99,30 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
 
   const handleSelectScenario = scenario => {
     setCurrentScenario(scenario);
-
-    // Load steps
     loadTestScenario(scenario);
-
-    // Reset AED state
     powerOffAED();
-
-    // Play first step audio (if exists)
-    if (scenario.steps?.[0]?.audio) {
-      playAudio(scenario.steps[0].audio);
-    }
-
     setModalVisible(false);
   };
 
-  // AUTO PLAY STEPS + AUDIO
-  useEffect(() => {
-    const step = steps[stepIndex];
-    if (!step) return;
-
-    // Play audio and wait before auto next
-    playAudio(step.audio, () => {
-      if (!step.action || step.action === 'auto') {
-        nextStep();
-      }
-    });
-  }, [stepIndex, steps]);
-
-  // When instructor presses a required action button
   const handleActionWithAudio = action => {
     handleAction(action);
 
     const step = steps[stepIndex];
     if (step?.audio) playAudio(step.audio);
   };
+
+  useEffect(() => {
+    if (!started) return;
+
+    const step = steps[stepIndex];
+    if (!step) return;
+
+    playAudio(step.audio, () => {
+      if (!step.action || step.action === 'auto') {
+        nextStep();
+      }
+    });
+  }, [stepIndex, steps, started]);
 
   return (
     <View style={style.container}>
