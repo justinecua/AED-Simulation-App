@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import { X, Timer, Hand, ArrowRightLeft } from 'lucide-react-native';
+import Sound from 'react-native-sound';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import style from '../../styles/InstructorTestScenarioStyle';
 import style2 from '../../styles/StudentAutoModeStyle';
 import Colors from '../../constants/colors';
 
 import Header from '../../components/Header';
-import AEDWaveform from '../../components/AEDWaveform';
+import AEDWaveformTestScenario from '../../components/AEDWaveformTestScenario';
 import AEDControls from '../../components/AEDControls';
 import aedStyle from '../../styles/aedBoxStyle';
 
@@ -16,9 +19,7 @@ import { useScenarioContext } from '../../context/ScenarioContext';
 import ModeControls from '../../components/ModeControl';
 import ToneDisplay from '../../components/ToneDisplay';
 
-import { Timer, Hand, ArrowRightLeft } from 'lucide-react-native';
-import Sound from 'react-native-sound';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+Sound.setCategory?.('Playback');
 
 const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
   const {
@@ -31,6 +32,7 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
     timer,
     waveform,
     strokeColors,
+    currentRhythm,
     powerOnAED,
     powerOffAED,
     startAED,
@@ -49,28 +51,115 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
 
   const { scenarios } = useScenarioContext();
   const [modalVisible, setModalVisible] = useState(false);
+  const analyzeHandledRef = useRef(false);
+  // ─────────────────────────────────────────────────────────────
+  // Display text (single source of truth for AED + ToneDisplay)
+  // ─────────────────────────────────────────────────────────────
+  const currentStep = steps?.[stepIndex];
+  const isAnalyzing =
+    currentStep?.action === 'analyze' &&
+    started &&
+    currentRhythm &&
+    waveform.length > 0;
 
-  // ================== AUDIO PLAYER ======================
-  const playAudio = (file, onFinish) => {
-    if (!file) {
-      if (onFinish) onFinish();
-      return;
+  const currentDisplayText = currentStep?.text ?? '';
+  // ─────────────────────────────────────────────────────────────
+  // Audio: single-owner (this screen), safe against replays & races
+  // ─────────────────────────────────────────────────────────────
+  const playedStepKeyRef = useRef(null); // prevents replay of same step
+  const soundRef = useRef(null); // current Sound instance
+  const genRef = useRef(0);
+
+  const stopAndReleaseSound = useCallback(() => {
+    if (soundRef.current) {
+      try {
+        soundRef.current.stop(() => {
+          soundRef.current?.release?.();
+          soundRef.current = null;
+        });
+      } catch (e) {
+        // fallback
+        try {
+          soundRef.current?.release?.();
+        } catch {}
+        soundRef.current = null;
+      }
     }
+  }, []);
 
-    const sound = new Sound(file, Sound.MAIN_BUNDLE, error => {
-      if (error) {
-        console.log('Sound load error:', error);
-        if (onFinish) onFinish();
+  const playAudio = useCallback(
+    (file, onFinish) => {
+      stopAndReleaseSound();
+
+      if (!file) {
+        onFinish?.();
         return;
       }
 
-      sound.play(success => {
-        sound.release();
-        if (onFinish) onFinish();
-      });
-    });
-  };
+      const myGen = ++genRef.current;
 
+      const sound = new Sound(file, Sound.MAIN_BUNDLE, error => {
+        if (myGen !== genRef.current) return;
+        if (error) {
+          console.log('Sound load error:', error);
+          onFinish?.();
+          return;
+        }
+
+        soundRef.current = sound;
+
+        sound.play(() => {
+          // ensure still current
+          if (myGen !== genRef.current) return;
+
+          sound.release();
+          if (soundRef.current === sound) soundRef.current = null;
+          onFinish?.();
+        });
+      });
+    },
+    [stopAndReleaseSound],
+  );
+
+  // Reset guards when scenario changes or simulation stops
+  useEffect(() => {
+    playedStepKeyRef.current = null;
+    genRef.current++;
+    stopAndReleaseSound();
+  }, [currentScenario?.id, stopAndReleaseSound]);
+
+  useEffect(() => {
+    if (!started) {
+      playedStepKeyRef.current = null;
+      genRef.current++;
+      stopAndReleaseSound();
+    }
+  }, [started, stopAndReleaseSound]);
+
+  useEffect(() => {
+    if (!started) return;
+
+    const step = steps?.[stepIndex];
+    if (!step) return;
+
+    const stepKey =
+      step.id ??
+      step.key ??
+      `${stepIndex}:${step.action ?? ''}:${step.text ?? ''}`;
+
+    if (playedStepKeyRef.current === stepKey) return;
+    playedStepKeyRef.current = stepKey;
+
+    playAudio(step.audio, () => {
+      if (step.action === 'auto') {
+        nextStep();
+      }
+    });
+  }, [stepIndex, started, playAudio, nextStep]);
+
+  // ─────────────────────────────────────────────────────────────
+  // Sessions
+  // ─────────────────────────────────────────────────────────────
   const saveInstructorSession = async () => {
     try {
       const newSession = {
@@ -81,7 +170,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
 
       const data = await AsyncStorage.getItem('aed_sessions_instructor');
       const sessions = data ? JSON.parse(data) : [];
-
       sessions.unshift(newSession);
 
       await AsyncStorage.setItem(
@@ -95,34 +183,45 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
     }
   };
 
-  // ======================================================
-
+  // ─────────────────────────────────────────────────────────────
+  // Scenario selection
+  // ─────────────────────────────────────────────────────────────
   const handleSelectScenario = scenario => {
     setCurrentScenario(scenario);
     loadTestScenario(scenario);
+
+    // stopping/reset
     powerOffAED();
     setModalVisible(false);
   };
 
-  const handleActionWithAudio = action => {
-    handleAction(action);
-
-    const step = steps[stepIndex];
-    if (step?.audio) playAudio(step.audio);
-  };
+  // ─────────────────────────────────────────────────────────────
+  // UI action dispatcher (NO AUDIO here)
+  // ─────────────────────────────────────────────────────────────
+  const doAction = useCallback(
+    action => {
+      handleAction(action);
+      // no audio here; effect owns audio
+    },
+    [handleAction],
+  );
 
   useEffect(() => {
-    if (!started) return;
+    const step = steps?.[stepIndex];
+    if (!started || !step) return;
 
-    const step = steps[stepIndex];
-    if (!step) return;
+    if (step.action !== 'analyze') return;
+    if (!currentRhythm || waveform.length === 0) return;
 
-    playAudio(step.audio, () => {
-      if (!step.action || step.action === 'auto') {
-        nextStep();
-      }
-    });
-  }, [stepIndex, steps, started]);
+    // AED analyze duration (realistic: 3–5 seconds)
+    const ANALYZE_DURATION = step.duration ?? 4000;
+
+    const t = setTimeout(() => {
+      nextStep();
+    }, ANALYZE_DURATION);
+
+    return () => clearTimeout(t);
+  }, [stepIndex, started, currentRhythm, waveform, steps, nextStep]);
 
   return (
     <View style={style.container}>
@@ -152,16 +251,25 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
               maxHeight: '70%',
             }}
           >
-            <Text
+            <View
               style={{
-                fontSize: 20,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
                 marginBottom: 10,
-                fontWeight: '600',
-                textAlign: 'center',
               }}
             >
-              Select a Scenario
-            </Text>
+              <Text style={{ fontSize: 15, fontWeight: '600' }}>
+                Select a Scenario
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <X size={18} color="#555" />
+              </TouchableOpacity>
+            </View>
 
             <ScrollView>
               {scenarios.map(s => (
@@ -175,10 +283,12 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
                   }}
                   onPress={() => handleSelectScenario(s)}
                 >
-                  <Text style={{ fontSize: 18, fontWeight: '500' }}>
+                  <Text style={{ fontSize: 15, fontWeight: '500' }}>
                     {s.name || 'Untitled Scenario'}
                   </Text>
-                  <Text style={{ opacity: 0.7 }}>{s.steps?.length} steps</Text>
+                  <Text style={{ opacity: 0.7, fontSize: 12 }}>
+                    {s.steps?.length} steps
+                  </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -208,20 +318,23 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
         <View style={style.content}>
           {/* HEADER BUTTONS */}
           <View style={style2.studentWrapper}>
-            <View style={style2.studentSubWrapper}>
+            <View style={style2.studentWrapper2Sub}>
               <TouchableOpacity style={style.contentText}>
                 <Text>
-                  Scenario: {currentScenario?.name || 'Test Scenario'}
+                  Status: {!poweredOn ? 'OFF' : paused ? 'PAUSED' : 'ON'}
                 </Text>
               </TouchableOpacity>
             </View>
-
             <View style={{ zIndex: 9999, elevation: 9999 }}>
               <TouchableOpacity
                 onPress={() => setModalVisible(true)}
                 style={[style.contentText, { zIndex: 9999 }]}
               >
-                <Text>Change Scenario</Text>
+                <Text>
+                  {currentScenario?.name
+                    ? `Scenario: ${currentScenario.name}`
+                    : 'Change Scenario'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -247,18 +360,18 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
                 ]}
                 disabled={expectedAction !== 'remove'}
                 onPress={() => {
-                  handleActionWithAudio('remove');
+                  doAction('remove');
                   setIsSwitchOpen(true);
                 }}
               >
                 <Hand color={Colors.text} size={22} />
               </TouchableOpacity>
 
-              {steps[stepIndex]?.action === 'open' && (
+              {steps?.[stepIndex]?.action === 'open' && (
                 <TouchableOpacity
                   style={style2.padPackageButton}
                   onPress={() => {
-                    handleActionWithAudio('open');
+                    doAction('open');
                     setIsSwitchOpen(true);
                     goApplyPads();
                   }}
@@ -272,18 +385,15 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
           {/* AED DISPLAY */}
           <View style={style.contentCenter}>
             <View style={aedStyle.aedBox}>
-              <AEDWaveform
+              <AEDWaveformTestScenario
                 started={started}
+                poweredOn={poweredOn}
+                currentRhythm={currentRhythm}
                 waveform={waveform}
                 strokeColors={strokeColors}
                 steps={steps}
                 stepIndex={stepIndex}
-                expectedAction={expectedAction}
-                displayText={
-                  steps.some((s, i) => i <= stepIndex && s.action === 'analyze')
-                    ? ''
-                    : steps[stepIndex]?.text ?? ''
-                }
+                displayText={currentDisplayText}
               />
 
               <AEDControls
@@ -294,15 +404,14 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
                     powerOnAED();
 
                     if (expectedAction === 'power') {
-                      handleActionWithAudio('power');
-                      nextStep();
+                      doAction('power');
                     }
                   } else {
                     saveInstructorSession();
                     powerOffAED();
                   }
                 }}
-                onShockPress={() => handleActionWithAudio('shock')}
+                onShockPress={() => doAction('shock')}
               />
             </View>
           </View>
@@ -327,8 +436,8 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
 
       {/* TONE DISPLAY */}
       <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        {started && steps.length > 0 && (
-          <ToneDisplay text={steps[stepIndex]?.text} />
+        {started && steps?.length > 0 && (
+          <ToneDisplay text={currentDisplayText} />
         )}
       </View>
     </View>

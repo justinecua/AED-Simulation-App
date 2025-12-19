@@ -16,6 +16,7 @@ import ToneDisplay from '../../components/ToneDisplay';
 
 import Wire from '../../components/PadPlacement/wire';
 import DraggablePad from '../../components/PadPlacement/draggablePad';
+
 const InstructorPadPlacementScreen = ({ goStudentAutoMode }) => {
   const {
     started,
@@ -93,7 +94,11 @@ const InstructorPadPlacementScreen = ({ goStudentAutoMode }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container} scrollEnabled={!isDragging} bounces={false}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        scrollEnabled={!isDragging}
+        bounces={false}
+      >
         <Header goBack={goStudentAutoMode} role="student" />
 
         {/* Info Header */}
@@ -179,9 +184,9 @@ const InstructorPadPlacementScreen = ({ goStudentAutoMode }) => {
                   targetX={targets[label].x}
                   targetY={targets[label].y}
                   onMove={handleMove}
-                  onRelease={(x,y,l,s) => {
+                  onRelease={(x, y, l, s) => {
                     setIsDragging(false);
-                    handleRelease(x,y,l,s);
+                    handleRelease(x, y, l, s);
                   }}
                   onDragStart={() => setIsDragging(true)}
                   onDragEnd={() => setIsDragging(false)}
