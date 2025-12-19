@@ -5,16 +5,16 @@ import aedStyle from '../styles/aedBoxStyle';
 
 const HEIGHT = 150;
 
-const AEDWaveformLiveSession = ({
-  stepIndex,
+const AEDWaveformTestScenario = ({
+  stepIndex = 0,
   started,
-  poweredOn,
+  poweredOn, // 👈 FIXED
   paused,
   currentRhythm,
   waveform,
   strokeColors,
   expectedAction,
-  steps,
+  steps = [],
   displayText,
 }) => {
   function getSmoothPath(points) {
@@ -97,4 +97,4 @@ const AEDWaveformLiveSession = ({
   );
 };
 
-export default AEDWaveformLiveSession;
+export default AEDWaveformTestScenario;

@@ -20,8 +20,9 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
     sendMessage,
   } = useTcpServerContext();
 
+  console.log(isServer);
+
   const [students, setStudents] = useState([]);
-  console.log(students);
 
   useEffect(() => {
     setIsServer(true);
@@ -29,6 +30,11 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
       setIsServer(false);
     };
   }, []);
+
+  // useEffect(() => {
+  //   setIsServer(false);
+  // }, []);
+
   useEffect(() => {
     if (connectionStatus === 'Connected') {
       setStudents([{ id: '1', name: 'Student', address: ipAddress }]);
@@ -82,8 +88,8 @@ const InstructorHostScreen = ({ goBack, goLiveSession }) => {
               </Text>
               <Text style={styles.noResultText}>
                 {isServer
-                  ? 'Share this IP with students to join.'
-                  : 'Enable your mobile hotspot first, then start the session. Student must connect to your hotspot to join.'}
+                  ? 'Make sure your hotspot is active. Share this IP address with the student. The student must connect to your hotspot before joining.'
+                  : 'Turn on your mobile hotspot first. Once enabled, start the session so students can connect.'}
               </Text>
             </View>
           )}
