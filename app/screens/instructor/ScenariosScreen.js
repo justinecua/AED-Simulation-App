@@ -92,7 +92,14 @@ export default function ScenariosScreen({
 
       {/* EMPTY STATE */}
       {scenarios.length === 0 ? (
-        <Text style={{ color: '#64748B', fontSize: 14 }}>
+        <Text
+          style={{
+            color: '#64748B',
+            fontSize: 14,
+            justifyContent: 'center',
+            textAlign: 'center',
+          }}
+        >
           No scenarios yet. Tap “New” to get started.
         </Text>
       ) : (

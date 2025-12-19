@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Play, Square, Pause, Hand, Zap, Activity } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRef, useEffect, useState } from 'react';
 
 import styles from '../../styles/InstructorLiveSessionScreenStyle';
 import Header from '../../components/Header';
@@ -27,8 +28,10 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
     studentPoweredOn,
     studentPaused,
   } = useLiveInstructor();
-  const { disconnect, setIsServer } = useTcpServerContext();
 
+  const { disconnect, setIsServer } = useTcpServerContext();
+  const sessionStartRef = useRef(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
   const rhythmLabels = {
     Sinus: 'Normal Sinus',
     VFib: 'Ventricular Fibrillation',
@@ -71,13 +74,18 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
   ];
 
   const readableMessage = message;
+
   const saveInstructorLiveSession = async () => {
     try {
+      const endTime = new Date().toISOString();
+      const totalTime = elapsedTime;
+
       const newSession = {
         type: 'Live Session',
         rhythm: selectedRhythm,
-        startTime: new Date().toISOString(),
-        totalTime: 0,
+        startTime: sessionStartRef.current,
+        endTime,
+        totalTime,
       };
 
       const data = await AsyncStorage.getItem('aed_sessions_instructor');
@@ -89,12 +97,25 @@ const InstructorLiveSessionScreen = ({ goBack }) => {
         'aed_sessions_instructor',
         JSON.stringify(sessions),
       );
-
-      console.log('Instructor live session saved!');
     } catch (e) {
-      console.log('Error saving live session:', e);
+      console.log('Error saving instructor session:', e);
     }
   };
+
+  useEffect(() => {
+    let interval;
+
+    if (sessionStartRef.current) {
+      interval = setInterval(() => {
+        const diff = Math.floor(
+          (Date.now() - new Date(sessionStartRef.current)) / 1000,
+        );
+        setElapsedTime(diff);
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

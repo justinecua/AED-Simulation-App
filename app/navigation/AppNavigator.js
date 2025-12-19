@@ -21,7 +21,7 @@ import InstructorLiveSessionScreen from '../screens/instructor/InstructorLiveSes
 import InstructorScenarioBuilder from '../screens/instructor/InstructorScenarioBuilder';
 import ScenariosScreen from '../screens/instructor/ScenariosScreen';
 import { LiveInstructorProvider } from '../context/LiveInstructorContext';
-
+import InstructorTestScenarioPadPlacementScreen from '../screens/instructor/InstructorTestScenarioPadPlacementScreen';
 // Shared
 import PadPlacementScreen from '../screens/student/PadPlacementScreen';
 
@@ -36,9 +36,10 @@ import { AEDPracticeProvider } from '../context/AEDPracticeContext';
 import { SimulationAEDProvider } from '../context/SimulationAEDContext';
 // UI
 import { SafeAreaView } from 'react-native-safe-area-context';
+import SplashScreen from '../shared/SplashScreen';
 
 export default function AppNavigator() {
-  const [screen, setScreen] = useState('role');
+  const [screen, setScreen] = useState('splash');
   const [direction, setDirection] = useState(1);
   const [editScenario, setEditScenario] = useState(null);
 
@@ -56,6 +57,13 @@ export default function AppNavigator() {
       <TcpServerProvider>
         <AEDProvider>
           <ScenarioProvider>
+            {/* SPLASH */}
+            {screen === 'splash' && (
+              <AnimatedScreenTransition direction={1} keyValue="splash">
+                <SplashScreen onFinish={() => setScreen('role')} />
+              </AnimatedScreenTransition>
+            )}
+
             {/* ROLE */}
             {screen === 'role' && (
               <AnimatedScreenTransition direction={direction} keyValue="role">
@@ -219,7 +227,7 @@ export default function AppNavigator() {
               </AnimatedScreenTransition>
             )}
 
-            {/* INSTRUCTOR TEST SCENARIO */}
+            {/* INSTRUCTOR TEST SCENARIO
             {screen === 'testScenarioInstructor' && (
               <AnimatedScreenTransition
                 direction={direction}
@@ -234,9 +242,32 @@ export default function AppNavigator() {
                   />
                 </TestScenarioProvider>
               </AnimatedScreenTransition>
-            )}
+            )} */}
+            {/* INSTRUCTOR TEST SCENARIO + PAD PLACEMENT */}
+            {screen === 'testScenarioInstructor' ||
+            screen === 'testScenarioApplyPads' ? (
+              <AnimatedScreenTransition direction={direction} keyValue={screen}>
+                <TestScenarioProvider>
+                  {screen === 'testScenarioInstructor' && (
+                    <InstructorTestScenarioScreen
+                      goHome={() => handleNavigation('role')}
+                      goHomeInsctructor={() => handleNavigation('instructor')}
+                      goApplyPads={() =>
+                        handleNavigation('testScenarioApplyPads')
+                      }
+                      goScenarios={() => handleNavigation('scenarios')}
+                    />
+                  )}
 
-            {/* INSTRUCTOR APPLY PADS */}
+                  {screen === 'testScenarioApplyPads' && (
+                    <InstructorTestScenarioPadPlacementScreen
+                      goBack={() => handleNavigation('testScenarioInstructor')}
+                    />
+                  )}
+                </TestScenarioProvider>
+              </AnimatedScreenTransition>
+            ) : null}
+            {/* INSTRUCTOR Live APPLY PADS */}
             {screen === 'applyPadsInstructor' && (
               <AnimatedScreenTransition
                 direction={direction}
