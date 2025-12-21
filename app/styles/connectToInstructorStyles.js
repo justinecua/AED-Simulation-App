@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     fontWeight: '600',
     marginTop: 10,
+    padding: 10,
   },
 
   noResultContainer: {

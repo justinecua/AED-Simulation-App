@@ -1,34 +1,106 @@
-import { useState } from 'react';
 import { Dimensions } from 'react-native';
 import heartRhythms from '../data/heartRhythms';
 import useAEDTimer from './useAEDTimer';
 import useWaveform from './useWaveform';
 import strokeColors from '../data/strokeColors';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import Sound from 'react-native-sound';
 
 const screenWidth = Dimensions.get('window').width;
 const aedWidth = screenWidth * 0.7;
 
 export default function useAEDTestScenario() {
-  /* ---------------- TIMER ---------------- */
-  const { timer, startTimer, stopTimer, resetTimer } = useAEDTimer();
+  Sound.setCategory?.('Playback');
 
-  /* ---------------- WAVEFORM ---------------- */
+  const { timer, startTimer, stopTimer, resetTimer } = useAEDTimer();
   const { waveform, drawWaveformPoint, clearWaveform, stopWaveform } =
     useWaveform(aedWidth);
-
-  /* ---------------- STEPS ---------------- */
   const [steps, setSteps] = useState([]);
   const [stepIndex, setStepIndex] = useState(0);
-
   const expectedAction = steps[stepIndex]?.action || null;
-
-  /* ---------------- AED STATE ---------------- */
   const [poweredOn, setPoweredOn] = useState(false);
   const [started, setStarted] = useState(false);
   const [paused, setPaused] = useState(false);
-
-  /* ---------------- RHYTHM ---------------- */
   const [currentRhythm, setCurrentRhythm] = useState(null);
+  const soundRef = useRef(null);
+  const genRef = useRef(0);
+  const lastPlayedKeyRef = useRef(null);
+
+  const stopAudio = useCallback(() => {
+    genRef.current++;
+    lastPlayedKeyRef.current = null;
+
+    if (soundRef.current) {
+      try {
+        soundRef.current.stop(() => {
+          soundRef.current?.release?.();
+          soundRef.current = null;
+        });
+      } catch {
+        try {
+          soundRef.current?.release?.();
+        } catch {}
+        soundRef.current = null;
+      }
+    }
+  }, []);
+
+  const playStepAudioOnce = useCallback(
+    step => {
+      if (!step?.audio) return;
+
+      const stepKey =
+        step.id ??
+        step.key ??
+        `${stepIndex}:${step.action ?? ''}:${step.text ?? ''}`;
+      if (lastPlayedKeyRef.current === stepKey) return;
+      lastPlayedKeyRef.current = stepKey;
+      stopAudio();
+
+      const myGen = ++genRef.current;
+
+      const s = new Sound(step.audio, Sound.MAIN_BUNDLE, err => {
+        if (myGen !== genRef.current) return;
+        if (err) return;
+
+        soundRef.current = s;
+        s.play(() => {
+          if (myGen !== genRef.current) return;
+
+          s.release();
+          if (soundRef.current === s) soundRef.current = null;
+          if (step.action === 'auto') {
+            setStepIndex(prev => Math.min(prev + 1, steps.length - 1));
+          }
+        });
+      });
+    },
+    [stepIndex, steps.length, stopAudio],
+  );
+
+  useEffect(() => {
+    if (!started) return;
+    const step = steps?.[stepIndex];
+    if (!step) return;
+
+    playStepAudioOnce(step);
+  }, [started, stepIndex, steps, playStepAudioOnce]);
+
+  useEffect(() => {
+    if (!started || paused) return;
+
+    const step = steps?.[stepIndex];
+    if (!step) return;
+
+    if (step.action !== 'analyze') return;
+
+    const ms = step.duration ?? 4000;
+    const t = setTimeout(() => {
+      setStepIndex(prev => Math.min(prev + 1, steps.length - 1));
+    }, ms);
+
+    return () => clearTimeout(t);
+  }, [started, paused, stepIndex, steps]);
 
   const randomizeRhythm = () => {
     const keys = Object.keys(heartRhythms);
@@ -37,7 +109,6 @@ export default function useAEDTestScenario() {
     return { name: key, bpm: r.bpm, pattern: r.generate() };
   };
 
-  /* ---------------- LOAD SCENARIO ---------------- */
   const loadTestScenario = scenario => {
     setSteps(scenario.steps || []);
     setStepIndex(0);
@@ -47,7 +118,6 @@ export default function useAEDTestScenario() {
     clearWaveform();
   };
 
-  /* ---------------- STEP NAV ---------------- */
   const nextStep = () => {
     setStepIndex(prev => Math.min(prev + 1, steps.length - 1));
   };
@@ -56,7 +126,6 @@ export default function useAEDTestScenario() {
     setStepIndex(prev => Math.max(prev - 1, 0));
   };
 
-  /* ---------------- ACTION HANDLER ---------------- */
   const handleAction = action => {
     const step = steps[stepIndex];
     if (!step) return;
@@ -66,7 +135,6 @@ export default function useAEDTestScenario() {
     }
   };
 
-  /* ---------------- POWER ---------------- */
   const powerOnAED = () => setPoweredOn(true);
 
   const powerOffAED = () => {
@@ -81,9 +149,17 @@ export default function useAEDTestScenario() {
     clearWaveform();
     setCurrentRhythm(null);
     setStepIndex(0);
+    stopAudio();
   };
 
-  /* ---------------- START / PAUSE ---------------- */
+  const stopAED = () => {
+    stopAudio();
+    setStarted(false);
+    setPaused(false);
+    stopTimer();
+    stopWaveform();
+  };
+
   const startAED = () => {
     if (started && !paused) return;
 
@@ -129,25 +205,22 @@ export default function useAEDTestScenario() {
     started,
     paused,
     timer,
-
     waveform,
     strokeColors,
     currentRhythm,
-
     steps,
     stepIndex,
     expectedAction,
-
     loadTestScenario,
     nextStep,
     prevStep,
-
     powerOnAED,
     powerOffAED,
     startAED,
     pauseAED,
     resumeAED,
-
     handleAction,
+    stopAED,
+    stopAudio,
   };
 }

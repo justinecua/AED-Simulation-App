@@ -51,8 +51,10 @@ const AEDControls = ({
         </TouchableOpacity>
 
         <View style={aedStyle.joulesBox}>
-          <ChevronUp color="black" size={13} />
-          <ChevronDown color="black" size={13} />
+          <View style={aedStyle.joulesArrow}>
+            <ChevronUp color="black" size={13} />
+            <ChevronDown color="black" size={13} />
+          </View>
           <Text style={aedStyle.jouleText}>0 J</Text>
         </View>
       </View>

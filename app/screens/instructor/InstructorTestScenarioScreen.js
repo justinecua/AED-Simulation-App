@@ -47,119 +47,22 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
     loadTestScenario,
     currentScenario,
     setCurrentScenario,
+    pauseAED,
+    resumeAED,
   } = useTestScenario();
 
   const { scenarios } = useScenarioContext();
   const [modalVisible, setModalVisible] = useState(false);
   const analyzeHandledRef = useRef(false);
-  // ─────────────────────────────────────────────────────────────
-  // Display text (single source of truth for AED + ToneDisplay)
-  // ─────────────────────────────────────────────────────────────
+  const hasScenarioSelected = !!currentScenario;
   const currentStep = steps?.[stepIndex];
   const isAnalyzing =
     currentStep?.action === 'analyze' &&
     started &&
     currentRhythm &&
     waveform.length > 0;
-
   const currentDisplayText = currentStep?.text ?? '';
-  // ─────────────────────────────────────────────────────────────
-  // Audio: single-owner (this screen), safe against replays & races
-  // ─────────────────────────────────────────────────────────────
-  const playedStepKeyRef = useRef(null); // prevents replay of same step
-  const soundRef = useRef(null); // current Sound instance
-  const genRef = useRef(0);
 
-  const stopAndReleaseSound = useCallback(() => {
-    if (soundRef.current) {
-      try {
-        soundRef.current.stop(() => {
-          soundRef.current?.release?.();
-          soundRef.current = null;
-        });
-      } catch (e) {
-        // fallback
-        try {
-          soundRef.current?.release?.();
-        } catch {}
-        soundRef.current = null;
-      }
-    }
-  }, []);
-
-  const playAudio = useCallback(
-    (file, onFinish) => {
-      stopAndReleaseSound();
-
-      if (!file) {
-        onFinish?.();
-        return;
-      }
-
-      const myGen = ++genRef.current;
-
-      const sound = new Sound(file, Sound.MAIN_BUNDLE, error => {
-        if (myGen !== genRef.current) return;
-        if (error) {
-          console.log('Sound load error:', error);
-          onFinish?.();
-          return;
-        }
-
-        soundRef.current = sound;
-
-        sound.play(() => {
-          // ensure still current
-          if (myGen !== genRef.current) return;
-
-          sound.release();
-          if (soundRef.current === sound) soundRef.current = null;
-          onFinish?.();
-        });
-      });
-    },
-    [stopAndReleaseSound],
-  );
-
-  // Reset guards when scenario changes or simulation stops
-  useEffect(() => {
-    playedStepKeyRef.current = null;
-    genRef.current++;
-    stopAndReleaseSound();
-  }, [currentScenario?.id, stopAndReleaseSound]);
-
-  useEffect(() => {
-    if (!started) {
-      playedStepKeyRef.current = null;
-      genRef.current++;
-      stopAndReleaseSound();
-    }
-  }, [started, stopAndReleaseSound]);
-
-  useEffect(() => {
-    if (!started) return;
-
-    const step = steps?.[stepIndex];
-    if (!step) return;
-
-    const stepKey =
-      step.id ??
-      step.key ??
-      `${stepIndex}:${step.action ?? ''}:${step.text ?? ''}`;
-
-    if (playedStepKeyRef.current === stepKey) return;
-    playedStepKeyRef.current = stepKey;
-
-    playAudio(step.audio, () => {
-      if (step.action === 'auto') {
-        nextStep();
-      }
-    });
-  }, [stepIndex, started, playAudio, nextStep]);
-
-  // ─────────────────────────────────────────────────────────────
-  // Sessions
-  // ─────────────────────────────────────────────────────────────
   const saveInstructorSession = async () => {
     try {
       const newSession = {
@@ -183,25 +86,16 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
     }
   };
 
-  // ─────────────────────────────────────────────────────────────
-  // Scenario selection
-  // ─────────────────────────────────────────────────────────────
   const handleSelectScenario = scenario => {
     setCurrentScenario(scenario);
     loadTestScenario(scenario);
-
-    // stopping/reset
     powerOffAED();
     setModalVisible(false);
   };
 
-  // ─────────────────────────────────────────────────────────────
-  // UI action dispatcher (NO AUDIO here)
-  // ─────────────────────────────────────────────────────────────
   const doAction = useCallback(
     action => {
       handleAction(action);
-      // no audio here; effect owns audio
     },
     [handleAction],
   );
@@ -212,8 +106,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
 
     if (step.action !== 'analyze') return;
     if (!currentRhythm || waveform.length === 0) return;
-
-    // AED analyze duration (realistic: 3–5 seconds)
     const ANALYZE_DURATION = step.duration ?? 4000;
 
     const t = setTimeout(() => {
@@ -233,7 +125,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
         role="instructor"
       />
 
-      {/* ===================== MODAL ===================== */}
       <Modal transparent animationType="fade" visible={modalVisible}>
         <View
           style={{
@@ -283,7 +174,11 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
                   }}
                   onPress={() => handleSelectScenario(s)}
                 >
-                  <Text style={{ fontSize: 15, fontWeight: '500' }}>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ fontSize: 15, fontWeight: '500', maxWidth: 280 }}
+                  >
                     {s.name || 'Untitled Scenario'}
                   </Text>
                   <Text style={{ opacity: 0.7, fontSize: 12 }}>
@@ -312,8 +207,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
         </View>
       </Modal>
 
-      {/* ================================================= */}
-
       <View style={style.subContainer}>
         <View style={style.content}>
           {/* HEADER BUTTONS */}
@@ -330,7 +223,11 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
                 onPress={() => setModalVisible(true)}
                 style={[style.contentText, { zIndex: 9999 }]}
               >
-                <Text>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={{ maxWidth: 180 }}
+                >
                   {currentScenario?.name
                     ? `Scenario: ${currentScenario.name}`
                     : 'Change Scenario'}
@@ -339,7 +236,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
             </View>
           </View>
 
-          {/* TIMER + ACTIONS */}
           <View style={style2.studentWrapper2}>
             <View style={style.wrapper2Sub}>
               <TouchableOpacity style={style.timerBox}>
@@ -351,7 +247,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
               </TouchableOpacity>
             </View>
 
-            {/* REMOVE + OPEN */}
             <View style={style2.studentWrapper2SubRight}>
               <TouchableOpacity
                 style={[
@@ -382,7 +277,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
             </View>
           </View>
 
-          {/* AED DISPLAY */}
           <View style={style.contentCenter}>
             <View style={aedStyle.aedBox}>
               <AEDWaveformTestScenario
@@ -399,10 +293,12 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
               <AEDControls
                 started={poweredOn}
                 flashing={expectedAction === 'shock'}
+                disabledPower={!hasScenarioSelected || !started}
                 onPowerPress={() => {
+                  if (!hasScenarioSelected || !started) return;
+
                   if (!poweredOn) {
                     powerOnAED();
-
                     if (expectedAction === 'power') {
                       doAction('power');
                     }
@@ -411,7 +307,6 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
                     powerOffAED();
                   }
                 }}
-                onShockPress={() => doAction('shock')}
               />
             </View>
           </View>
@@ -424,8 +319,20 @@ const InstructorTestScenarioScreen = ({ goHomeInsctructor, goApplyPads }) => {
           <ModeControls
             started={started}
             paused={paused}
-            onPowerPress={startAED}
-            onPausePress={() => {}}
+            disabledPlay={!hasScenarioSelected}
+            onPowerPress={() => {
+              if (!hasScenarioSelected) return;
+              startAED();
+            }}
+            onPausePress={() => {
+              if (!started) return;
+
+              if (paused) {
+                resumeAED();
+              } else {
+                pauseAED();
+              }
+            }}
             onStopPress={() => {
               saveInstructorSession();
               powerOffAED();

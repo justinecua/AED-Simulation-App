@@ -36,8 +36,7 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
   const { sendMessage } = useTcpServerContext();
   const attachHandledRef = useRef(false);
   const [imageLayout, setImageLayout] = useState(null);
-
-  /* ---------------- helpers ---------------- */
+  const [isDragging, setIsDragging] = useState(false);
 
   const getTargetPx = label => {
     if (!imageLayout) return { x: 0, y: 0 };
@@ -94,8 +93,6 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
     handleMove(x, y, label);
   };
 
-  /* ---------------- step completion ---------------- */
-
   useEffect(() => {
     if (steps[stepIndex]?.action !== 'attach') {
       attachHandledRef.current = false;
@@ -124,11 +121,12 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
     }
   }, [stepIndex, steps]);
 
-  /* ---------------- render ---------------- */
-
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        scrollEnabled={!isDragging}
+      >
         <Header goBack={goLiveSession} role="student" />
 
         <View style={styles.contentContainer}>
@@ -203,6 +201,8 @@ const LivePadPlacementScreen = ({ goLiveSession }) => {
                         targetY={y}
                         onMove={handleMove}
                         onRelease={handleRelease}
+                        onDragStart={() => setIsDragging(true)}
+                        onDragEnd={() => setIsDragging(false)}
                         padSize={{ w, h }}
                         padStyle={[
                           styles.aedPad,
