@@ -126,22 +126,28 @@ export default function ScenariosScreen({
               {/* LEFT DETAILS */}
               <View style={{ flex: 1 }}>
                 <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
                   style={{
                     fontSize: 16,
                     fontWeight: '700',
                     color: '#0F172A',
                     marginBottom: 4,
+                    maxWidth: 280,
                   }}
                 >
                   {s.name || '(Untitled Scenario)'}
                 </Text>
 
                 <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
                   style={{
                     color: '#64748B',
                     marginBottom: 8,
                     fontSize: 13,
                     lineHeight: 18,
+                    maxWidth: 280,
                   }}
                 >
                   {s.description || '—'}

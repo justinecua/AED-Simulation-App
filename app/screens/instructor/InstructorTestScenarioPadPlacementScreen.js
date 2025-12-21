@@ -32,7 +32,7 @@ const InstructorTestScenarioPadPlacementScreen = ({ goBack }) => {
     startAED,
     pauseAED,
     resumeAED,
-    stopAED,
+    powerOffAED,
     nextStep,
     prevStep,
     timer,
@@ -73,10 +73,6 @@ const InstructorTestScenarioPadPlacementScreen = ({ goBack }) => {
     return { x: x + w / 2, y: y + h / 2 };
   };
 
-  /* -------------------------
-       Drag logic
-    -------------------------- */
-
   const handleMove = (x, y, label) => {
     setPositions(p => ({ ...p, [label]: { x, y } }));
 
@@ -111,86 +107,6 @@ const InstructorTestScenarioPadPlacementScreen = ({ goBack }) => {
       handleAction('attach');
     }
   }, [placedPads, stepIndex]);
-
-  const playedStepKeyRef = useRef(null);
-  const soundRef = useRef(null);
-  const genRef = useRef(0);
-
-  const stopAndReleaseSound = useCallback(() => {
-    if (soundRef.current) {
-      try {
-        soundRef.current.stop(() => {
-          soundRef.current?.release?.();
-          soundRef.current = null;
-        });
-      } catch (e) {
-        try {
-          soundRef.current?.release?.();
-        } catch {}
-        soundRef.current = null;
-      }
-    }
-  }, []);
-
-  const playAudio = useCallback(
-    (file, onFinish) => {
-      stopAndReleaseSound();
-
-      if (!file) {
-        onFinish?.();
-        return;
-      }
-
-      const myGen = ++genRef.current;
-
-      const sound = new Sound(file, Sound.MAIN_BUNDLE, error => {
-        if (myGen !== genRef.current) return;
-
-        if (error) {
-          console.log('Sound load error:', error);
-          onFinish?.();
-          return;
-        }
-
-        soundRef.current = sound;
-
-        sound.play(() => {
-          if (myGen !== genRef.current) return;
-          sound.release();
-          if (soundRef.current === sound) soundRef.current = null;
-          onFinish?.();
-        });
-      });
-    },
-    [stopAndReleaseSound],
-  );
-
-  useEffect(() => {
-    if (!started) {
-      playedStepKeyRef.current = null;
-      genRef.current++;
-      stopAndReleaseSound();
-    }
-  }, [started, stopAndReleaseSound]);
-
-  useEffect(() => {
-    if (!started) return;
-
-    const step = steps?.[stepIndex];
-    if (!step) return;
-
-    const stepKey =
-      step.id ??
-      step.key ??
-      `${stepIndex}:${step.action ?? ''}:${step.text ?? ''}`;
-
-    if (playedStepKeyRef.current === stepKey) return;
-    playedStepKeyRef.current = stepKey;
-
-    playAudio(step.audio, () => {
-      if (step.action === 'auto') nextStep();
-    });
-  }, [stepIndex, started, steps, playAudio, nextStep]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -304,15 +220,14 @@ const InstructorTestScenarioPadPlacementScreen = ({ goBack }) => {
                   })}
               </View>
             </View>
-            {started && steps.length > 0 && (
-              <View style={{ alignItems: 'center' }}>
-                <ToneDisplay text={steps[stepIndex]?.text} />
-              </View>
-            )}
           </View>
         </View>
       </ScrollView>
-
+      {started && steps.length > 0 && (
+        <View style={{ alignItems: 'center' }}>
+          <ToneDisplay text={steps[stepIndex]?.text} />
+        </View>
+      )}
       {/* Floating controls */}
       <View
         style={{
@@ -333,7 +248,7 @@ const InstructorTestScenarioPadPlacementScreen = ({ goBack }) => {
           }}
           onPausePress={pauseAED}
           onStopPress={() => {
-            stopAED();
+            powerOffAED();
             setIsSwitchOpen(false);
             setPositions({
               'Pad 1': { x: 15, y: 10 },

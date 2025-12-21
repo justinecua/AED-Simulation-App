@@ -243,19 +243,20 @@ export default function AppNavigator() {
                 </TestScenarioProvider>
               </AnimatedScreenTransition>
             )} */}
-            {/* INSTRUCTOR TEST SCENARIO + PAD PLACEMENT */}
-            {screen === 'testScenarioInstructor' ||
-            screen === 'testScenarioApplyPads' ? (
-              <AnimatedScreenTransition direction={direction} keyValue={screen}>
-                <TestScenarioProvider>
+            {/* INSTRUCTOR TEST SCENARIO FLOW */}
+            {(screen === 'testScenarioInstructor' ||
+              screen === 'testScenarioApplyPads') && (
+              <TestScenarioProvider>
+                <AnimatedScreenTransition
+                  direction={direction}
+                  keyValue="testScenarioFlow"
+                >
                   {screen === 'testScenarioInstructor' && (
                     <InstructorTestScenarioScreen
-                      goHome={() => handleNavigation('role')}
                       goHomeInsctructor={() => handleNavigation('instructor')}
                       goApplyPads={() =>
                         handleNavigation('testScenarioApplyPads')
                       }
-                      goScenarios={() => handleNavigation('scenarios')}
                     />
                   )}
 
@@ -264,9 +265,9 @@ export default function AppNavigator() {
                       goBack={() => handleNavigation('testScenarioInstructor')}
                     />
                   )}
-                </TestScenarioProvider>
-              </AnimatedScreenTransition>
-            ) : null}
+                </AnimatedScreenTransition>
+              </TestScenarioProvider>
+            )}
             {/* INSTRUCTOR Live APPLY PADS */}
             {screen === 'applyPadsInstructor' && (
               <AnimatedScreenTransition
