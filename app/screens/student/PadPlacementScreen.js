@@ -45,6 +45,7 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
   const BODY_MAX_HEIGHT = Math.min(screenHeight * 0.55, 620);
   const attachHandledRef = useRef(false);
   const [imageLayout, setImageLayout] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   /* -------------------------
      Helpers (ONE coordinate system)
@@ -151,7 +152,10 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        scrollEnabled={!isDragging}
+      >
         <Header goBack={goStudentAutoMode} role="student" />
 
         <View style={styles.contentContainer}>
@@ -248,6 +252,8 @@ const PadPlacementScreen = ({ goStudentAutoMode }) => {
                         targetY={y}
                         onMove={handleMove}
                         onRelease={handleRelease}
+                        onDragStart={() => setIsDragging(true)}
+                        onDragEnd={() => setIsDragging(false)}
                         padSize={{ w, h }}
                         padStyle={[
                           styles.aedPad,

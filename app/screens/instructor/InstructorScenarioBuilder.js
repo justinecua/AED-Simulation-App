@@ -46,10 +46,12 @@ export default function InstructorScenarioBuilder({
   goScenarios,
   editScenario,
 }) {
+  const MAX_TITLE_LENGTH = 55;
+  const MAX_DESCRIPTION_LENGTH = 500;
   const { addScenario, updateScenario } = useScenarioContext();
   const [builderTimer, setBuilderTimer] = useState(0);
 
-  const [rhythmPreview, setRhythmPreview] = useState('VFib');
+  const [rhythmPreview, setRhythmPreview] = useState('Sinus');
   const defaultPreviewSteps = aedSequences[rhythmPreview] || [];
   const [showDefaultSteps, setShowDefaultSteps] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -151,8 +153,8 @@ export default function InstructorScenarioBuilder({
     }
 
     const scenarioData = {
-      name,
-      description,
+      name: name.trim(),
+      description: description.trim(),
       rhythm,
       steps: steps.map(({ key, ...rest }) => rest),
     };
@@ -236,16 +238,16 @@ export default function InstructorScenarioBuilder({
                 style={{
                   fontSize: 16,
                   fontWeight: '600',
-                  marginBottom: 2,
+                  marginBottom: 7,
                   color: '4b4b4bff',
                 }}
               >
                 Steps to build a Scenario
               </Text>
 
-              <View style={{}}>
+              <View>
                 <Text
-                  style={{ fontSize: 12, color: '#4b4b4bff', lineHeight: 14 }}
+                  style={{ fontSize: 12, color: '#4b4b4bff', lineHeight: 16 }}
                 >
                   • Tap a default step to add it to the timeline.{'\n'}• Tap a
                   step in the Timeline to remove it.{'\n'}• Edit steps by
@@ -263,7 +265,19 @@ export default function InstructorScenarioBuilder({
                   placeholder="Input Scenario Name"
                   value={name}
                   onChangeText={setName}
+                  maxLength={MAX_TITLE_LENGTH}
                 />
+
+                <Text
+                  style={{
+                    fontSize: 11,
+                    color: '#64748B',
+                    alignSelf: 'flex-end',
+                    marginTop: 4,
+                  }}
+                >
+                  {name.length}/{MAX_TITLE_LENGTH}
+                </Text>
               </View>
 
               <View style={styles.inputBox}>
@@ -274,7 +288,19 @@ export default function InstructorScenarioBuilder({
                   value={description}
                   onChangeText={setDescription}
                   multiline
+                  maxLength={MAX_DESCRIPTION_LENGTH}
                 />
+
+                <Text
+                  style={{
+                    fontSize: 11,
+                    color: '#64748B',
+                    alignSelf: 'flex-end',
+                    marginTop: 4,
+                  }}
+                >
+                  {description.length}/{MAX_DESCRIPTION_LENGTH}
+                </Text>
               </View>
             </View>
 

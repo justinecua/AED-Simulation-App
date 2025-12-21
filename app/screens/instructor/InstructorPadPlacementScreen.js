@@ -40,6 +40,7 @@ const InstructorPadPlacementScreen = ({ goStudentAutoMode }) => {
     handleAction,
   } = useAEDContext();
   const attachHandledRef = useRef(false);
+
   const handleMove = (x, y, label) => {
     setPositions(p => ({ ...p, [label]: { x, y } }));
     const { w, h } = padSizes[label];

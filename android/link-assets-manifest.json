@@ -292,6 +292,106 @@
     {
       "path": "app/assets/fonts/RussoOne-Regular.ttf",
       "sha1": "4a12533ad9ee3d6c83da4ac659d78ef9fb702ab4"
+    },
+    {
+      "path": "app/assets/sounds/attach_pads_to_patients_bare_chest.mp3",
+      "sha1": "e2978cfba888b987de36b77e4fa2237ed69beaee"
+    },
+    {
+      "path": "app/assets/sounds/call_for_help.mp3",
+      "sha1": "382ce7437d8808b2330e58cdc5fa69d436cdb128"
+    },
+    {
+      "path": "app/assets/sounds/check_responsiveness.mp3",
+      "sha1": "4a276619b29da73778bff0b47e8fd6079111a10d"
+    },
+    {
+      "path": "app/assets/sounds/cut_or_tear_clothing_to_expose_bare_chest.mp3",
+      "sha1": "7ba949eb18e4543f7913c235812c891f551e9089"
+    },
+    {
+      "path": "app/assets/sounds/dont_touch_patient.mp3",
+      "sha1": "ff398a13c40ab7495559e6a19ddb8244717dcb64"
+    },
+    {
+      "path": "app/assets/sounds/dont_touch_patient_analyzing.mp3",
+      "sha1": "29ba602a7d5912e19c98ea592f7e17977a95731f"
+    },
+    {
+      "path": "app/assets/sounds/good_compression.mp3",
+      "sha1": "92c24d561e6cb9571eb7e3beaa4d6ea486d6e6ce"
+    },
+    {
+      "path": "app/assets/sounds/keep.xml",
+      "sha1": "4753046e5312118263a950c756b9adc7aba3d37b"
+    },
+    {
+      "path": "app/assets/sounds/no_shock_advised.mp3",
+      "sha1": "b83e2ff8a1278055086bcdd874b107a4ea346da1"
+    },
+    {
+      "path": "app/assets/sounds/open_pad_package.mp3",
+      "sha1": "f9c8d925eedd6a404315d90ca708cf041b0d0feb"
+    },
+    {
+      "path": "app/assets/sounds/prepare_to_shock_again.mp3",
+      "sha1": "1f2364820ccf7fa7cd915f48fa702d1b10fcb04a"
+    },
+    {
+      "path": "app/assets/sounds/press_flashing_shock_button.mp3",
+      "sha1": "8b533c51cabd6b56b54412f89ef55df5420da538"
+    },
+    {
+      "path": "app/assets/sounds/push_harder.mp3",
+      "sha1": "b9b3e3b763c9a74fc2b634f132566d7d79480d93"
+    },
+    {
+      "path": "app/assets/sounds/remove_pad_package.mp3",
+      "sha1": "c6d8f92c53f48c6c798a986bd5a0e00c6640e58f"
+    },
+    {
+      "path": "app/assets/sounds/resume_cpr_push_to_match_the_tone.mp3",
+      "sha1": "fc42f0861079e7427be0722977414e34cdfc4f5b"
+    },
+    {
+      "path": "app/assets/sounds/shock_advised.mp3",
+      "sha1": "fd30142d2d0024b31cda6eac289c771c840c7a9e"
+    },
+    {
+      "path": "app/assets/sounds/shock_delivered.mp3",
+      "sha1": "a7efe84ce0d904c0bc470c0e4ab6618b2236187b"
+    },
+    {
+      "path": "app/assets/sounds/showing_asystole_rhythm.mp3",
+      "sha1": "207258aac857ba0cb6bf87bd9a44ee9e3596a47c"
+    },
+    {
+      "path": "app/assets/sounds/showing_sinus_rhythm.mp3",
+      "sha1": "72f76ea84ca32c687d8f46b1d6085bbec920298b"
+    },
+    {
+      "path": "app/assets/sounds/showing_ventricular_fibrillation_rhythm.mp3",
+      "sha1": "6dbae8231977f7a42eb1ae47e2dc01f856b63e90"
+    },
+    {
+      "path": "app/assets/sounds/showing_ventricular_tachycardia_rhythm.mp3",
+      "sha1": "c0c0cb92d27270e351428be4d2d49ea7c0dc04b8"
+    },
+    {
+      "path": "app/assets/sounds/start_cpr_push_to_match_the_tone.mp3",
+      "sha1": "ca6e79b2ccdf1792bf9fb133bbcfadd787f29f52"
+    },
+    {
+      "path": "app/assets/sounds/stay_calm.mp3",
+      "sha1": "b598043aead0119f12b6578bbaaf7140649513de"
+    },
+    {
+      "path": "app/assets/sounds/stop_cpr.mp3",
+      "sha1": "2f271ff7d447218d095427feee3a9f076477a3e9"
+    },
+    {
+      "path": "app/assets/sounds/turn_on_aed.mp3",
+      "sha1": "a45eaf97cc46750cdc5449fe29a6ec19670ababe"
     }
   ]
 }

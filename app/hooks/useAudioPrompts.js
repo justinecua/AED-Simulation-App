@@ -1,6 +1,6 @@
-// hooks/useAudioPrompts.js
 import { useRef, useCallback, useEffect } from 'react';
 import Sound from 'react-native-sound';
+import { Platform } from 'react-native';
 
 // IMPORTANT (Android):
 // - Put your .mp3 files in android/app/src/main/res/raw (names must be lowercase, no dashes)
@@ -29,7 +29,7 @@ export default function useAudioPrompts() {
       stop();
 
       // ANDROID (raw/): pass without extension; iOS may require "file.mp3"
-      const file = name;
+      const file = Platform.OS === 'ios' ? `${name}.mp3` : name;
       const snd = new Sound(file, Sound.MAIN_BUNDLE, err => {
         if (err) {
           console.warn('Audio load error:', err);

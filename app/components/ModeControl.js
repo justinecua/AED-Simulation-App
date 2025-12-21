@@ -8,20 +8,29 @@ const ModeControls = ({
   onPowerPress,
   onPausePress,
   onStopPress,
+  disabledPlay = false,
 }) => {
   return (
     <View style={style.startContainer}>
       {/* Start / Resume Button */}
       <TouchableOpacity
+        disabled={disabledPlay}
         style={[
           style.PlayButton,
           started && !paused && { backgroundColor: '#09E979' },
+          disabledPlay && { opacity: 0.4 },
         ]}
         onPress={onPowerPress}
       >
         <Play
           size={20}
-          color={started && !paused ? '#ffffff' : Colors.heartRateBackground}
+          color={
+            disabledPlay
+              ? '#ccc'
+              : started && !paused
+              ? '#ffffff'
+              : Colors.heartRateBackground
+          }
         />
       </TouchableOpacity>
 

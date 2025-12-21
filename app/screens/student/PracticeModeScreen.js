@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Platform,
 } from 'react-native';
 
 import Colors from '../../constants/colors';
@@ -16,6 +17,7 @@ import aedStyle from '../../styles/aedBoxStyle';
 import { Picker } from '@react-native-picker/picker';
 import ToneDisplayPractice from '../../components/ToneDisplayPractice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Modal } from 'react-native';
 
 import {
   ArrowLeft,
@@ -35,6 +37,13 @@ import { AEDPracticeContext } from '../../context/AEDPracticeContext';
 const PracticeModeScreen = ({ goHomeStudent, goPracticeApplyPads }) => {
   const [rhythm, setRhythm] = useState('Sinus');
   const sessionStartRef = useRef(null);
+  const RHYTHMS = [
+    { label: 'Sinus', value: 'Sinus' },
+    { label: 'V-Fib', value: 'VFib' },
+    { label: 'V-Tach', value: 'VTach' },
+    { label: 'Asystole', value: 'Asystole' },
+  ];
+  const [showRhythmModal, setShowRhythmModal] = useState(false);
 
   const savePracticeSession = async () => {
     try {
@@ -216,50 +225,38 @@ const PracticeModeScreen = ({ goHomeStudent, goPracticeApplyPads }) => {
 
             {/* Rhythm Picker */}
             <View style={{ marginBottom: 10, width: '100%' }}>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={rhythm}
-                  onValueChange={val => {
-                    setRhythm(val);
-                    changeRhythm(val);
-                    setStepIndex(0);
-                  }}
-                  style={{
-                    height: 55,
-                    color: !started ? 'gray' : '#000',
-                  }}
-                  enabled={started}
-                >
-                  <Picker.Item
-                    style={{
-                      fontSize: 14,
-                    }}
-                    label="Sinus"
-                    value="Sinus"
+              <TouchableOpacity
+                style={styles.selector}
+                onPress={() => setShowRhythmModal(true)}
+              >
+                <Text style={{ fontSize: 14 }}>{rhythm}</Text>
+              </TouchableOpacity>
+
+              <Modal transparent animationType="fade" visible={showRhythmModal}>
+                <View style={styles.modalContainer}>
+                  <TouchableOpacity
+                    style={styles.backdrop}
+                    onPress={() => setShowRhythmModal(false)}
                   />
-                  <Picker.Item
-                    style={{
-                      fontSize: 14,
-                    }}
-                    label="V-Fib"
-                    value="VFib"
-                  />
-                  <Picker.Item
-                    style={{
-                      fontSize: 14,
-                    }}
-                    label="V-Tach"
-                    value="VTach"
-                  />
-                  <Picker.Item
-                    style={{
-                      fontSize: 14,
-                    }}
-                    label="Asystole"
-                    value="Asystole"
-                  />
-                </Picker>
-              </View>
+
+                  <View style={styles.modal}>
+                    {RHYTHMS.map(item => (
+                      <TouchableOpacity
+                        key={item.value}
+                        style={styles.option}
+                        onPress={() => {
+                          setRhythm(item.value);
+                          changeRhythm(item.value);
+                          setStepIndex(0);
+                          setShowRhythmModal(false);
+                        }}
+                      >
+                        <Text style={styles.optionText}>{item.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+              </Modal>
             </View>
 
             {/* Row 1: Back / Pause / Next */}
@@ -532,5 +529,96 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'space-between',
+  },
+
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 15,
+  },
+  subContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    borderRadius: 15,
+    padding: 12,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  modeText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  timerIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  timerText: {
+    marginLeft: 6,
+    color: '#FA4C17',
+    fontWeight: 'bold',
+  },
+  contentCenter: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  controlsContainer: {
+    marginTop: 30,
+  },
+  controlBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    marginBottom: 10,
+  },
+  controlText: {
+    fontSize: 14,
+  },
+  selector: {
+    backgroundColor: '#fff',
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  selectorText: {
+    fontSize: 14,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modal: {
+    width: '85%',
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 12,
+  },
+
+  option: {
+    padding: 16,
+  },
+  optionText: {
+    fontSize: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 10,
   },
 });

@@ -50,6 +50,7 @@ const PracticePadPlacementScreen = ({
 
   const attachHandledRef = useRef(false);
   const [imageLayout, setImageLayout] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   /* -------------------------
      Helpers (single coord system)
@@ -123,7 +124,10 @@ const PracticePadPlacementScreen = ({
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        scrollEnabled={!isDragging}
+      >
         <Header goBack={goPracticeMode} role="student" />
 
         <View style={styles.contentContainer}>
@@ -217,6 +221,8 @@ const PracticePadPlacementScreen = ({
                         targetY={y}
                         onMove={handleMove}
                         onRelease={handleRelease}
+                        onDragStart={() => setIsDragging(true)}
+                        onDragEnd={() => setIsDragging(false)}
                         padSize={{ w, h }}
                         padStyle={[
                           styles.aedPad,

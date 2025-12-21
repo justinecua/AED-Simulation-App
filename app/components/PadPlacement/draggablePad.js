@@ -11,41 +11,58 @@ const DraggablePad = ({
   initialY,
   onMove,
   onRelease,
+  onDragStart,
+  onDragEnd,
   padStyle,
   padSize,
 }) => {
   const pan = useRef(
     new Animated.ValueXY({ x: initialX, y: initialY }),
   ).current;
+
   const lastOffset = useRef({ x: initialX, y: initialY });
   const [isPressed, setIsPressed] = useState(false);
 
   useEffect(() => {
-    const id = pan.addListener(val => onMove?.(val.x, val.y, label));
+    const id = pan.addListener(val => {
+      onMove?.(val.x, val.y, label);
+    });
     return () => pan.removeListener(id);
   }, [pan, onMove, label]);
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+
       onPanResponderGrant: () => {
+        onDragStart?.();
         pan.setOffset(lastOffset.current);
         pan.setValue({ x: 0, y: 0 });
         setIsPressed(true);
       },
+
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
         useNativeDriver: false,
       }),
+
       onPanResponderRelease: () => {
         pan.flattenOffset();
         setIsPressed(false);
+        onDragEnd?.(); // 🔴 re-enable ScrollView
 
         const { w, h } = padSize;
         const x = pan.x._value;
         const y = pan.y._value;
 
         const padCenter = { x: x + w / 2, y: y + h / 2 };
-        const targetCenter = { x: targetX + w / 2, y: targetY + h / 2 };
+        const targetCenter = {
+          x: targetX + w / 2,
+          y: targetY + h / 2,
+        };
+
         const dist = Math.hypot(
           padCenter.x - targetCenter.x,
           padCenter.y - targetCenter.y,
@@ -64,11 +81,17 @@ const DraggablePad = ({
           onRelease?.(x, y, label, false);
         }
       },
+
+      onPanResponderTerminate: () => {
+        setIsPressed(false);
+        onDragEnd?.();
+      },
     }),
   ).current;
 
   return (
     <Animated.View
+      pointerEvents="box-only"
       {...panResponder.panHandlers}
       style={[
         pan.getLayout(),
