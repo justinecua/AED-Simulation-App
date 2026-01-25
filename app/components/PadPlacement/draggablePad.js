@@ -51,7 +51,7 @@ const DraggablePad = ({
       onPanResponderRelease: () => {
         pan.flattenOffset();
         setIsPressed(false);
-        onDragEnd?.(); // 🔴 re-enable ScrollView
+        onDragEnd?.();
 
         const { w, h } = padSize;
         const x = pan.x._value;

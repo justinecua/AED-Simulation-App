@@ -114,10 +114,10 @@
 
 /* Begin PBXFileReference section */
 		02C49F16C8A0411EB13B57E6 /* Roboto_SemiCondensed-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-Thin.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-Thin.ttf"; sourceTree = "<group>"; };
-		038228CA919B42C6AFAD3817 /* keep.xml */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = keep.xml; path = ../app/assets/sounds/keep.xml; sourceTree = "<group>"; };
+		038228CA919B42C6AFAD3817 /* keep.xml */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = keep.xml; path = ../app/assets/sounds/keep.xml; sourceTree = "<group>"; };
 		082B612D35DB4B8C98DC4776 /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-LightItalic.ttf"; path = "../app/assets/fonts/Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
 		098661FD2254476799776F9E /* Roboto_SemiCondensed-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-Light.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-Light.ttf"; sourceTree = "<group>"; };
-		0B4611E0E0564F85B98E3D01 /* shock_advised.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = shock_advised.mp3; path = ../app/assets/sounds/shock_advised.mp3; sourceTree = "<group>"; };
+		0B4611E0E0564F85B98E3D01 /* shock_advised.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = shock_advised.mp3; path = ../app/assets/sounds/shock_advised.mp3; sourceTree = "<group>"; };
 		0B4BA3D9D0B24041BFDF0A49 /* Roboto_SemiCondensed-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-MediumItalic.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-MediumItalic.ttf"; sourceTree = "<group>"; };
 		133C2C53FC5A4252ABF906C1 /* Roboto_Condensed-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-ThinItalic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-ThinItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* SimCrit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimCrit.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,28 +125,28 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = SimCrit/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = SimCrit/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		14AABE00E7434035A0D03DC6 /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ThinItalic.ttf"; path = "../app/assets/fonts/Poppins-ThinItalic.ttf"; sourceTree = "<group>"; };
-		1A4D8482FF474CEF89D5BA4E /* dont_touch_patient_analyzing.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = dont_touch_patient_analyzing.mp3; path = ../app/assets/sounds/dont_touch_patient_analyzing.mp3; sourceTree = "<group>"; };
+		1A4D8482FF474CEF89D5BA4E /* dont_touch_patient_analyzing.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = dont_touch_patient_analyzing.mp3; path = ../app/assets/sounds/dont_touch_patient_analyzing.mp3; sourceTree = "<group>"; };
 		1CC59BEA03874EF99404B23F /* Roboto_Condensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-Bold.ttf"; path = "../app/assets/fonts/Roboto_Condensed-Bold.ttf"; sourceTree = "<group>"; };
 		1E15155E0964488CA3DD217D /* Roboto_Condensed-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-ExtraLightItalic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		23DE52AD09F44E0587923B5C /* Roboto_SemiCondensed-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-SemiBold.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-SemiBold.ttf"; sourceTree = "<group>"; };
 		267E18F475C84489BFD02407 /* Roboto-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraLight.ttf"; path = "../app/assets/fonts/Roboto-ExtraLight.ttf"; sourceTree = "<group>"; };
 		271D8D01C14041D8AFB07FD4 /* Roboto_SemiCondensed-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-Medium.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-Medium.ttf"; sourceTree = "<group>"; };
-		2A67F1DC1FC14E5C85567594 /* turn_on_aed.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = turn_on_aed.mp3; path = ../app/assets/sounds/turn_on_aed.mp3; sourceTree = "<group>"; };
+		2A67F1DC1FC14E5C85567594 /* turn_on_aed.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = turn_on_aed.mp3; path = ../app/assets/sounds/turn_on_aed.mp3; sourceTree = "<group>"; };
 		2A9E3449FA35477A900D6BF3 /* Roboto_SemiCondensed-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-ExtraLight.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-ExtraLight.ttf"; sourceTree = "<group>"; };
 		30801AF5693F46DBBB97C288 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../app/assets/fonts/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		343C6FDECB3E4264879A3B1B /* Roboto-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraLightItalic.ttf"; path = "../app/assets/fonts/Roboto-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		3492DE9F3FE14AE39012A718 /* Roboto_Condensed-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-ExtraLight.ttf"; path = "../app/assets/fonts/Roboto_Condensed-ExtraLight.ttf"; sourceTree = "<group>"; };
 		379C2CC3426E4907B1E2B94C /* Poppins-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Black.ttf"; path = "../app/assets/fonts/Poppins-Black.ttf"; sourceTree = "<group>"; };
-		37B6B394D51B42D0835BF95B /* showing_ventricular_tachycardia_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = showing_ventricular_tachycardia_rhythm.mp3; path = ../app/assets/sounds/showing_ventricular_tachycardia_rhythm.mp3; sourceTree = "<group>"; };
+		37B6B394D51B42D0835BF95B /* showing_ventricular_tachycardia_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = showing_ventricular_tachycardia_rhythm.mp3; path = ../app/assets/sounds/showing_ventricular_tachycardia_rhythm.mp3; sourceTree = "<group>"; };
 		3A28F29A67E14825B5F370C3 /* Poppins-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Medium.ttf"; path = "../app/assets/fonts/Poppins-Medium.ttf"; sourceTree = "<group>"; };
 		3B1EEECE3E89417894386AFB /* Roboto-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-SemiBold.ttf"; path = "../app/assets/fonts/Roboto-SemiBold.ttf"; sourceTree = "<group>"; };
 		3BFD0ED2BA1A47469FFD0FAE /* Roboto-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Italic.ttf"; path = "../app/assets/fonts/Roboto-Italic.ttf"; sourceTree = "<group>"; };
 		43C72840CFA344A4A63B8527 /* Poppins-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBold.ttf"; path = "../app/assets/fonts/Poppins-ExtraBold.ttf"; sourceTree = "<group>"; };
-		4962748F18CC4132972C7843 /* call_for_help.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = call_for_help.mp3; path = ../app/assets/sounds/call_for_help.mp3; sourceTree = "<group>"; };
+		4962748F18CC4132972C7843 /* call_for_help.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = call_for_help.mp3; path = ../app/assets/sounds/call_for_help.mp3; sourceTree = "<group>"; };
 		4BDE5D23FE094DB986F4F757 /* Roboto_Condensed-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-Black.ttf"; path = "../app/assets/fonts/Roboto_Condensed-Black.ttf"; sourceTree = "<group>"; };
 		523ED61A22924BF282AE5CC5 /* Roboto-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Light.ttf"; path = "../app/assets/fonts/Roboto-Light.ttf"; sourceTree = "<group>"; };
 		53B5564ED71F434D8FE902ED /* Roboto-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Thin.ttf"; path = "../app/assets/fonts/Roboto-Thin.ttf"; sourceTree = "<group>"; };
-		54F4799BFF344C0B81085B41 /* no_shock_advised.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = no_shock_advised.mp3; path = ../app/assets/sounds/no_shock_advised.mp3; sourceTree = "<group>"; };
+		54F4799BFF344C0B81085B41 /* no_shock_advised.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = no_shock_advised.mp3; path = ../app/assets/sounds/no_shock_advised.mp3; sourceTree = "<group>"; };
 		55E4CB5367734366A15656F1 /* Roboto_SemiCondensed-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-BlackItalic.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-BlackItalic.ttf"; sourceTree = "<group>"; };
 		59B37CE77B17472A99D767A9 /* Roboto-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-SemiBoldItalic.ttf"; path = "../app/assets/fonts/Roboto-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		5D54D0F3EBC179CC02A6E52A /* Pods-SimCrit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimCrit.debug.xcconfig"; path = "Target Support Files/Pods-SimCrit/Pods-SimCrit.debug.xcconfig"; sourceTree = "<group>"; };
@@ -161,38 +161,38 @@
 		754548BF687D4C9F8DA19589 /* Roboto_Condensed-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-Light.ttf"; path = "../app/assets/fonts/Roboto_Condensed-Light.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = SimCrit/AppDelegate.swift; sourceTree = "<group>"; };
 		76531A1AA4844DDDA9313D9A /* Roboto_SemiCondensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-SemiBoldItalic.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
-		76953BEC1AD7476FA384D938 /* resume_cpr_push_to_match_the_tone.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = resume_cpr_push_to_match_the_tone.mp3; path = ../app/assets/sounds/resume_cpr_push_to_match_the_tone.mp3; sourceTree = "<group>"; };
-		77CC55A1C8EB4EF5B17EA242 /* stop_cpr.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = stop_cpr.mp3; path = ../app/assets/sounds/stop_cpr.mp3; sourceTree = "<group>"; };
-		7A2B355ED45449D188B57963 /* showing_ventricular_fibrillation_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = showing_ventricular_fibrillation_rhythm.mp3; path = ../app/assets/sounds/showing_ventricular_fibrillation_rhythm.mp3; sourceTree = "<group>"; };
-		7B528B6034AA4F41A8B8A930 /* start_cpr_push_to_match_the_tone.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = start_cpr_push_to_match_the_tone.mp3; path = ../app/assets/sounds/start_cpr_push_to_match_the_tone.mp3; sourceTree = "<group>"; };
+		76953BEC1AD7476FA384D938 /* resume_cpr_push_to_match_the_tone.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = resume_cpr_push_to_match_the_tone.mp3; path = ../app/assets/sounds/resume_cpr_push_to_match_the_tone.mp3; sourceTree = "<group>"; };
+		77CC55A1C8EB4EF5B17EA242 /* stop_cpr.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = stop_cpr.mp3; path = ../app/assets/sounds/stop_cpr.mp3; sourceTree = "<group>"; };
+		7A2B355ED45449D188B57963 /* showing_ventricular_fibrillation_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = showing_ventricular_fibrillation_rhythm.mp3; path = ../app/assets/sounds/showing_ventricular_fibrillation_rhythm.mp3; sourceTree = "<group>"; };
+		7B528B6034AA4F41A8B8A930 /* start_cpr_push_to_match_the_tone.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = start_cpr_push_to_match_the_tone.mp3; path = ../app/assets/sounds/start_cpr_push_to_match_the_tone.mp3; sourceTree = "<group>"; };
 		7C2CAFCA565D4B79B86F2218 /* Poppins-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Thin.ttf"; path = "../app/assets/fonts/Poppins-Thin.ttf"; sourceTree = "<group>"; };
 		7D00334EFE0042FFA9165C37 /* Poppins-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BoldItalic.ttf"; path = "../app/assets/fonts/Poppins-BoldItalic.ttf"; sourceTree = "<group>"; };
-		7F8951D893FA4F8FA9524DE7 /* remove_pad_package.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = remove_pad_package.mp3; path = ../app/assets/sounds/remove_pad_package.mp3; sourceTree = "<group>"; };
+		7F8951D893FA4F8FA9524DE7 /* remove_pad_package.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = remove_pad_package.mp3; path = ../app/assets/sounds/remove_pad_package.mp3; sourceTree = "<group>"; };
 		811894E1DF4B48EB8CBF8B62 /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLight.ttf"; path = "../app/assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SimCrit/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8299D646C9ED44B5ACF87C0B /* Roboto_SemiCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-Regular.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		8434505412064E60833BBA16 /* Roboto-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Black.ttf"; path = "../app/assets/fonts/Roboto-Black.ttf"; sourceTree = "<group>"; };
 		86730E86C8FE4136AF06E3CE /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../app/assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
 		90FD0EEA9EEA49B9A17D65B9 /* Roboto_Condensed-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-BoldItalic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-BoldItalic.ttf"; sourceTree = "<group>"; };
-		925EF147357F428BAB9E624A /* good_compression.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = good_compression.mp3; path = ../app/assets/sounds/good_compression.mp3; sourceTree = "<group>"; };
+		925EF147357F428BAB9E624A /* good_compression.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = good_compression.mp3; path = ../app/assets/sounds/good_compression.mp3; sourceTree = "<group>"; };
 		9404688A7F2140BC8C30B941 /* Roboto_Condensed-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-LightItalic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-LightItalic.ttf"; sourceTree = "<group>"; };
 		97472809F31544D4AF06B50C /* Roboto_Condensed-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-Italic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-Italic.ttf"; sourceTree = "<group>"; };
-		97BBEBAB125345E78E97EA12 /* cut_or_tear_clothing_to_expose_bare_chest.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = cut_or_tear_clothing_to_expose_bare_chest.mp3; path = ../app/assets/sounds/cut_or_tear_clothing_to_expose_bare_chest.mp3; sourceTree = "<group>"; };
+		97BBEBAB125345E78E97EA12 /* cut_or_tear_clothing_to_expose_bare_chest.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = cut_or_tear_clothing_to_expose_bare_chest.mp3; path = ../app/assets/sounds/cut_or_tear_clothing_to_expose_bare_chest.mp3; sourceTree = "<group>"; };
 		9A6E87953EC14AB884829BA9 /* Roboto_SemiCondensed-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-ExtraLightItalic.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		9B2C54E2330346378584200F /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-MediumItalic.ttf"; path = "../app/assets/fonts/Roboto-MediumItalic.ttf"; sourceTree = "<group>"; };
 		AA9CDC901026AA9C37D7C1A9 /* libPods-SimCrit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SimCrit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0AF309F160240D689B3510C /* Roboto_SemiCondensed-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-ExtraBold.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-ExtraBold.ttf"; sourceTree = "<group>"; };
 		B36C55B5C81640A5ABDA3EB7 /* Roboto_Condensed-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-Medium.ttf"; path = "../app/assets/fonts/Roboto_Condensed-Medium.ttf"; sourceTree = "<group>"; };
 		B5CA275689A24028B9CCCF85 /* Roboto_SemiCondensed-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-Black.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-Black.ttf"; sourceTree = "<group>"; };
-		B69513DA3AA54BE08EA26410 /* showing_asystole_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = showing_asystole_rhythm.mp3; path = ../app/assets/sounds/showing_asystole_rhythm.mp3; sourceTree = "<group>"; };
+		B69513DA3AA54BE08EA26410 /* showing_asystole_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = showing_asystole_rhythm.mp3; path = ../app/assets/sounds/showing_asystole_rhythm.mp3; sourceTree = "<group>"; };
 		B6CE8BEBCA69465693757008 /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBoldItalic.ttf"; path = "../app/assets/fonts/Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		BC0D418729AB4DB980F0845C /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../app/assets/fonts/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
-		BDF7C637E5F2410DB3F22703 /* open_pad_package.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = open_pad_package.mp3; path = ../app/assets/sounds/open_pad_package.mp3; sourceTree = "<group>"; };
-		C0C1CAAE85214B8695FFF554 /* prepare_to_shock_again.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = prepare_to_shock_again.mp3; path = ../app/assets/sounds/prepare_to_shock_again.mp3; sourceTree = "<group>"; };
-		C102F257EDF94A53861B72E9 /* check_responsiveness.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = check_responsiveness.mp3; path = ../app/assets/sounds/check_responsiveness.mp3; sourceTree = "<group>"; };
-		C1F366184EA545E6956AA528 /* attach_pads_to_patients_bare_chest.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = attach_pads_to_patients_bare_chest.mp3; path = ../app/assets/sounds/attach_pads_to_patients_bare_chest.mp3; sourceTree = "<group>"; };
+		BDF7C637E5F2410DB3F22703 /* open_pad_package.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = open_pad_package.mp3; path = ../app/assets/sounds/open_pad_package.mp3; sourceTree = "<group>"; };
+		C0C1CAAE85214B8695FFF554 /* prepare_to_shock_again.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = prepare_to_shock_again.mp3; path = ../app/assets/sounds/prepare_to_shock_again.mp3; sourceTree = "<group>"; };
+		C102F257EDF94A53861B72E9 /* check_responsiveness.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = check_responsiveness.mp3; path = ../app/assets/sounds/check_responsiveness.mp3; sourceTree = "<group>"; };
+		C1F366184EA545E6956AA528 /* attach_pads_to_patients_bare_chest.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = attach_pads_to_patients_bare_chest.mp3; path = ../app/assets/sounds/attach_pads_to_patients_bare_chest.mp3; sourceTree = "<group>"; };
 		C4640D16F1AA4F4E897AA733 /* Roboto_Condensed-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-ExtraBoldItalic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
-		C6F4DFD242154EE29C3015D6 /* push_harder.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = push_harder.mp3; path = ../app/assets/sounds/push_harder.mp3; sourceTree = "<group>"; };
+		C6F4DFD242154EE29C3015D6 /* push_harder.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = push_harder.mp3; path = ../app/assets/sounds/push_harder.mp3; sourceTree = "<group>"; };
 		C6FDBC4EB1AE4AF4930C4DAE /* RussoOne-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RussoOne-Regular.ttf"; path = "../app/assets/fonts/RussoOne-Regular.ttf"; sourceTree = "<group>"; };
 		C81C7F54A6D74A11AD648F04 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../app/assets/fonts/Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		CAC759C91C9B447F9E1C89D8 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../app/assets/fonts/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
@@ -200,18 +200,18 @@
 		D0098B0BBCBD4433A14A628E /* Roboto_Condensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-Regular.ttf"; path = "../app/assets/fonts/Roboto_Condensed-Regular.ttf"; sourceTree = "<group>"; };
 		D794242955C14C69A5D2D7DB /* Roboto_Condensed-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-SemiBold.ttf"; path = "../app/assets/fonts/Roboto_Condensed-SemiBold.ttf"; sourceTree = "<group>"; };
 		DA8735DA69E143C9A91FC04F /* Roboto_Condensed-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-Thin.ttf"; path = "../app/assets/fonts/Roboto_Condensed-Thin.ttf"; sourceTree = "<group>"; };
-		DC27C02FAAC241049D6B939F /* stay_calm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = stay_calm.mp3; path = ../app/assets/sounds/stay_calm.mp3; sourceTree = "<group>"; };
-		DF943C0693B449E29662F18C /* showing_sinus_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = showing_sinus_rhythm.mp3; path = ../app/assets/sounds/showing_sinus_rhythm.mp3; sourceTree = "<group>"; };
+		DC27C02FAAC241049D6B939F /* stay_calm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = stay_calm.mp3; path = ../app/assets/sounds/stay_calm.mp3; sourceTree = "<group>"; };
+		DF943C0693B449E29662F18C /* showing_sinus_rhythm.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = showing_sinus_rhythm.mp3; path = ../app/assets/sounds/showing_sinus_rhythm.mp3; sourceTree = "<group>"; };
 		E0354408FA6B49018AB72891 /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../app/assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
 		E158463091C84FBCA9FD6471 /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../app/assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
 		E40B63D942404CC882416CD4 /* Roboto_Condensed-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-SemiBoldItalic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		E760E5D14679405A81810D5C /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BoldItalic.ttf"; path = "../app/assets/fonts/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
-		E83784B2038546609249AA06 /* press_flashing_shock_button.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = press_flashing_shock_button.mp3; path = ../app/assets/sounds/press_flashing_shock_button.mp3; sourceTree = "<group>"; };
+		E83784B2038546609249AA06 /* press_flashing_shock_button.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = press_flashing_shock_button.mp3; path = ../app/assets/sounds/press_flashing_shock_button.mp3; sourceTree = "<group>"; };
 		EA941F42786BA09B44F9FE3F /* Pods-SimCrit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimCrit.release.xcconfig"; path = "Target Support Files/Pods-SimCrit/Pods-SimCrit.release.xcconfig"; sourceTree = "<group>"; };
 		EAB44849E43C4771879C931D /* Poppins-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BlackItalic.ttf"; path = "../app/assets/fonts/Poppins-BlackItalic.ttf"; sourceTree = "<group>"; };
 		EB9F23B042F14B49906B86DF /* Roboto_SemiCondensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-Bold.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		ED9ABE834C3A46F78458E46E /* dont_touch_patient.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = dont_touch_patient.mp3; path = ../app/assets/sounds/dont_touch_patient.mp3; sourceTree = "<group>"; };
+		ED9ABE834C3A46F78458E46E /* dont_touch_patient.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = dont_touch_patient.mp3; path = ../app/assets/sounds/dont_touch_patient.mp3; sourceTree = "<group>"; };
 		EF9C8ABB50DE480BA5E00537 /* Poppins-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLightItalic.ttf"; path = "../app/assets/fonts/Poppins-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		F3EEC2D40AE440F4A088CD34 /* Roboto_SemiCondensed-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_SemiCondensed-BoldItalic.ttf"; path = "../app/assets/fonts/Roboto_SemiCondensed-BoldItalic.ttf"; sourceTree = "<group>"; };
 		F4210B345C3D47278EACF0F8 /* Roboto_Condensed-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-BlackItalic.ttf"; path = "../app/assets/fonts/Roboto_Condensed-BlackItalic.ttf"; sourceTree = "<group>"; };
@@ -220,7 +220,7 @@
 		FB4820C1046843B3913E116B /* Roboto-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ExtraBoldItalic.ttf"; path = "../app/assets/fonts/Roboto-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		FC53B2859ED94B84987A490B /* Roboto_Condensed-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto_Condensed-ExtraBold.ttf"; path = "../app/assets/fonts/Roboto_Condensed-ExtraBold.ttf"; sourceTree = "<group>"; };
 		FE060ADEF7CB40499C7327F4 /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../app/assets/fonts/Poppins-Italic.ttf"; sourceTree = "<group>"; };
-		FFA85C00ABE64C348BAAECC5 /* shock_delivered.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = shock_delivered.mp3; path = ../app/assets/sounds/shock_delivered.mp3; sourceTree = "<group>"; };
+		FFA85C00ABE64C348BAAECC5 /* shock_delivered.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = shock_delivered.mp3; path = ../app/assets/sounds/shock_delivered.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -591,9 +591,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SimCrit/Pods-SimCrit-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SimCrit/Pods-SimCrit-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -630,9 +634,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SimCrit/Pods-SimCrit-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SimCrit/Pods-SimCrit-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -660,7 +668,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B7MALAN96V;
+				DEVELOPMENT_TEAM = 39479SCSC5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = SimCrit/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -689,7 +697,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B7MALAN96V;
+				DEVELOPMENT_TEAM = 39479SCSC5;
 				INFOPLIST_FILE = SimCrit/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -778,10 +786,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -850,10 +855,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

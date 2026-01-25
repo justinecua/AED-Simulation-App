@@ -4,8 +4,6 @@ import { Home } from 'lucide-react-native';
 import Colors from '../constants/colors';
 
 const { width, height } = Dimensions.get('window');
-
-// Detect if screen matches 720 x 1600 pixels resolution (~360 x 800dp)
 const screenSize = width === 360 && height === 800;
 
 const FloatingHome = ({ onPress }) => {

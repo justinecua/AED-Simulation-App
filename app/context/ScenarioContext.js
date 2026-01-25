@@ -30,7 +30,7 @@ export const ScenarioProvider = ({ children }) => {
     }
   };
 
-  const addScenario = async (scenario) => {
+  const addScenario = async (scenario) => {  
     const newScenario = {
       ...scenario,
       id: String(Date.now()), // Add unique ID
