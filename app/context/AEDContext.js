@@ -19,7 +19,7 @@ export const AEDProvider = ({ children }) => {
   return (
     <AEDContext.Provider
       value={{
-        ...aed, // all values from useAED()
+        ...aed,
         isSwitchOpen,
         setIsSwitchOpen,
         positions,

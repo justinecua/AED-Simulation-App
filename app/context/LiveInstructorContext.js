@@ -14,7 +14,6 @@ export const LiveInstructorProvider = ({ children }) => {
   const [studentPoweredOn, setStudentPoweredOn] = useState(false);
   const [studentPaused, setStudentPaused] = useState(false);
 
-  // ⭐ THIS WAS MISSING
   const [instructorMessage, setInstructorMessage] = useState('');
   const [padsLocked, setPadsLocked] = useState(false);
   const [lastPadStatus, setLastPadStatus] = useState({
@@ -107,12 +106,10 @@ export const LiveInstructorProvider = ({ children }) => {
     sendSignal('CONTROL_MODE', newMode ? 'INSTRUCTOR' : 'AUTO');
   };
 
-  // ⭐ MAIN MESSAGE HANDLER (clean & fixed)
   useEffect(() => {
     if (!message) return;
     console.log('INCOMING FROM TCP:', message);
 
-    // 🔹 1) Handle plain-text messages from the student first
     if (typeof message === 'string') {
       if (message.includes('Student powered on the AED')) {
         setStudentPoweredOn(true);
@@ -138,7 +135,6 @@ export const LiveInstructorProvider = ({ children }) => {
       return;
     }
 
-    // 1️⃣ PAD STATUS
     if (parsed.type === 'PAD_STATUS') {
       const { label, placed } = parsed.data;
 
@@ -149,7 +145,6 @@ export const LiveInstructorProvider = ({ children }) => {
         const allCorrect = updated['Pad 1'] && updated['Pad 2'];
         const anyNotCorrect = !updated['Pad 1'] || !updated['Pad 2'];
 
-        // 🔓 If previously locked but now a pad is moved → UNLOCK
         if (padsLocked && anyNotCorrect) {
           setPadsLocked(false);
           setInstructorMessage(
@@ -158,14 +153,12 @@ export const LiveInstructorProvider = ({ children }) => {
           return updated;
         }
 
-        // 🔒 If both are correct → LOCK and show dominant message
         if (!padsLocked && allCorrect) {
           setPadsLocked(true);
           setInstructorMessage('Student placed both pads correctly');
           return updated;
         }
 
-        // Normal single-pad real-time updates (only when not locked)
         if (!padsLocked) {
           setInstructorMessage(
             `${label} is ${placed ? 'placed correctly' : 'not placed'}`,
@@ -178,7 +171,6 @@ export const LiveInstructorProvider = ({ children }) => {
       return;
     }
 
-    // 2️⃣ STUDENT ACTION
     if (parsed.type === 'STUDENT_ACTION') {
       if (parsed.data === 'OPEN_PAD_PACKAGE') {
         setInstructorMessage('Student opened the pad package');
@@ -192,7 +184,6 @@ export const LiveInstructorProvider = ({ children }) => {
       return;
     }
 
-    // 3️⃣ STEP CONTROLS
     if (parsed.type === 'PLAY_STEP') {
       setCurrentStepIndex(parsed.data.index ?? 0);
     }
@@ -229,10 +220,6 @@ export const LiveInstructorProvider = ({ children }) => {
       return;
     }
 
-    // DEFAULT → show message json raw for instructor
-    //setInstructorMessage(message);
-
-    // translated JSON into readable text
     if (parsed?.type === 'SIM_CONTROL') {
       if (parsed.data === 'START') {
         setInstructorMessage('You started the simulation');
@@ -268,8 +255,6 @@ export const LiveInstructorProvider = ({ children }) => {
 
       return;
     }
-
-    // setInstructorMessage('Received student signal');
   }, [message]);
 
   return (
