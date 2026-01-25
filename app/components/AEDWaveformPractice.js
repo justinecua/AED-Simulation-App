@@ -30,16 +30,10 @@ const AEDWaveformPractice = ({
     }
     return d;
   }
-  // Detect if analyze has ever happened
   const hasAnalyzed = steps.some(
     (s, i) => i <= stepIndex && s.action === 'analyze',
   );
-
-  // Is current step = analyze?
   const isAnalyzingNow = steps[stepIndex]?.action === 'analyze';
-
-  // Show text BEFORE analyze or DURING analyze
-  // Hide AFTER analyze forever
   const shouldShowText =
     started && steps[stepIndex] && (!hasAnalyzed || isAnalyzingNow);
 
